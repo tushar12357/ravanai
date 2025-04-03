@@ -4,6 +4,7 @@ import { MicOff } from "lucide-react";
 import axios from "axios";
 import { UltravoxSession } from "ultravox-client";
 import useSessionStore from "../store/session";
+import { useWidgetContext } from "../constexts/WidgetContext";
 import { useUltravoxStore } from "../store/ultrasession";
 import logo from "../assets/logo.png";
 
@@ -16,6 +17,7 @@ const RavanVoiceAI = () => {
   const [isMuted, setIsMuted] = useState(false);
   const [speech, setSpeech] = useState("");
   const [isVisible, setIsVisible] = useState(true);
+  const {agent_id,schema}=useWidgetContext()
   const [auto_end_call, setAutoEndCall] = useState(false);
   const [pulseEffects, setPulseEffects] = useState({
     small: false,
@@ -38,8 +40,8 @@ const RavanVoiceAI = () => {
     setStatus,
   } = useUltravoxStore();
   const baseurl = "https://app.snowie.ai";
-  const agent_id = "43279ed4-9039-49c8-b11b-e90f3f7c588c";
-  const schema = "6af30ad4-a50c-4acc-8996-d5f562b6987f";
+  // const agent_id = "43279ed4-9039-49c8-b11b-e90f3f7c588c";
+  // const schema = "6af30ad4-a50c-4acc-8996-d5f562b6987f";
   const debugMessages = new Set(["debug"]);
   const orange = "#F97316";
   const creamYellow = "#FFF7ED";
