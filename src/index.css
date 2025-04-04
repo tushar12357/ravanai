@@ -18,6 +18,7 @@
   --gradient-surface: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.98) 100%);
   --gradient-glass: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
   --gradient-glow: radial-gradient(circle at center, var(--primary-light) 0%, transparent 70%);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
 }
 
 .scrollbar-hide::-webkit-scrollbar {
@@ -29,15 +30,23 @@
   scrollbar-width: none;
 }
 
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  .safe-area-bottom {
+    padding-bottom: var(--safe-bottom);
+  }
+}
+
 @layer components {
   .widget-container {
-    @apply fixed bottom-6 right-6 z-[9999] flex flex-col items-end;
+    @apply fixed z-[9999] flex flex-col items-end;
+    @apply bottom-0 right-0 sm:bottom-6 sm:right-6;
     filter: drop-shadow(0 20px 40px rgba(255, 107, 44, 0.15));
   }
 
   .chat-window {
-    @apply w-[380px] rounded-[32px] overflow-hidden transition-all duration-500 ease-out flex flex-col;
-    height: 620px;
+    @apply w-[300px] sm:w-[380px] h-[500px] sm:h-[620px] flex flex-col overflow-hidden transition-all duration-500 ease-out;
+    @apply rounded-t-2xl sm:rounded-[32px];
+    @apply safe-area-bottom;
     background: var(--gradient-surface);
     backdrop-filter: blur(20px);
     border: 1px solid var(--border);
@@ -50,26 +59,28 @@
   }
 
   .chat-window.minimized {
-    height: 72px;
+    @apply h-[72px];
     animation: minimizeWindow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   .chat-header {
-    @apply relative px-6 py-4 flex justify-between items-center;
+    @apply relative flex justify-between items-center;
+    @apply px-3 py-3 sm:px-6 sm:py-4;
+    @apply h-[60px] sm:h-[72px];
     background: var(--gradient-primary);
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    height: 72px;
     box-shadow: 
       0 4px 12px rgba(0, 0, 0, 0.05),
       inset 0 -1px 0 rgba(255, 255, 255, 0.1);
   }
 
   .header-logo {
-    @apply flex items-center gap-3;
+    @apply flex items-center gap-2 sm:gap-3;
   }
 
   .logo-container {
-    @apply w-10 h-10 rounded-full flex items-center justify-center relative overflow-hidden;
+    @apply flex items-center justify-center relative overflow-hidden;
+    @apply w-8 h-8 sm:w-10 sm:h-10 rounded-full;
     background: var(--gradient-glass);
     box-shadow: 
       0 4px 12px rgba(0, 0, 0, 0.1),
@@ -77,61 +88,47 @@
     animation: logoFloat 6s ease-in-out infinite;
   }
 
-  .logo-container::before {
-    content: '';
-    @apply absolute inset-0;
-    background: var(--gradient-glow);
-    opacity: 0.5;
-    animation: rotateLogo 10s linear infinite;
-  }
-
   .header-title {
-    @apply text-white text-lg font-semibold tracking-tight;
+    @apply text-white font-semibold tracking-tight;
+    @apply text-base sm:text-lg;
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   }
 
   .header-controls {
-    @apply flex items-center gap-3;
+    @apply flex items-center;
+    @apply gap-1.5 sm:gap-3;
   }
 
   .control-button {
-    @apply p-2.5 rounded-full transition-all duration-300 text-white/90 hover:text-white relative;
+    @apply rounded-full transition-all duration-300;
+    @apply text-white/90 hover:text-white active:scale-95;
+    @apply p-2 sm:p-2.5;
+    @apply touch-manipulation;
     background: var(--gradient-glass);
     backdrop-filter: blur(4px);
     box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
   }
 
-  .control-button::before {
-    content: '';
-    @apply absolute inset-0 rounded-full opacity-0 transition-opacity duration-300;
-    background: var(--gradient-glow);
-  }
-
-  .control-button:hover {
-    @apply transform scale-110;
-    background: rgba(255, 255, 255, 0.2);
-    box-shadow: 
-      0 4px 12px rgba(0, 0, 0, 0.1),
-      inset 0 0 0 1px rgba(255, 255, 255, 0.2);
-  }
-
-  .control-button:hover::before {
-    opacity: 0.5;
-  }
-
   .chat-content {
-    @apply flex flex-col p-6 bg-gradient-to-b from-orange-50/50 to-white;
-    height: calc(100% - 72px);
-    overflow-y: auto;
+    @apply flex flex-col flex-1 overflow-y-auto;
+    @apply p-3 sm:p-6;
+    @apply bg-gradient-to-b from-orange-50/50 to-white;
+    height: calc(100% - var(--header-height, 60px));
   }
 
   .mic-button-container {
-    @apply relative flex justify-center mb-8;
+    @apply relative flex justify-center;
+    @apply mb-3 sm:mb-6;
+    @apply touch-manipulation;
     perspective: 1000px;
   }
 
   .mic-button {
-    @apply relative w-36 h-36 rounded-full flex items-center justify-center transition-all duration-300 transform hover:scale-105 overflow-hidden;
+    @apply relative flex items-center justify-center;
+    @apply w-16 h-16 sm:w-28 sm:h-28 rounded-full;
+    @apply transition-all duration-300 transform;
+    @apply hover:scale-105 active:scale-95;
+    @apply touch-manipulation;
     background: var(--gradient-primary);
     box-shadow: 
       0 20px 40px -10px var(--shadow),
@@ -139,53 +136,12 @@
       0 8px 16px rgba(0, 0, 0, 0.1);
   }
 
-  .mic-button.active {
-    @apply scale-110;
-    animation: micPulse 2s infinite;
-    box-shadow: 
-      0 30px 60px -15px var(--shadow),
-      inset 0 0 0 1px rgba(255, 255, 255, 0.3),
-      0 12px 24px rgba(0, 0, 0, 0.15);
-  }
-
-  .mic-button::before {
-    content: '';
-    @apply absolute inset-0 rounded-full;
-    background: var(--gradient-glow);
-    opacity: 0;
-    transition: opacity 0.3s ease;
-  }
-
-  .mic-button:hover::before {
-    opacity: 0.5;
-  }
-
-  .pulse-ring {
-    @apply absolute overflow-hidden rounded-full;
-    width: 100%;
-    height: 100%;
-    border: 2px solid var(--primary);
-    animation: pulseRing 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-    animation-delay: var(--delay);
-  }
-
-  .glow-effect {
-    @apply absolute inset-0 rounded-full;
-    background: var(--gradient-glow);
-    filter: blur(20px);
-    opacity: 0.4;
-    animation: glowPulse 3s infinite;
-  }
-
-  .glow-ring {
-    @apply absolute inset-0 rounded-full;
-    border: 2px solid var(--primary);
-    opacity: 0.5;
-    animation: glowRing 2s infinite;
-  }
-
   .status-badge {
-    @apply px-6 py-3 rounded-full text-sm font-medium text-center text-primary-dark mb-6 mx-auto inline-block relative overflow-hidden;
+    @apply inline-block relative overflow-hidden;
+    @apply px-3 py-2 sm:px-4 sm:py-2;
+    @apply text-xs sm:text-sm font-medium text-center text-primary-dark;
+    @apply mb-3 sm:mb-4 mx-auto;
+    @apply rounded-2xl;
     background: var(--gradient-surface);
     border: 1px solid var(--border);
     box-shadow: 
@@ -195,43 +151,26 @@
     animation: badgeFloat 3s ease-in-out infinite;
   }
 
-  .status-badge::before {
-    content: '';
-    @apply absolute inset-0;
-    background: var(--gradient-glow);
-    opacity: 0.1;
-    animation: rotateBadge 10s linear infinite;
-  }
-
   .transcript-container {
-    @apply rounded-3xl p-6 mb-6 flex-1 overflow-y-auto scrollbar-hide relative;
+    @apply flex-1 overflow-y-auto scrollbar-hide relative;
+    @apply rounded-xl sm:rounded-2xl;
+    @apply p-3 sm:p-4;
+    @apply mb-3 sm:mb-4;
+    @apply min-h-[100px] sm:min-h-[120px];
+    @apply max-h-[220px] sm:max-h-[280px];
     background: var(--gradient-surface);
     border: 1px solid var(--border);
     box-shadow: 
       inset 0 2px 4px rgba(0, 0, 0, 0.02),
       0 8px 16px rgba(255, 107, 44, 0.08);
-    min-height: 140px;
-    max-height: 180px;
-  }
-
-  .transcript-container::before {
-    content: '';
-    @apply absolute inset-0 rounded-3xl;
-    background: var(--gradient-glow);
-    opacity: 0.05;
-    animation: pulseTranscript 4s ease-in-out infinite;
-  }
-
-  .transcript-text {
-    @apply text-gray-800 leading-relaxed relative;
-  }
-
-  .input-wrapper {
-    @apply mt-auto relative;
   }
 
   .input-container {
-    @apply flex items-center gap-3 p-4 rounded-full sticky bottom-0 relative overflow-hidden;
+    @apply flex items-center sticky bottom-0;
+    @apply gap-2;
+    @apply p-2 sm:p-3;
+    @apply rounded-full;
+    @apply mt-auto;
     background: var(--gradient-surface);
     border: 1px solid var(--border);
     box-shadow: 
@@ -239,77 +178,39 @@
       inset 0 0 0 1px rgba(255, 255, 255, 0.2);
   }
 
-  .input-container::before {
-    content: '';
-    @apply absolute inset-0;
-    background: var(--gradient-glow);
-    opacity: 0.05;
-    animation: pulseInput 4s ease-in-out infinite;
-  }
-
   .message-input {
-    @apply flex-1 px-5 py-3 rounded-full text-sm transition-all duration-300 bg-white/80 border border-orange-100/50 text-gray-700 placeholder-gray-400;
+    @apply flex-1 transition-all duration-300;
+    @apply px-3 py-2 sm:px-4 sm:py-2.5;
+    @apply rounded-full text-xs sm:text-sm;
+    @apply bg-white/80 border border-orange-100/50;
+    @apply text-gray-700 placeholder-gray-400;
+    @apply focus:outline-none focus:ring-2 focus:ring-primary/20;
     backdrop-filter: blur(8px);
   }
 
-  .message-input:focus {
-    @apply outline-none border-primary ring-2 ring-primary/20;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(255, 107, 44, 0.1);
-  }
-
   .send-button {
-    @apply p-3.5 rounded-full transition-all duration-300 transform hover:scale-105 disabled:opacity-50 relative overflow-hidden;
+    @apply rounded-full transition-all duration-300;
+    @apply p-2 sm:p-2.5;
+    @apply transform hover:scale-105 active:scale-95;
+    @apply disabled:opacity-50 disabled:cursor-not-allowed;
+    @apply touch-manipulation;
     background: var(--gradient-primary);
     box-shadow: 
       0 8px 16px var(--shadow),
       inset 0 0 0 1px rgba(255, 255, 255, 0.2);
   }
 
-  .send-button::before {
-    content: '';
-    @apply absolute inset-0;
-    background: var(--gradient-glow);
-    opacity: 0;
-    transition: opacity 0.3s ease;
-  }
-
-  .send-button:not(:disabled):hover {
-    @apply transform scale-110;
-    box-shadow: 
-      0 12px 24px var(--shadow),
-      inset 0 0 0 1px rgba(255, 255, 255, 0.3);
-  }
-
-  .send-button:not(:disabled):hover::before {
-    opacity: 0.5;
-  }
-
   .floating-button {
-    @apply w-16 h-16 rounded-full flex items-center justify-center transition-all duration-500 transform hover:scale-110 relative overflow-hidden;
+    @apply rounded-full flex items-center justify-center;
+    @apply w-12 h-12 sm:w-14 sm:h-14;
+    @apply transition-all duration-500;
+    @apply transform hover:scale-110 active:scale-95;
+    @apply touch-manipulation;
     background: var(--gradient-primary);
     box-shadow: 
       0 20px 40px -10px var(--shadow),
       inset 0 0 0 1px rgba(255, 255, 255, 0.2);
     animation: floatButton 6s ease-in-out infinite;
-  }
-
-  .floating-button::before {
-    content: '';
-    @apply absolute inset-0;
-    background: var(--gradient-glow);
-    opacity: 0;
-    transition: opacity 0.3s ease;
-  }
-
-  .floating-button:hover {
-    box-shadow: 
-      0 30px 60px -15px var(--shadow),
-      inset 0 0 0 1px rgba(255, 255, 255, 0.3);
-  }
-
-  .floating-button:hover::before {
-    opacity: 0.5;
   }
 }
 
@@ -326,12 +227,25 @@
 
 @keyframes minimizeWindow {
   from {
-    height: 620px;
+    height: 500px;
     opacity: 1;
   }
   to {
     height: 72px;
     opacity: 0.95;
+  }
+}
+
+@media (min-width: 640px) {
+  @keyframes minimizeWindow {
+    from {
+      height: 620px;
+      opacity: 1;
+    }
+    to {
+      height: 72px;
+      opacity: 0.95;
+    }
   }
 }
 
