@@ -88,6 +88,14 @@
     animation: logoFloat 6s ease-in-out infinite;
   }
 
+  .logo-container::before {
+    content: '';
+    @apply absolute inset-0;
+    background: var(--gradient-glow);
+    opacity: 0.5;
+    animation: rotateLogo 10s linear infinite;
+  }
+
   .header-title {
     @apply text-white font-semibold tracking-tight;
     @apply text-base sm:text-lg;
@@ -107,6 +115,16 @@
     background: var(--gradient-glass);
     backdrop-filter: blur(4px);
     box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+  }
+
+  .control-button::before {
+    content: '';
+    @apply absolute inset-0 rounded-full opacity-0 transition-opacity duration-300;
+    background: var(--gradient-glow);
+  }
+
+  .control-button:hover::before {
+    opacity: 0.5;
   }
 
   .chat-content {
@@ -136,6 +154,27 @@
       0 8px 16px rgba(0, 0, 0, 0.1);
   }
 
+  .mic-button.active {
+    @apply scale-110;
+    animation: micPulse 2s infinite;
+    box-shadow: 
+      0 30px 60px -15px var(--shadow),
+      inset 0 0 0 1px rgba(255, 255, 255, 0.3),
+      0 12px 24px rgba(0, 0, 0, 0.15);
+  }
+
+  .mic-button::before {
+    content: '';
+    @apply absolute inset-0 rounded-full;
+    background: var(--gradient-glow);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .mic-button:hover::before {
+    opacity: 0.5;
+  }
+
   .status-badge {
     @apply inline-block relative overflow-hidden;
     @apply px-3 py-2 sm:px-4 sm:py-2;
@@ -149,6 +188,14 @@
       inset 0 0 0 1px rgba(255, 255, 255, 0.2);
     backdrop-filter: blur(8px);
     animation: badgeFloat 3s ease-in-out infinite;
+  }
+
+  .status-badge::before {
+    content: '';
+    @apply absolute inset-0;
+    background: var(--gradient-glow);
+    opacity: 0.1;
+    animation: rotateBadge 10s linear infinite;
   }
 
   .transcript-container {
@@ -165,6 +212,18 @@
       0 8px 16px rgba(255, 107, 44, 0.08);
   }
 
+  .transcript-container::before {
+    content: '';
+    @apply absolute inset-0 rounded-3xl;
+    background: var(--gradient-glow);
+    opacity: 0.05;
+    animation: pulseTranscript 4s ease-in-out infinite;
+  }
+
+  .transcript-text {
+    @apply text-gray-800 leading-relaxed relative;
+  }
+
   .input-container {
     @apply flex items-center sticky bottom-0;
     @apply gap-2;
@@ -176,6 +235,14 @@
     box-shadow: 
       0 8px 16px var(--shadow),
       inset 0 0 0 1px rgba(255, 255, 255, 0.2);
+  }
+
+  .input-container::before {
+    content: '';
+    @apply absolute inset-0;
+    background: var(--gradient-glow);
+    opacity: 0.05;
+    animation: pulseInput 4s ease-in-out infinite;
   }
 
   .message-input {
@@ -198,6 +265,18 @@
     box-shadow: 
       0 8px 16px var(--shadow),
       inset 0 0 0 1px rgba(255, 255, 255, 0.2);
+  }
+
+  .send-button::before {
+    content: '';
+    @apply absolute inset-0;
+    background: var(--gradient-glow);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .send-button:not(:disabled):hover::before {
+    opacity: 0.5;
   }
 
   .floating-button {
