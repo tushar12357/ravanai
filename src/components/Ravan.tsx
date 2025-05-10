@@ -106,7 +106,7 @@ const RavanVoiceAI = () => {
         console.log("call left successfully first time");
 
         const response = await axios.post(
-          `${baseurl}/api/end-call-session-ultravox/`,
+          `${baseurl}/api/end-call-session-thunder/`,
           {
             call_session_id: callSessionId,
             call_id: callId,
@@ -190,7 +190,7 @@ const RavanVoiceAI = () => {
         await session.leaveCall();
         console.log("call left successfully second time");
         const response = await axios.post(
-          `${baseurl}/api/end-call-session-ultravox/`,
+          `${baseurl}/api/end-call-session-thunder/`,
           {
             call_session_id: callSessionId,
             call_id: callId,
@@ -290,7 +290,7 @@ const RavanVoiceAI = () => {
     localStorage.clear();
     await session.leaveCall();
     const response = await axios.post(
-      `${baseurl}/api/end-call-session-ultravox/`,
+      `${baseurl}/api/end-call-session-thunder/`,
       {
         call_session_id: callSessionId,
         call_id: callId,
