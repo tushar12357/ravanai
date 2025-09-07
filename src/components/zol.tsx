@@ -64,17 +64,17 @@ const Zol = () => {
   // Change agent name to Ravan
   useEffect(() => {
     if (status === "disconnected") {
-      setSpeech("Talk To Maya");
+      setSpeech("Talk To Francisco");
     } else if (status === "connecting") {
-      setSpeech("Connecting To Maya");
+      setSpeech("Connecting To Francisco");
     } else if (status === "speaking") {
       setSpeech("Ravan is Speaking");
     } else if (status === "connected") {
-      setSpeech("Connected To Maya");
+      setSpeech("Connected To Francisco");
     } else if (status === "disconnecting") {
-      setSpeech("Ending Conversation With Maya");
+      setSpeech("Ending Conversation With Francisco");
     } else if (status === "listening") {
-      setSpeech(" Maya is Listening");
+      setSpeech(" Francisco is Listening");
     }
   }, [status]);
 
@@ -276,7 +276,7 @@ const Zol = () => {
 
   const toggleExpand = () => {
     if (status === "disconnected") {
-      setSpeech("Connecting To Maya");
+      setSpeech("Connecting To Francisco");
       handleMicClick();
     }
     if (session.isSpeakerMuted) {
