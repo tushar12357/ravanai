@@ -351,9 +351,9 @@ const Zol = () => {
           <div className="chat-header">
             <div className="header-logo">
               <div className="logo-container">
-                <img src={logo} alt="Ravan AI logo" className="w-6 h-6" />
+                <img src={logo} alt="Zolutium logo" className="w-6 h-6" />
               </div>
-              <span className="header-title">Ravan AI</span>
+              <span className="header-title">Zolutium</span>
             </div>
             <div className="header-controls">
               <button
@@ -481,7 +481,7 @@ const Zol = () => {
             </div>
           </button>
           <span className="talk-to-me text-sm font-medium px-3 py-1 mt-2">
-            Talk to Zol
+            Talk to Francisco
           </span>{" "}
         </div>
       )}
