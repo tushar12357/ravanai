@@ -64,7 +64,7 @@ const Zol = () => {
   // Change agent name to Ravan
   useEffect(() => {
     if (status === "disconnected") {
-      setSpeech("Habla Con Nuestra IA ");
+      setSpeech("Talk to Francisco");
     } else if (status === "connecting") {
       setSpeech("Connecting To Francisco");
     } else if (status === "speaking") {
@@ -353,7 +353,7 @@ const Zol = () => {
               <div className="logo-container">
                 <img src={logo} alt="Zolutium logo" className="w-6 h-6" />
               </div>
-              <span className="header-title">Zolutium</span>
+              <span className="header-title">Habla Con Nuestra IA</span>
             </div>
             <div className="header-controls">
               <button
