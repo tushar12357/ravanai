@@ -40,7 +40,7 @@ function App() {
         "--gradient-glow",
         "radial-gradient(circle at center, #3a63ff 0%, transparent 70%)"
       );
-      root.style.setProperty("--text-color", "#25143f");
+      root.style.setProperty("--text-color", "#ffffffff");
       root.style.setProperty(
         "--safe-bottom",
         "env(safe-area-inset-bottom, 0px)"

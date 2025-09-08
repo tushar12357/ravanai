@@ -6,7 +6,7 @@ import { UltravoxSession } from "ultravox-client";
 import useSessionStore from "../store/session";
 import { useWidgetContext } from "../constexts/WidgetContext";
 import { useUltravoxStore } from "../store/ultrasession";
-import logo from "../assets/icon logo zol.png";
+import logo from "../assets/pablo.jpg";
 import { countryCodes } from './countryCodes';
 
 // Interface definitions
@@ -64,11 +64,11 @@ const Zol = () => {
   // Change agent name to Ravan
   useEffect(() => {
     if (status === "disconnected") {
-      setSpeech("Talk To Francisco");
+      setSpeech("Habla Con Nuestra IA ");
     } else if (status === "connecting") {
       setSpeech("Connecting To Francisco");
     } else if (status === "speaking") {
-      setSpeech("Ravan is Speaking");
+      setSpeech("Francisco is Speaking");
     } else if (status === "connected") {
       setSpeech("Connected To Francisco");
     } else if (status === "disconnecting") {
