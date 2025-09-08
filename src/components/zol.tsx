@@ -480,7 +480,7 @@ const Zol = () => {
               />
             </div>
           </button>
-          <span className="talk-to-me text-sm font-medium px-3 py-1 mt-2">
+          <span className="talk-to-me !text-white text-sm font-medium px-3 py-1 mt-2">
             Talk to Francisco
           </span>{" "}
         </div>
