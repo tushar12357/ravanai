@@ -6,7 +6,7 @@ import { UltravoxSession } from "ultravox-client";
 import useSessionStore from "../store/session";
 import { useWidgetContext } from "../constexts/WidgetContext";
 import { useUltravoxStore } from "../store/ultrasession";
-import logo from "../assets/pablo.jpg";
+import logo from "../assets/74784.png";
 import { countryCodes } from './countryCodes';
 
 // Interface definitions
@@ -353,7 +353,7 @@ const Zol = () => {
               <div className="logo-container">
                 <img src={logo} alt="Zolutium logo" className="w-6 h-6" />
               </div>
-              <span className="header-title">Habla Con Nuestra IA</span>
+              <span className="header-title">Zolutium IA</span>
             </div>
             <div className="header-controls">
               <button
