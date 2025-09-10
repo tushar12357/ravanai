@@ -3,6 +3,7 @@ import RavanVoiceAI from "./components/Ravan";
 import { useEffect } from "react";
 import Zol from "./components/zol";
 import { useWidgetContext } from "./constexts/WidgetContext";
+import ZolOrange from "./components/zolOrange";
 function App() {
   const { type } = useWidgetContext();
 
@@ -49,7 +50,13 @@ function App() {
   }, [type]);
   return (
     <>
-      {type === "zol" ? <Zol /> : <RavanVoiceAI />}
+      {type === "zol" ? (
+        <Zol />
+      ) : type === "zolorange" ? (
+        <ZolOrange />
+      ) : (
+        <RavanVoiceAI />
+      )}
       {/* <Forkartik /> */}
     </>
   );
