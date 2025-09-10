@@ -62,19 +62,19 @@ const Zol = () => {
   const orange = "#F97316";
   const creamYellow = "#FFF7ED";
   // Change agent name to Ravan
-  useEffect(() => {
+useEffect(() => {
     if (status === "disconnected") {
-      setSpeech("Talk to Francisco");
+      setSpeech("Habla con Francisco");
     } else if (status === "connecting") {
-      setSpeech("Connecting To Francisco");
+      setSpeech("Conectando con Francisco");
     } else if (status === "speaking") {
-      setSpeech("Francisco is Speaking");
+      setSpeech("Francisco está hablando");
     } else if (status === "connected") {
-      setSpeech("Connected To Francisco");
+      setSpeech("Conectado con Francisco");
     } else if (status === "disconnecting") {
-      setSpeech("Ending Conversation With Francisco");
+      setSpeech("Terminando conversación con Francisco");
     } else if (status === "listening") {
-      setSpeech(" Francisco is Listening");
+      setSpeech("Francisco está escuchando");
     }
   }, [status]);
 
