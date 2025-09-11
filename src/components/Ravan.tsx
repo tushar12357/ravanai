@@ -97,30 +97,30 @@ const RavanVoiceAI = () => {
     }
   };
 
-  useEffect(() => {
-    if (auto_end_call) {
-      const handleClose = async () => {
-        localStorage.clear();
+  // useEffect(() => {
+  //   if (auto_end_call) {
+  //     const handleClose = async () => {
+  //       localStorage.clear();
 
-        await session.leaveCall();
-        console.log("call left successfully first time");
+  //       await session.leaveCall();
+  //       console.log("call left successfully first time");
 
-        const response = await axios.post(
-          `${baseurl}/api/end-call-session-thunder/`,
-          {
-            call_session_id: callSessionId,
-            call_id: callId,
-            schema_name: schema,
-          }
-        );
-        setTranscripts(null);
-        toggleVoice(false);
-      };
-      handleClose();
-    }
-  }, [auto_end_call]);
+  //       const response = await axios.post(
+  //         `${baseurl}/api/end-call-session-thunder/`,
+  //         {
+  //           call_session_id: callSessionId,
+  //           call_id: callId,
+  //           schema_name: schema,
+  //         }
+  //       );
+  //       setTranscripts(null);
+  //       toggleVoice(false);
+  //     };
+  //     handleClose();
+  //   }
+  // }, [auto_end_call]);
 
-  session.registerToolImplementation("auto_end_call", end_call);
+  // session.registerToolImplementation("auto_end_call", end_call);
 
   // Handle message submission
   const handleSubmit = () => {
@@ -133,10 +133,13 @@ const RavanVoiceAI = () => {
   useEffect(() => {
     console.log("status", status);
     const callId = localStorage.getItem("callId");
-    if (callId && status === "disconnected") {
+    if (
+      // callId && 
+      status === "disconnecting") {
       console.log("reconnecting");
       setIsMuted(true);
-      handleMicClickForReconnect(callId);
+      // handleMicClickForReconnect(callId);
+      handleClose()
     } else if (status === "listening" && callId && isMuted) {
       session.muteSpeaker();
     }
