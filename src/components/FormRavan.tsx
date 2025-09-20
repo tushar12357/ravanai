@@ -418,7 +418,7 @@ const RavanFormAI = () => {
               </button>
               <form
                 onSubmit={handleLeadSubmit}
-                className="flex flex-col space-y-3 w-full"
+                className="flex flex-col space-y-3 mt-5 w-full"
               >
                 <input
                   type="text"
