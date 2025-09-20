@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import Zol from "./components/zol";
 import { useWidgetContext } from "./constexts/WidgetContext";
 import ZolOrange from "./components/zolOrange";
+import RavanFormAI from "./components/FormRavan";
 function App() {
   const { type } = useWidgetContext();
 
@@ -54,6 +55,8 @@ function App() {
         <Zol />
       ) : type === "zolorange" ? (
         <ZolOrange />
+      ) : type === "formravan" ? (
+        <RavanFormAI />
       ) : (
         <RavanVoiceAI />
       )}
