@@ -398,7 +398,7 @@ const RavanFormAI = () => {
           </div>
 
           {leadFormVisible ? (
-            <div className="p-4 flex flex-col items-center">
+            <div className="lead-form-container">
               {/* Logo on top */}
               <button
                 onClick={handleMicClick}
