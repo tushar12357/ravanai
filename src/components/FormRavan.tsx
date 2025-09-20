@@ -7,6 +7,8 @@ import useSessionStore from "../store/session";
 import { useWidgetContext } from "../constexts/WidgetContext";
 import { useUltravoxStore } from "../store/ultrasession";
 import logo from "../assets/logo.png";
+import PhoneInput from "react-phone-input-2";
+import "react-phone-input-2/lib/style.css";
 
 const RavanFormAI = () => {
   const [expanded, setExpanded] = useState(false);
@@ -27,7 +29,7 @@ const RavanFormAI = () => {
   const [message, setMessage] = useState("");
   const [isMinimized, setIsMinimized] = useState(false);
   const [leadFormVisible, setLeadFormVisible] = useState(true);
-  const [leadData, setLeadData] = useState({ name: "", email: "", phone: "" });
+  const [leadData, setLeadData] = useState({ name: "", email: "", phone: "", country:""});
 
   // const { agent_id, schema } = useWidgetContext();
   const { callId, callSessionId, setCallId, setCallSessionId } =
@@ -79,6 +81,24 @@ const RavanFormAI = () => {
     return () => {
       document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
+  }, []);
+
+  useEffect(() => {
+    const fetchCountry = async () => {
+      try {
+        const res = await fetch("https://ipapi.co/json/");
+        const data = await res.json();
+        if (data && data.country_code) {
+          setLeadData((prev) => ({
+            ...prev,
+            country: data.country_code.toLowerCase(),
+          }));
+        }
+      } catch (err) {
+        console.error("Error fetching country:", err);
+      }
+    };
+    fetchCountry();
   }, []);
 
   const sessionRef = useRef(null);
@@ -178,9 +198,9 @@ const RavanFormAI = () => {
         const response = await axios.post(`${baseurl}/api/start-thunder/`, {
           agent_code: agent_id,
           schema_name: schema,
-          lead_name: leadData.name,
-          lead_email: leadData.email,
-          lead_phone: leadData.phone,
+          name: leadData.name,
+          email: leadData.email,
+          phone: leadData.phone,
         });
 
         const wssUrl = response.data.joinUrl;
@@ -373,10 +393,14 @@ const RavanFormAI = () => {
           </div>
 
           {leadFormVisible ? (
-            <div className="p-4">
+            <div className="p-4 flex flex-col items-center">
+              {/* Logo on top */}
+              <img src={logo} alt="Ravan AI logo" className="w-12 h-12 mb-3" />
+              <h2 className="text-lg font-semibold mb-4">Talk to Ravan AI</h2>
+
               <form
                 onSubmit={handleLeadSubmit}
-                className="flex flex-col space-y-3"
+                className="flex flex-col space-y-3 w-full"
               >
                 <input
                   type="text"
@@ -398,16 +422,24 @@ const RavanFormAI = () => {
                   className="border rounded p-2"
                   required
                 />
-                <input
-                  type="tel"
-                  placeholder="Enter your phone number"
+
+                {/* Phone input with country dropdown */}
+                <PhoneInput
+                  country={leadData.country || "us"} // fallback
                   value={leadData.phone}
-                  onChange={(e) =>
-                    setLeadData({ ...leadData, phone: e.target.value })
+                  onChange={(phone, country) =>
+                    setLeadData({
+                      ...leadData,
+                      phone: phone,
+                      country: country.countryCode,
+                    })
                   }
-                  className="border rounded p-2"
-                  required
+                  enableSearch={true}
+                  inputClass="w-full p-2"
+                  containerClass="w-full"
+                  dropdownClass="custom-dropdown"
                 />
+
                 <button
                   type="submit"
                   className="bg-orange-500 text-white rounded p-2 font-semibold"
