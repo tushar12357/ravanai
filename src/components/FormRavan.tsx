@@ -29,7 +29,12 @@ const RavanFormAI = () => {
   const [message, setMessage] = useState("");
   const [isMinimized, setIsMinimized] = useState(false);
   const [leadFormVisible, setLeadFormVisible] = useState(true);
-  const [leadData, setLeadData] = useState({ name: "", email: "", phone: "", country:""});
+  const [leadData, setLeadData] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    country: "",
+  });
 
   // const { agent_id, schema } = useWidgetContext();
   const { callId, callSessionId, setCallId, setCallSessionId } =
@@ -395,9 +400,12 @@ const RavanFormAI = () => {
           {leadFormVisible ? (
             <div className="p-4 flex flex-col items-center">
               {/* Logo on top */}
-              <img src={logo} alt="Ravan AI logo" className="w-12 h-12 mb-3" />
-              <h2 className="text-lg font-semibold mb-4">Talk to Ravan AI</h2>
-
+              <div className="header-logo">
+                <div className="logo-container">
+                  <img src={logo} alt="Ravan AI logo" className="w-6 h-6" />
+                </div>
+                <span className="header-title">Ravan AI</span>
+              </div>
               <form
                 onSubmit={handleLeadSubmit}
                 className="flex flex-col space-y-3 w-full"
