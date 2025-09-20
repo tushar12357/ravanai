@@ -400,11 +400,15 @@ const RavanFormAI = () => {
           {leadFormVisible ? (
             <div className="p-4 flex flex-col items-center">
               {/* Logo on top */}
-              <div className="header-logo">
-                <div className="logo-container">
-                  <img src={logo} alt="Ravan AI logo" className="w-6 h-6" />
-                </div>
-                <span className="header-title">Ravan AI</span>
+              <div className="relative">
+                {isGlowing && <div className="glow-effect"></div>}
+                <img
+                  src={logo}
+                  alt="Ravan AI logo"
+                  className={`w-12 h-12 transition-transform duration-300 ${
+                    isRecording ? "scale-110" : ""
+                  }`}
+                />
               </div>
               <form
                 onSubmit={handleLeadSubmit}
