@@ -143,7 +143,7 @@ const Maya = () => {
         setIsGlowing(true);
         const response = await axios.post(
           `${baseurl}/api/protected/thunder/start-thunder`,
-          {},
+          {agent_type:"main"},
           {
             headers: {
               Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJpc3MiOiJhdXRoc2VydmljZSIsImV4cCI6MTc2MTI1NDg4NX0.sy0HRn2oDAuB5I0FGpTLwiRxDyCJq5W3Xp4kGqDG9DE`,
