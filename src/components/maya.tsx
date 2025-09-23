@@ -151,8 +151,8 @@ const Maya = () => {
           }
         );
 
-        const wssUrl = response.data.joinUrl;
-        const callId = response.data.callId;
+        const wssUrl = response.data.data.joinUrl;
+        const callId = response.data.data.callId;
         localStorage.setItem("callId", callId);
         localStorage.setItem("wssUrl", wssUrl);
         setCallId(callId);
