@@ -5,6 +5,7 @@ import Zol from "./components/zol";
 import { useWidgetContext } from "./constexts/WidgetContext";
 import ZolOrange from "./components/zolOrange";
 import RavanFormAI from "./components/FormRavan";
+import Maya from "./components/maya";
 function App() {
   const { type } = useWidgetContext();
 
@@ -57,7 +58,9 @@ function App() {
         <ZolOrange />
       ) : type === "formravan" ? (
         <RavanFormAI />
-      ) : (
+      ) : type==="maya" ? (
+        <Maya/>
+      ): (
         <RavanVoiceAI />
       )}
       {/* <Forkartik /> */}
