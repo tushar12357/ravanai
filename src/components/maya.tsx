@@ -113,7 +113,7 @@ const Maya = () => {
   const handleMicClickForReconnect = async (id) => {
     try {
       const response = await axios.post(
-        `${baseurl}/api/protected/start-thunder`,
+        `${baseurl}/api/protected/thunder/start-thunder/`,
         { prior_call_id: id },
         {
           headers: {
@@ -142,7 +142,7 @@ const Maya = () => {
       if (!isListening) {
         setIsGlowing(true);
         const response = await axios.post(
-          `${baseurl}/api/protected/start-thunder`,
+          `${baseurl}/api/protected/thunder/start-thunder/`,
           {},
           {
             headers: {
