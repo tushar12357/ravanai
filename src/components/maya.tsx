@@ -4,7 +4,6 @@ import { MicOff } from "lucide-react";
 import axios from "axios";
 import { UltravoxSession } from "ultravox-client";
 import useSessionStore from "../store/session";
-import { useWidgetContext } from "../constexts/WidgetContext";
 import { useUltravoxStore } from "../store/ultrasession";
 import logo from "../assets/logo.png";
 
@@ -17,7 +16,6 @@ const Maya = () => {
   const [isMuted, setIsMuted] = useState(false);
   const [speech, setSpeech] = useState("");
   const [isVisible, setIsVisible] = useState(true);
-  const {agent_id,schema}=useWidgetContext()
   const [auto_end_call, setAutoEndCall] = useState(false);
   const [pulseEffects, setPulseEffects] = useState({
     small: false,
@@ -27,9 +25,7 @@ const Maya = () => {
   const [message, setMessage] = useState("");
   const [isMinimized, setIsMinimized] = useState(false);
 
-  // const { agent_id, schema } = useWidgetContext();
-  const { callId, callSessionId, setCallId, setCallSessionId } =
-    useSessionStore();
+  const { callId, callSessionId, setCallId, setCallSessionId } = useSessionStore();
   const {
     setSession,
     transcripts,
@@ -40,12 +36,10 @@ const Maya = () => {
     setStatus,
   } = useUltravoxStore();
   const baseurl = "https://maya.ravan.ai";
-  // const agent_id = "43279ed4-9039-49c8-b11b-e90f3f7c588c";
-  // const schema = "6af30ad4-a50c-4acc-8996-d5f562b6987f";
   const debugMessages = new Set(["debug"]);
   const orange = "#F97316";
   const creamYellow = "#FFF7ED";
-  // Change agent name to Ravan
+
   useEffect(() => {
     if (status === "disconnected") {
       setSpeech("Talk To Maya");
@@ -65,7 +59,6 @@ const Maya = () => {
   useEffect(() => {
     const handleVisibilityChange = () => {
       if (document.visibilityState === "hidden") {
-        console.log("gg", document.visibilityState);
         session.muteSpeaker();
       } else if (document.visibilityState === "visible") {
         session.unmuteSpeaker();
@@ -97,31 +90,6 @@ const Maya = () => {
     }
   };
 
-  // useEffect(() => {
-  //   if (auto_end_call) {
-  //     const handleClose = async () => {
-  //       localStorage.clear();
-
-  //       await session.leaveCall();
-  //       console.log("call left successfully first time");
-
-  //       const response = await axios.post(
-  //         `${baseurl}/api/end-call-session-thunder/`,
-  //         {
-  //           call_session_id: callSessionId,
-  //           call_id: callId,
-  //           schema_name: schema,
-  //         }
-  //       );
-  //       setTranscripts(null);
-  //       toggleVoice(false);
-  //     };
-  //     handleClose();
-  //   }
-  // }, [auto_end_call]);
-
-  // session.registerToolImplementation("auto_end_call", end_call);
-
   // Handle message submission
   const handleSubmit = () => {
     if (status !== "disconnected" && message.trim()) {
@@ -133,13 +101,10 @@ const Maya = () => {
   useEffect(() => {
     console.log("status", status);
     const callId = localStorage.getItem("callId");
-    if (
-      // callId && 
-      status === "disconnecting") {
+    if (status === "disconnecting") {
       console.log("reconnecting");
       setIsMuted(true);
-      // handleMicClickForReconnect(callId);
-      handleClose()
+      handleClose();
     } else if (status === "listening" && callId && isMuted) {
       session.muteSpeaker();
     }
@@ -147,11 +112,15 @@ const Maya = () => {
 
   const handleMicClickForReconnect = async (id) => {
     try {
-      const response = await axios.post(`${baseurl}/api/start-thunder/`, {
-        agent_code: agent_id,
-        schema_name: schema,
-        prior_call_id: id,
-      });
+      const response = await axios.post(
+        `${baseurl}/api/protected/start-thunder`,
+        { prior_call_id: id },
+        {
+          headers: {
+            Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJpc3MiOiJhdXRoc2VydmljZSIsImV4cCI6MTc2MTI1NDg4NX0.sy0HRn2oDAuB5I0FGpTLwiRxDyCJq5W3Xp4kGqDG9DE`,
+          },
+        }
+      );
 
       const wssUrl = response.data.joinUrl;
       const callId = response.data.callId;
@@ -163,7 +132,7 @@ const Maya = () => {
         await session.joinCall(`${wssUrl}`);
       }
     } catch (error) {
-      console.error("Error in handleMicClick:", error);
+      console.error("Error in handleMicClickForReconnect:", error);
     }
   };
 
@@ -172,10 +141,15 @@ const Maya = () => {
     try {
       if (!isListening) {
         setIsGlowing(true);
-        const response = await axios.post(`${baseurl}/api/start-thunder/`, {
-          agent_code: agent_id,
-          schema_name: schema,
-        });
+        const response = await axios.post(
+          `${baseurl}/api/protected/start-thunder`,
+          {},
+          {
+            headers: {
+              Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJpc3MiOiJhdXRoc2VydmljZSIsImV4cCI6MTc2MTI1NDg4NX0.sy0HRn2oDAuB5I0FGpTLwiRxDyCJq5W3Xp4kGqDG9DE`,
+            },
+          }
+        );
 
         const wssUrl = response.data.joinUrl;
         const callId = response.data.callId;
@@ -191,16 +165,7 @@ const Maya = () => {
       } else {
         setIsGlowing(false);
         await session.leaveCall();
-        console.log("call left successfully second time");
-        const response = await axios.post(
-          `${baseurl}/api/end-call-session-thunder/`,
-          {
-            call_session_id: callSessionId,
-            call_id: callId,
-            schema_name: schema,
-          }
-        );
-
+        console.log("call left successfully");
         setTranscripts(null);
         toggleVoice(false);
         localStorage.clear();
@@ -292,14 +257,6 @@ const Maya = () => {
     setExpanded(false);
     localStorage.clear();
     await session.leaveCall();
-    const response = await axios.post(
-      `${baseurl}/api/end-call-session-thunder/`,
-      {
-        call_session_id: callSessionId,
-        call_id: callId,
-        schema_name: schema,
-      }
-    );
     setTranscripts(null);
     toggleVoice(false);
   };
@@ -311,7 +268,6 @@ const Maya = () => {
   useEffect(() => {
     const container = containerRef.current;
     if (container) {
-      // Set scrollTop to scrollHeight to always scroll to the bottom
       container.scrollTop = container.scrollHeight;
     }
   }, [transcripts]);
@@ -325,13 +281,14 @@ const Maya = () => {
     }
   }, [status]);
 
-
   return (
     <div className="widget-container">
       {expanded ? (
-        <div className={`chat-window ${isMinimized ? 'minimized' : ''} ${
-          isGlowing ? "border-orange-400 shadow-orange-500/50" : "border-orange-300"
-        }`}>
+        <div
+          className={`chat-window ${isMinimized ? "minimized" : ""} ${
+            isGlowing ? "border-orange-400 shadow-orange-500/50" : "border-orange-300"
+          }`}
+        >
           <div className="chat-header">
             <div className="header-logo">
               <div className="logo-container">
@@ -354,11 +311,7 @@ const Maya = () => {
               >
                 <Minimize2 size={18} />
               </button>
-              <button
-                onClick={handleClose}
-                className="control-button"
-                title="Close"
-              >
+              <button onClick={handleClose} className="control-button" title="Close">
                 <X size={18} />
               </button>
             </div>
@@ -369,38 +322,37 @@ const Maya = () => {
               <div className="mic-button-container">
                 {isRecording && (
                   <>
-                    <div className="pulse-ring" style={{ '--delay': '0s' }}></div>
-                    <div className="pulse-ring" style={{ '--delay': '0.5s' }}></div>
-                    <div className="pulse-ring" style={{ '--delay': '1s' }}></div>
+                    <div className="pulse-ring" style={{ "--delay": "0s" }}></div>
+                    <div className="pulse-ring" style={{ "--delay": "0.5s" }}></div>
+                    <div className="pulse-ring" style={{ "--delay": "1s" }}></div>
                   </>
                 )}
                 <button
                   onClick={handleMicClick}
-                  // disabled={isDisconnecting || isConnecting}
                   className={`mic-button ${isRecording ? "active" : ""}`}
                 >
                   <div className="relative">
                     {isGlowing && <div className="glow-effect"></div>}
-                    <img 
-                      src={logo} 
-                      alt="Ravan AI logo" 
+                    <img
+                      src={logo}
+                      alt="Ravan AI logo"
                       className={`w-12 h-12 transition-transform duration-300 ${
                         isRecording ? "scale-110" : ""
-                      }`} 
+                      }`}
                     />
                   </div>
                 </button>
               </div>
 
-              <div className="status-badge">
-                {speech}
-              </div>
+              <div className="status-badge">{speech}</div>
 
               <div className="transcript-container" ref={containerRef}>
                 <div className="relative">
                   <span className="transcript-text">{transcripts}</span>
                   {!transcripts && (
-                    <span className="text-gray-400 italic">Your conversation will appear here...</span>
+                    <span className="text-gray-400 italic">
+                      Your conversation will appear here...
+                    </span>
                   )}
                 </div>
               </div>
@@ -423,7 +375,9 @@ const Maya = () => {
                   <button
                     type="button"
                     onClick={handleSubmit}
-                    disabled={!message.trim() || status === "disconnected" || status === "connecting"}
+                    disabled={
+                      !message.trim() || status === "disconnected" || status === "connecting"
+                    }
                     className="send-button"
                   >
                     <Send size={20} className="text-white" />
@@ -435,19 +389,15 @@ const Maya = () => {
         </div>
       ) : (
         <div className="floating-button-container flex flex-col items-center">
-        <button
-          onClick={toggleExpand}
-          // disabled={isDisconnecting || isConnecting}
-          className="floating-button"
-        >
-          <div className="relative">
-            {/* {!isDisconnecting && !isConnecting && <div className="glow-ring"></div>} */}
-            <img src={logo} alt="Ravan AI logo" className="w-8 h-8 relative z-10" />
-          </div>
-        </button>
-        <span className="talk-to-me text-sm font-medium px-3 py-1 mt-2">
-      Talk to Maya
-    </span>        </div>
+          <button onClick={toggleExpand} className="floating-button">
+            <div className="relative">
+              <img src={logo} alt="Ravan AI logo" className="w-8 h-8 relative z-10" />
+            </div>
+          </button>
+          <span className="talk-to-me text-sm font-medium px-3 py-1 mt-2">
+            Talk to Maya
+          </span>
+        </div>
       )}
     </div>
   );
