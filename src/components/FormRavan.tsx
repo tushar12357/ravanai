@@ -1,5 +1,14 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Mic, Send, X, Minimize2, Pause, Volume2, VolumeX, ChevronsUpDown } from "lucide-react";
+import {
+  Mic,
+  Send,
+  X,
+  Minimize2,
+  Pause,
+  Volume2,
+  VolumeX,
+  ChevronsUpDown,
+} from "lucide-react";
 import { MicOff } from "lucide-react";
 import axios from "axios";
 import { UltravoxSession } from "ultravox-client";
@@ -278,7 +287,8 @@ const RavanFormAI = () => {
   const [countrySearch, setCountrySearch] = useState("");
   const [filteredCountries, setFilteredCountries] = useState(countryCodes);
 
-  const { callId, callSessionId, setCallId, setCallSessionId } = useSessionStore();
+  const { callId, callSessionId, setCallId, setCallSessionId } =
+    useSessionStore();
   const {
     setSession,
     transcripts,
@@ -364,7 +374,11 @@ const RavanFormAI = () => {
 
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target) &&
+        !event.target.closest(".country-dropdown") // Optional: Add a class to the dropdown for specificity
+      ) {
         setIsCountryDropdownOpen(false);
       }
     };
@@ -681,14 +695,19 @@ const RavanFormAI = () => {
                 <div className="flex">
                   <div ref={dropdownRef} className="relative">
                     <button
-                      onClick={() => setIsCountryDropdownOpen(!isCountryDropdownOpen)}
+                      onClick={() =>
+                        setIsCountryDropdownOpen(!isCountryDropdownOpen)
+                      }
                       className="w-24 px-3 py-2.5 rounded-l-xl border border-r-0 border-gray-200 bg-secondary text-black backdrop-blur-sm text-sm hover:border-gray-300 flex items-center justify-between"
                     >
                       {countryCode}
                       <ChevronsUpDown className="h-4 w-4 opacity-50" />
                     </button>
                     {isCountryDropdownOpen && (
-                      <div className="absolute z-10 w-64 bottom-full mb-1 bg-white border border-gray-200 rounded-xl shadow-lg max-h-64 overflow-y-auto">
+                      <div
+                        className="absolute z-10 w-64 bottom-full mb-1 bg-white border border-gray-200 rounded-xl shadow-lg max-h-64 overflow-y-auto country-dropdown"
+                        ref={dropdownRef}
+                      >
                         <input
                           type="text"
                           value={countrySearch}
@@ -706,7 +725,9 @@ const RavanFormAI = () => {
                                 className="w-full text-left px-3 py-2 text-sm text-black sidebar-tab-hover-color rounded-lg flex justify-between items-center"
                               >
                                 <span>{country.name}</span>
-                                <span className="text-gray-500">{country.code}</span>
+                                <span className="text-gray-500">
+                                  {country.code}
+                                </span>
                               </button>
                             ))
                           ) : (
@@ -826,10 +847,7 @@ const RavanFormAI = () => {
         </div>
       ) : (
         <div className="floating-button-container flex flex-col items-center">
-          <button
-            onClick={toggleExpand}
-            className="floating-button"
-          >
+          <button onClick={toggleExpand} className="floating-button">
             <div className="relative">
               <img
                 src={logo}
