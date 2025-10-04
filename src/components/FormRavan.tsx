@@ -372,19 +372,19 @@ const RavanFormAI = () => {
     setFilteredCountries(filtered);
   }, [countrySearch]);
 
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target) &&
-        !event.target.closest(".country-dropdown") // Optional: Add a class to the dropdown for specificity
-      ) {
-        setIsCountryDropdownOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+  // useEffect(() => {
+  //   const handleClickOutside = (event) => {
+  //     if (
+  //       dropdownRef.current &&
+  //       !dropdownRef.current.contains(event.target) &&
+  //       !event.target.closest(".country-dropdown") // Optional: Add a class to the dropdown for specificity
+  //     ) {
+  //       setIsCountryDropdownOpen(false);
+  //     }
+  //   };
+  //   document.addEventListener("mousedown", handleClickOutside);
+  //   return () => document.removeEventListener("mousedown", handleClickOutside);
+  // }, []);
 
   const handleCountrySelect = (country) => {
     setCountryCode(country.code);
