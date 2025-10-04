@@ -372,20 +372,6 @@ const RavanFormAI = () => {
     setFilteredCountries(filtered);
   }, [countrySearch]);
 
-  // useEffect(() => {
-  //   const handleClickOutside = (event) => {
-  //     if (
-  //       dropdownRef.current &&
-  //       !dropdownRef.current.contains(event.target) &&
-  //       !event.target.closest(".country-dropdown") // Optional: Add a class to the dropdown for specificity
-  //     ) {
-  //       setIsCountryDropdownOpen(false);
-  //     }
-  //   };
-  //   document.addEventListener("mousedown", handleClickOutside);
-  //   return () => document.removeEventListener("mousedown", handleClickOutside);
-  // }, []);
-
   const handleCountrySelect = (country) => {
     setCountryCode(country.code);
     setIsCountryDropdownOpen(false);
@@ -668,6 +654,14 @@ const RavanFormAI = () => {
                   />
                 </div>
               </button>
+              <p className="text-center text-base font-medium text-gray-700 mt-5 mb-4 bg-gradient-to-r from-orange-50 to-creamYellow/30 px-3 py-2 rounded-md shadow-sm hover:shadow transition-all duration-200">
+                Schedule a call with{" "}
+                <span className="text-orange-400">Maya</span> to explore how AI
+                employees can{" "}
+                <span className="underline decoration-orange-300">
+                  enhance your business
+                </span>
+              </p>
               <form
                 onSubmit={handleLeadSubmit}
                 className="flex flex-col space-y-3 mt-5 w-full"
