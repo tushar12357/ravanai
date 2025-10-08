@@ -655,7 +655,7 @@ const RavanFormAI = () => {
                 </div>
               </button>
               <p className="text-center text-base font-medium text-gray-700 mt-5 mb-4 bg-gradient-to-r from-orange-50 to-creamYellow/30 px-3 py-2 rounded-md shadow-sm hover:shadow transition-all duration-200">
-                Schedule a call with{" "}
+                Have a call with{" "}
                 <span className="text-orange-400">Maya</span> to see how AI
                 employees can{" "}
                 <span className="underline decoration-orange-300">
