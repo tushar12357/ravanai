@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Mic, Send, X, Minimize2, Pause, Volume2, VolumeX } from "lucide-react";
-import { MicOff } from "lucide-react";
+import { Mic, Send, X, Minimize2, MicOff, Volume2, VolumeX } from "lucide-react";
 import axios from "axios";
 import { UltravoxSession } from "ultravox-client";
 import useSessionStore from "../store/session";
@@ -13,7 +12,8 @@ const Maya = () => {
   const [isRecording, setIsRecording] = useState(false);
   const containerRef = useRef(null);
   const [isGlowing, setIsGlowing] = useState(false);
-  const [isMuted, setIsMuted] = useState(false);
+  const [isMicMuted, setIsMicMuted] = useState(false);
+  const [isSpeakerMuted, setIsSpeakerMuted] = useState(false);
   const [speech, setSpeech] = useState("");
   const [isVisible, setIsVisible] = useState(true);
   const [auto_end_call, setAutoEndCall] = useState(false);
@@ -60,8 +60,10 @@ const Maya = () => {
     const handleVisibilityChange = () => {
       if (document.visibilityState === "hidden") {
         session.muteSpeaker();
+        session.muteMic();
       } else if (document.visibilityState === "visible") {
         session.unmuteSpeaker();
+        session.unmuteMic();
       }
     };
 
@@ -90,7 +92,6 @@ const Maya = () => {
     }
   };
 
-  // Handle message submission
   const handleSubmit = () => {
     if (status !== "disconnected" && message.trim()) {
       session.sendText(`${message}`);
@@ -103,10 +104,11 @@ const Maya = () => {
     const callId = localStorage.getItem("callId");
     if (status === "disconnecting") {
       console.log("reconnecting");
-      setIsMuted(true);
+      setIsMicMuted(true);
+      setIsSpeakerMuted(true);
       handleClose();
-    } else if (status === "listening" && callId && isMuted) {
-      session.muteSpeaker();
+    } else if (status === "listening" && callId && isMicMuted) {
+      session.muteMic();
     }
   }, [status]);
 
@@ -136,7 +138,6 @@ const Maya = () => {
     }
   };
 
-  // Handle mic button click
   const handleMicClick = async () => {
     try {
       if (!isListening) {
@@ -189,7 +190,6 @@ const Maya = () => {
     }
   });
 
-  // Listen for status changing events
   session.addEventListener("status", (event) => {
     setStatus(session.status);
     if (session.status === "speaking" || session.status === "listening") {
@@ -203,7 +203,6 @@ const Maya = () => {
     console.log("Got a debug message: ", JSON.stringify(msg));
   });
 
-  // Animated pulse effects for recording state
   useEffect(() => {
     if (isRecording) {
       const smallPulse = setInterval(() => {
@@ -231,8 +230,12 @@ const Maya = () => {
       setSpeech("Connecting To Maya");
       handleMicClick();
     }
+    if (session.isMicrophoneMuted) {
+      setIsMicMuted(false);
+      session.unmuteMic();
+    }
     if (session.isSpeakerMuted) {
-      setIsMuted(false);
+      setIsSpeakerMuted(false);
       session.unmuteSpeaker();
     }
 
@@ -240,8 +243,17 @@ const Maya = () => {
     setIsMinimized(false);
   };
 
-  const toggleMute = () => {
-    setIsMuted(!isMuted);
+  const toggleMicMute = () => {
+    setIsMicMuted(!isMicMuted);
+    if (session.isMicrophoneMuted) {
+      session.unmuteMic()();
+    } else {
+      session.muteMic();
+    }
+  };
+
+  const toggleSpeakerMute = () => {
+    setIsSpeakerMuted(!isSpeakerMuted);
     if (session.isSpeakerMuted) {
       session.unmuteSpeaker();
     } else {
@@ -272,7 +284,6 @@ const Maya = () => {
     }
   }, [transcripts]);
 
-  // Animation for the button when speaking/active
   useEffect(() => {
     if (status === "speaking" || status === "listening") {
       setIsGlowing(true);
@@ -298,11 +309,18 @@ const Maya = () => {
             </div>
             <div className="header-controls">
               <button
-                onClick={toggleMute}
+                onClick={toggleMicMute}
                 className="control-button"
-                title={isMuted ? "Unmute" : "Mute"}
+                title={isMicMuted ? "Unmute Mic" : "Mute Mic"}
               >
-                {isMuted ? <VolumeX size={18} /> : <Volume2 size={18} />}
+                {isMicMuted ? <MicOff size={18} /> : <Mic size={18} />}
+              </button>
+              <button
+                onClick={toggleSpeakerMute}
+                className="control-button"
+                title={isSpeakerMuted ? "Unmute Speaker" : "Mute Speaker"}
+              >
+                {isSpeakerMuted ? <VolumeX size={18} /> : <Volume2 size={18} />}
               </button>
               <button
                 onClick={toggleMinimize}
