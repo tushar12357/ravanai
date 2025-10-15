@@ -246,7 +246,7 @@ const Maya = () => {
   const toggleMicMute = () => {
     setIsMicMuted(!isMicMuted);
     if (session.isMicrophoneMuted) {
-      session.unmuteMic()();
+      session.unmuteMic();
     } else {
       session.muteMic();
     }
