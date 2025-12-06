@@ -617,7 +617,7 @@ const DemoExperienceSection = () => {
                 Follow us on Instagram & tag us to unlock your personalized AI influencer video!
               </p>
               <a
-                href="https://instagram.com/yourhandle"
+                href="https://www.instagram.com/ravan.aiagent/"
                 target="_blank"
                 className="bg-[#FF6B35] text-white px-8 py-4 rounded-full font-bold hover:bg-[#FF8B60] inline-block"
               >
