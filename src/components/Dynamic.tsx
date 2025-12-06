@@ -137,7 +137,6 @@ const Dynamic = () => {
     } catch (error: any) {
       console.error("Failed to create agent:", error);
       setCreationStatus("");
-      alert("Failed to create agent. Please check the URL and try again.");
     } finally {
       // Only remove loading if error occurred; otherwise we hide form
       if (creationStatus.includes("Failed") || !dynamicAgentCode) {

@@ -7,6 +7,7 @@ import ZolOrange from "./components/zolOrange";
 import RavanFormAI from "./components/FormRavan";
 import Maya from "./components/maya";
 import Dynamic from "./components/Dynamic";
+import DemoExperienceSection from "./components/DynamicForm";
 function App() {
   const { type } = useWidgetContext();
 
@@ -62,10 +63,10 @@ function App() {
       ) : type==="maya" ? (
         <Maya/>
       ): type==="dynamic" ? (
-        <Dynamic/>
-      ): (
-        <RavanVoiceAI />
-      )}
+        <DemoExperienceSection/>
+        ): (
+         <RavanVoiceAI />
+       )} 
       {/* <Forkartik /> */}
       {/* <RavanFormAI /> */}
 
