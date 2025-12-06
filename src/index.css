@@ -464,3 +464,10 @@
     filter: blur(2px);
   }
 }
+
+@layer components {
+  .dynamic-widget-container {
+    @apply relative flex flex-col items-start; /* NORMAL FLOW */
+    filter: drop-shadow(0 20px 40px rgba(255, 107, 44, 0.15));
+  }
+}

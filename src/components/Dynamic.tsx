@@ -282,13 +282,24 @@ const Dynamic = () => {
   // Show form if no agent yet
   if (showForm) {
     return (
-      <div className="widget-container flex items-center justify-center min-h-screen bg-gray-50">
+      <div className="dynamic-widget-container flex items-center justify-center min-h-screen bg-gray-50">
         <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full">
           <div className="flex items-center gap-3 mb-6">
             <img src={logo} alt="Ravan AI" className="w-10 h-10" />
-            <h2 className="text-2xl font-bold text-gray-800">
-              Create Your AI Agent
-            </h2>
+            <div className="flex flex-col gap-1 mb-6">
+              <p className="text-xs font-bold tracking-wider text-orange-500 uppercase">
+                BUILD IN UNDER 1 MINUTE
+              </p>
+
+              <h2 className="text-2xl font-bold text-gray-800 leading-snug">
+                Create Your Website Widget Instantly
+              </h2>
+
+              <p className="text-sm text-gray-600">
+                Build and test your custom AI widget right here. Deploy it on
+                your website and start converting visitors into customers.
+              </p>
+            </div>
           </div>
 
           <form onSubmit={handleCreateAgent} className="space-y-5">
@@ -385,7 +396,7 @@ const Dynamic = () => {
 
   // Main widget (same as before, just cleaner)
   return (
-    <div className="widget-container">
+    <div className="dynamic-widget-container">
       {expanded ? (
         <div
           className={`chat-window ${isMinimized ? "minimized" : ""} ${
