@@ -53,37 +53,52 @@ const CountryDropdown = ({
   setIsOpen,
   search,
   setSearch,
-}: any) => {
+}: {
+  formData: DemoFormData;
+  setFormData: React.Dispatch<React.SetStateAction<DemoFormData>>;
+  isOpen: boolean;
+  setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  search: string;
+  setSearch: React.Dispatch<React.SetStateAction<string>>;
+}) => {
   const wrapperRef = useRef<HTMLDivElement>(null);
-useEffect(() => {
-  if (!isOpen) return;
 
-  const handleClick = (e: MouseEvent) => {
-    if (
-      wrapperRef.current &&
-      !wrapperRef.current.contains(e.target as Node)
-    ) {
-      setIsOpen(false);
-    }
-  };
+  useEffect(() => {
+    if (!isOpen) return;
 
-  // ❗ use "click" instead of "mousedown"
-  document.addEventListener("click", handleClick, true);
-  return () => document.removeEventListener("click", handleClick, true);
-}, [isOpen, setIsOpen]);
+    const handleClickOutside = (e: MouseEvent) => {
+      if (
+        wrapperRef.current &&
+        !wrapperRef.current.contains(e.target as Node)
+      ) {
+        setIsOpen(false);
+        setSearch(""); // optional: clear search when closing
+      }
+    };
 
+    // small delay so that the click that opened the dropdown is ignored
+    const timer = setTimeout(() => {
+      document.addEventListener("mousedown", handleClickOutside);
+    }, 0);
+
+    return () => {
+      clearTimeout(timer);
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isOpen, setIsOpen, setSearch]); // ← dependencies are stable
+
+  let timer: any;
 
   const filtered = countryCodes.filter((c) => {
     const s = search.toLowerCase().trim();
     return (
       c.name.toLowerCase().includes(s) ||
-      c.code.replace("+", "").includes(s) ||
-      c.code.toLowerCase().includes(s)
+      c.code.includes(s)
     );
   });
 
   const onSelect = (c: { code: string; name: string }) => {
-    setFormData((prev: any) => ({
+    setFormData((prev) => ({
       ...prev,
       countryCode: c.code,
       countryLabel: c.name,
@@ -96,16 +111,17 @@ useEffect(() => {
     <div ref={wrapperRef} className="relative">
       <button
         type="button"
+        onClick={() => setIsOpen((v) => !v)}
         className="w-28 px-3 py-2.5 rounded-xl border bg-gray-50 flex items-center justify-between text-sm"
-        onClick={() => setIsOpen((prev: boolean) => !prev)}
       >
-        {formData.countryCode}
+        <span>{formData.countryCode}</span>
         <ChevronsUpDown className="w-4 h-4 opacity-50" />
       </button>
 
       {isOpen && (
         <div className="absolute z-50 mt-2 w-64 bg-white border rounded-xl shadow-xl max-h-72 overflow-hidden">
           <input
+            autoFocus
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
@@ -114,17 +130,23 @@ useEffect(() => {
           />
 
           <div className="max-h-64 overflow-y-auto">
-            {filtered.map((c) => (
-              <button
-                key={`${c.code}-${c.name}`}
-                type="button"
-                onClick={() => onSelect(c)}
-                className="w-full px-3 py-2 flex justify-between text-left text-sm hover:bg-gray-100"
-              >
-                <span>{c.name}</span>
-                <span className="text-gray-500">{c.code}</span>
-              </button>
-            ))}
+            {filtered.length === 0 ? (
+              <div className="px-3 py-2 text-gray-500 text-center">
+                No countries found
+              </div>
+            ) : (
+              filtered.map((c) => (
+                <button
+                  key={c.code}
+                  type="button"
+                  onClick={() => onSelect(c)}
+                  className="w-full px-3 py-2 flex justify-between text-left text-sm hover:bg-gray-100"
+                >
+                  <span>{c.name}</span>
+                  <span className="text-gray-500">{c.code}</span>
+                </button>
+              ))
+            )}
           </div>
         </div>
       )}
