@@ -137,7 +137,7 @@ const CountryDropdown = ({
             ) : (
               filtered.map((c) => (
                 <button
-                  key={c.code}
+                key={`${c.code}-${c.name}`}
                   type="button"
                   onClick={() => onSelect(c)}
                   className="w-full px-3 py-2 flex justify-between text-left text-sm hover:bg-gray-100"
