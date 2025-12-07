@@ -471,3 +471,9 @@
     filter: drop-shadow(0 20px 40px rgba(255, 107, 44, 0.15));
   }
 }
+@layer components {
+  .end-widget-container {
+    @apply relative flex flex-col  items-end; /* NORMAL FLOW */
+    filter: drop-shadow(0 20px 40px rgba(255, 107, 44, 0.15));
+  }
+}

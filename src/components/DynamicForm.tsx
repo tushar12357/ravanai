@@ -19,6 +19,8 @@ import ReactCountryFlag from "react-country-flag";
 import Dynamic from "./Dynamic";
 import RavanForm from "./RavanForm";
 import ravanLogo from "@/assets/logo.png";
+import FreebiePopup from "./FreebiePopup";
+import { BookDemoPopup } from "./BookDemoPopup";
 
 // Replace this line:
 // import countryList from "react-select-country-list";
@@ -81,6 +83,7 @@ const DemoExperienceSection = () => {
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [currentStep, setCurrentStep] = useState<DemoStep>("selection");
   const [showFreebiePopup, setShowFreebiePopup] = useState(false);
+  const [showBookDemoPopup, setShowBookDemoPopup] = useState(false);
 
   // Calling states
   const [isCallingSubmitting, setIsCallingSubmitting] = useState(false);
@@ -189,7 +192,7 @@ const DemoExperienceSection = () => {
         {
           access_key: "testmycall",
           calling_number: "+18582520325",
-          email: formData.email.trim() || "demo@ravan.ai",
+          email: formData.email.trim(),
           name: formData.name.trim(),
           new_agent: 164,
           receiver_number: fullInternationalNumber, // Now includes country code!
@@ -245,7 +248,6 @@ const DemoExperienceSection = () => {
         style={{ width: "1.5em", height: "1.5em" }}
         cdnUrl="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.5.0/flags/4x3/"
       />
-      <span className="font-medium">{label}</span>
       <span className="text-gray-500 ml-auto text-sm">{value}</span>
     </div>
   );
@@ -261,47 +263,119 @@ const DemoExperienceSection = () => {
               Interactive Demo
             </span>
             <h2 className="mt-6 text-5xl font-black text-gray-900 leading-tight">
-              Experience Our AI Solutions AI Solutions
+              Experience Our AI Solutions
             </h2>
             <p className="mt-4 text-lg text-gray-600 max-w-2xl mx-auto">
-              Try our powerful AI tools firsthand and see how they can transform
-              your business
+              Try live demos of our AI solutions and see how they can transform
+              your business instantly.
             </p>
           </div>
+          {/* FLOATING SIDE CTA BUTTONS — MORE INWARD */}
+          {/* <div className="relative w-full">
+            <button
+              onClick={() => setShowBookDemoPopup(true)}
+              className="
+      fixed left-24   
+      -rotate-90 origin-left 
+      bg-white text-orange-600 font-extrabold 
+      px-4 py-2 rounded-xl 
+      border-2 border-orange-500 
+      shadow-[0_0_15px_rgba(255,107,53,0.6)]
+      hover:shadow-[0_0_25px_rgba(255,107,53,1)] 
+      hover:bg-orange-50 
+      transition-all
+      animate-pulse
+      z-50
+    "
+            >
+              Book A Free 1:1 AI Consultation Call
+            </button>
+
+            <button
+              onClick={() => setShowFreebiePopup(true)}
+              className="
+      fixed top-1/2 right-24  
+      rotate-90 origin-right 
+      bg-gradient-to-r from-orange-500 to-orange-600 
+      text-white font-extrabold
+      px-4 py-2 rounded-xl 
+      shadow-[0_0_15px_rgba(255,107,53,0.7)]
+      hover:shadow-[0_0_25px_rgba(255,107,53,1)]
+      hover:opacity-90
+      transition-all 
+      animate-pulse
+      z-50
+    "
+            >
+              🎁 Get Freebie
+            </button>
+          </div> */}
 
           {/* Persistent Demo Selector Tabs */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto mb-16">
+          {/* Persistent Demo Selector Tabs */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto mb-12 md:mb-16">
             {/* Website Widget Tab */}
-            <motion.div
-              whileHover={{ y: -4 }}
-              onClick={() => setCurrentStep("widget-select")}
-              className={`cursor-pointer rounded-3xl p-8 transition-all shadow-lg border-4 ${
-                currentStep.startsWith("widget")
-                  ? "bg-white border-[#FF6B35] shadow-2xl scale-105"
-                  : "bg-white/70 border-transparent hover:border-[#FF8B60]"
-              }`}
-            >
-              <div className="flex items-start gap-5">
-                <div className="p-4 rounded-2xl bg-[#FFE5D9] text-[#FF6B35]">
-                  <MessageSquare className="w-8 h-8" />
+            <div>
+              <motion.div
+                whileHover={{ y: -4 }}
+                onClick={() => setCurrentStep("widget-select")}
+                className={`cursor-pointer rounded-3xl p-8 transition-all shadow-lg border-4 ${
+                  currentStep.startsWith("widget")
+                    ? "bg-white border-[#FF6B35] shadow-2xl scale-105"
+                    : "bg-white/70 border-transparent hover:border-[#FF8B60]"
+                }`}
+              >
+                <div className="flex items-start gap-5">
+                  <div className="p-4 rounded-2xl bg-[#FFE5D9] text-[#FF6B35]">
+                    <MessageSquare className="w-8 h-8" />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="text-2xl font-bold text-gray-900">
+                      AI Website Voice Widget
+                    </h3>
+                    <p className="mt-2 text-gray-600 leading-relaxed">
+                      AI speech-to-speech bot that engages visitors and converts
+                      leads 24/7
+                    </p>
+                  </div>
                 </div>
-                <div className="flex-1">
-                  <h3 className="text-2xl font-bold text-gray-900">
-                    Website Widget
-                  </h3>
-                  <p className="mt-2 text-gray-600 leading-relaxed">
-                    AI speech-to-speech bot that engages visitors and converts
-                    leads 24/7
-                  </p>
-                  {currentStep.startsWith("widget") && (
-                    <div className="mt-4 flex items-center gap-2 text-[#FF6B35] font-bold">
-                      <Zap className="w-5 h-5" />
-                      <span>Active Demo</span>
+              </motion.div>
+
+              {/* MOBILE ONLY: Show these buttons right under the widget card when selected */}
+              {currentStep.startsWith("widget") && (
+                <div className="mt-6 flex flex-col sm:hidden gap-4">
+                  <button
+                    onClick={() => setCurrentStep("widget-custom")}
+                    className="bg-[#ffe5d9f7] rounded-2xl shadow-md p-6 border-2 border-gray-200 hover:border-white text-left flex items-start gap-4"
+                  >
+                    <Sparkles className="w-8 h-8 text-[#ff4d0c] shrink-0" />
+                    <div>
+                      <h4 className="text-xl font-bold text-[#ff4d0c]">
+                        Create Custom Widget
+                      </h4>
+                      <p className="text-[#ff4d0c] text-sm">
+                        Build a speech-to-speech agent from scratch
+                      </p>
                     </div>
-                  )}
+                  </button>
+
+                  <button
+                    onClick={() => setCurrentStep("widget-sample")}
+                    className="bg-[#ffe5d9f7] rounded-2xl shadow-md p-6 border-2 border-gray-200 hover:border-white text-left flex items-start gap-4"
+                  >
+                    <MessageSquare className="w-8 h-8 text-[#ff4d0c] shrink-0" />
+                    <div>
+                      <h4 className="text-xl font-bold text-[#ff4d0c]">
+                        Sample Bot
+                      </h4>
+                      <p className="text-[#ff4d0c] text-sm">
+                        Instant prebuilt demo
+                      </p>
+                    </div>
+                  </button>
                 </div>
-              </div>
-            </motion.div>
+              )}
+            </div>
 
             {/* AI Calling Tab */}
             <motion.div
@@ -322,66 +396,101 @@ const DemoExperienceSection = () => {
                     AI Calling
                   </h3>
                   <p className="mt-2 text-gray-600 leading-relaxed">
-                    Voice AI that handles calls, books appointments, and follows
-                    up
+                    AI phone caller that handles calls, books appointments, and
+                    follows up
                   </p>
-                  {currentStep.startsWith("calling") && (
-                    <div className="mt-4 flex items-center gap-2 text-[#FF6B35] font-bold">
-                      <Zap className="w-5 h-5" />
-                      <span>Active Demo</span>
-                    </div>
-                  )}
                 </div>
               </div>
             </motion.div>
           </div>
 
+          {/* MOBILE ONLY: Freebie + Book Demo Buttons (stacked below cards) */}
+          <div className="block sm:hidden space-y-4 max-w-md mx-auto mb-12 px-6">
+            <button
+              onClick={() => setShowBookDemoPopup(true)}
+              className="w-full bg-white text-orange-600 font-extrabold py-5 rounded-2xl border-4 border-orange-500 shadow-xl hover:shadow-2xl transition-all text-lg"
+            >
+              Book A Free 1:1 AI Consultation Call
+            </button>
+
+            <button
+              onClick={() => setShowFreebiePopup(true)}
+              className="w-full bg-gradient-to-r from-orange-500 to-orange-600 text-white font-extrabold py-5 rounded-2xl shadow-xl hover:shadow-2xl transition-all text-lg flex items-center justify-center gap-3"
+            >
+              Get Freebie
+            </button>
+          </div>
+
+          {/* DESKTOP: Original floating side buttons (unchanged) */}
+          <div className="hidden sm:block">
+            {/* Book Demo - Left Side */}
+            <button
+              onClick={() => setShowBookDemoPopup(true)}
+              className="fixed left-24 -rotate-90 origin-left bg-white text-orange-600 font-extrabold px-4 py-2 rounded-xl border-2 border-orange-500 shadow-[0_0_15px_rgba(255,107,53,0.6)] hover:shadow-[0_0_25px_rgba(255,107,53,1)] hover:bg-orange-50 transition-all animate-pulse z-50"
+            >
+              Book A Free 1:1 AI Consultation Call
+            </button>
+
+            {/* Get Freebie - Right Side */}
+            <button
+              onClick={() => setShowFreebiePopup(true)}
+              className="fixed top-1/2 right-24 rotate-90 origin-right bg-gradient-to-r from-orange-500 to-orange-600 text-white font-extrabold px-4 py-2 rounded-xl shadow-[0_0_15px_rgba(255,107,53,0.7)] hover:shadow-[0_0_25px_rgba(255,107,53,1)] hover:opacity-90 transition-all animate-pulse z-50"
+            >
+              🎁 Get Freebie
+            </button>
+          </div>
+
           {/* Dynamic Demo Content Area */}
+
           <AnimatePresence mode="wait">
             {/* Widget Flow */}
             {currentStep.startsWith("widget") && (
+              <div className="hidden md:block">
               <motion.div
                 key="widget-tabs"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
-                className="grid md:grid-cols-2 gap-10 max-w-5xl mx-auto mb-12"
+                className="flex flex-row gap-6 mb-12 max-w-3xl"
               >
                 <button
                   onClick={() => setCurrentStep("widget-custom")}
-                  className={`bg-white rounded-3xl shadow-xl p-10 transition-all group border-4 ${
-                    currentStep === "widget-custom"
-                      ? "border-[#FF6B35] shadow-2xl scale-105"
-                      : "border-transparent hover:border-[#FF6B35]"
-                  }`}
+                  className="bg-[#ffe5d9f7] rounded-2xl shadow-md p-6 border-2 border-gray-200 hover:border-white text-left w-72 whitespace-normal break-words"
                 >
-                  <Sparkles className="w-14 h-14 text-[#FF6B35] mx-auto mb-5" />
-                  <h4 className="text-2xl font-bold mb-3">
-                    Create Custom Widget
-                  </h4>
-                  <p className="text-gray-600">
-                    Build your own AI speech-to-speech bot from scratch
-                  </p>
+                  <div className="flex items-start gap-4">
+                    <Sparkles className="w-8 h-8 text-[#ff4d0c] shrink-0" />
+                    <div className="space-y-1">
+                      <h4 className="text-xl font-bold text-[#ff4d0c]">
+                        Create Custom Widget
+                      </h4>
+                      <p className="text-[#ff4d0c] text-sm">
+                        Build a speech-to-speech agent from scratch
+                      </p>
+                    </div>
+                  </div>
                 </button>
 
                 <button
                   onClick={() => setCurrentStep("widget-sample")}
-                  className={`bg-white rounded-3xl shadow-xl p-10 transition-all group border-4 ${
-                    currentStep === "widget-sample"
-                      ? "border-[#FF6B35] shadow-2xl scale-105"
-                      : "border-transparent hover:border-[#FF6B35]"
-                  }`}
+                  className="bg-[#ffe5d9f7] rounded-2xl shadow-md p-6 border-2 border-gray-200 hover:border-white text-left w-72 whitespace-normal break-words"
                 >
-                  <MessageSquare className="w-14 h-14 text-[#FF6B35] mx-auto mb-5" />
-                  <h4 className="text-2xl font-bold mb-3">Try Sample Bot</h4>
-                  <p className="text-gray-600">
-                    Instantly test a pre-built demo
-                  </p>
+                  <div className="flex items-start gap-4">
+                    <MessageSquare className="w-8 h-8 text-[#ff4d0c] shrink-0" />
+                    <div className="space-y-1">
+                      <h4 className="text-xl font-bold text-[#ff4d0c]">
+                        Sample Bot
+                      </h4>
+                      <p className="text-[#ff4d0c] text-sm">
+                        Instant prebuilt demo
+                      </p>
+                    </div>
+                  </div>
                 </button>
               </motion.div>
+              </div>
             )}
 
-            {currentStep.startsWith("widget") && (
+            {/* {currentStep.startsWith("widget") && (
               <AnimatePresence mode="wait">
                 {currentStep === "widget-custom" && (
                   <motion.div
@@ -413,10 +522,10 @@ const DemoExperienceSection = () => {
                   </motion.div>
                 )}
               </AnimatePresence>
-            )}
+            )} */}
 
             {/* AI Calling Flow */}
-            {currentStep === "calling-confirm" && (
+            {/* {currentStep === "calling-confirm" && (
               <motion.div
                 key="calling-confirm"
                 initial={{ opacity: 0, y: 30 }}
@@ -432,8 +541,7 @@ const DemoExperienceSection = () => {
                     Request AI Calling Demo
                   </h3>
                   <p className="text-gray-600">
-                    Our AI will call you shortly to demonstrate natural
-                    conversation and appointment booking.
+                    Our AI Phone Caller will call you shortly to demonstrate how it handles inbound & outbound calls, transfers calls to your team, books appointments, and automatically follows up with every lead—all in real time.
                   </p>
                 </div>
 
@@ -506,21 +614,8 @@ const DemoExperienceSection = () => {
                   Switch to another demo above
                 </div>
               </motion.div>
-            )}
+            )} */}
           </AnimatePresence>
-
-          {/* Freebie CTA */}
-          {currentStep.startsWith("widget") && !showFreebiePopup && (
-            <div className="text-center mt-20">
-              <button
-                onClick={() => setShowFreebiePopup(true)}
-                className="inline-flex items-center gap-3 bg-white text-[#FF6B35] px-10 py-5 rounded-full text-xl font-bold shadow-xl border-2 border-[#FF6B35] hover:bg-[#FFF0EC] transition transform hover:scale-105"
-              >
-                <Gift className="w-7 h-7" />
-                Get Your Freebie!
-              </button>
-            </div>
-          )}
         </div>
       </section>
 
@@ -532,7 +627,7 @@ const DemoExperienceSection = () => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4 overflow-y-auto"
-            onClick={() => !isSubmitting && setShowInfoModal(false)}
+            onClick={() => {}}
           >
             <motion.div
               initial={{ scale: 0.9, opacity: 0 }}
@@ -607,11 +702,12 @@ const DemoExperienceSection = () => {
                     <h2 className="text-2xl md:text-3xl font-bold text-gray-900">
                       Welcome to{" "}
                       <span className="text-orange-500 font-extrabold">
-                        Ravan
+                        Ravan.ai
                       </span>
                     </h2>
                     <p className="text-gray-500 text-sm mt-1">
-                      Thanks for stopping by!
+                      Experience your AI sales workforce — start your
+                      interactive AI demo.
                     </p>
                   </motion.div>
                   <form onSubmit={handleSubmit} className="space-y-5">
@@ -714,7 +810,7 @@ const DemoExperienceSection = () => {
                       <input
                         type="text"
                         name="businessName"
-                        placeholder="Business Name"
+                        placeholder="Company Name"
                         value={formData.businessName}
                         onChange={handleChange}
                         className="w-full h-11 px-4 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 transition"
@@ -757,10 +853,213 @@ const DemoExperienceSection = () => {
                       transition={{ delay: 0.7 }}
                       className="text-center text-xs text-gray-400"
                     >
-                      No data sent • Just for personalization
+                      Thank you for visiting our booth — enjoy your personalized
+                      AI demo.{" "}
                     </motion.p>
                   </form>
                 </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+      {/* AI CALLING DEMO POPUP */}
+      <AnimatePresence>
+        {(currentStep === "calling-confirm" ||
+          currentStep === "calling-success") && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-6"
+            onClick={() => setCurrentStep("selection")}
+          >
+            {/* CARD */}
+            <motion.div
+              initial={{ scale: 0.92, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.92, opacity: 0 }}
+              transition={{ type: "spring", damping: 20, stiffness: 250 }}
+              className="relative bg-white rounded-3xl shadow-2xl w-full max-w-xl mx-auto p-12"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* CLOSE BUTTON */}
+              <button
+                onClick={() => setCurrentStep("selection")}
+                className="absolute top-6 right-6 text-gray-400 hover:text-gray-600"
+              >
+                <X className="w-7 h-7" />
+              </button>
+
+              {/* CONTENT (calling-confirm) */}
+              {currentStep === "calling-confirm" && (
+                <motion.div
+                  key="calling-confirm"
+                  initial={{ opacity: 0, y: 15 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -15 }}
+                  className="text-center"
+                >
+                  {/* ICON */}
+                  <div className="w-28 h-28 rounded-full bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center shadow-xl mx-auto mb-8">
+                    <Phone className="w-14 h-14 text-white" />
+                  </div>
+
+                  {/* HEADING */}
+                  <h3 className="text-3xl font-extrabold text-gray-900 mb-5">
+                    AI Calling
+                  </h3>
+
+                  <p className="text-gray-600 text-sm mb-10">
+                    Our AI Phone Caller will call you shortly to demonstrate how
+                    it handles inbound & outbound calls, books appointments, and
+                    automatically follows up with every lead.
+                  </p>
+
+                  {/* PHONE NUMBER */}
+                  <p className="text-lg text-gray-500 mb-2">
+                    We'll call you at:
+                  </p>
+                  <div className="flex items-center justify-center gap-3 mb-10">
+                    {/* Country Code (read only dropdown optional) */}
+                    <Select
+                      options={countryOptions}
+                      value={countryOptions.find(
+                        (opt) => opt.value === formData.countryCode
+                      )}
+                      onChange={handleCountryChange}
+                      formatOptionLabel={formatOptionLabel}
+                      styles={selectStyles}
+                      className="react-select-container"
+                      classNamePrefix="react-select"
+                      placeholder="Code"
+                      isSearchable
+                    />
+
+                    {/* Editable phone input */}
+                    <input
+                      type="tel"
+                      value={formData.phone}
+                      onChange={(e) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          phone: e.target.value,
+                        }))
+                      }
+                      className="w-full max-w-xs h-14 text-center bg-gray-50 border border-gray-300 rounded-2xl font-bold text-2xl tracking-wider"
+                      placeholder="Enter number"
+                    />
+                  </div>
+
+                  {/* CTA */}
+                  <button
+                    onClick={handleCallingRequest}
+                    disabled={isCallingSubmitting || callingSubmitSuccess}
+                    className={`w-full py-5 rounded-full text-xl font-bold transition-all shadow-lg flex items-center justify-center gap-3 max-w-md mx-auto ${
+                      callingSubmitSuccess
+                        ? "bg-green-500 text-white"
+                        : isCallingSubmitting
+                        ? "bg-gray-400 cursor-not-allowed text-white"
+                        : "bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-500 text-white"
+                    }`}
+                  >
+                    {isCallingSubmitting ? (
+                      "Requesting Call..."
+                    ) : callingSubmitSuccess ? (
+                      <>
+                        <Check className="w-6 h-6" />
+                        Call Requested!
+                      </>
+                    ) : (
+                      <>
+                        <Phone className="w-6 h-6" />
+                        Start Demo Call
+                      </>
+                    )}
+                  </button>
+                </motion.div>
+              )}
+
+              {/* SUCCESS STATE (popup remains!) */}
+              {currentStep === "calling-success" && (
+                <motion.div
+                  key="success"
+                  initial={{ opacity: 0, y: 15 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -15 }}
+                  className="text-center"
+                >
+                  <div className="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-8">
+                    <Check className="w-12 h-12 text-green-600" />
+                  </div>
+
+                  <h3 className="text-3xl font-extrabold text-gray-900 mb-3">
+                    Demo Call Requested!
+                  </h3>
+
+                  <p className="text-gray-600 mb-10">
+                    Our AI will call <strong>{formData.name}</strong> at{" "}
+                    <strong>
+                      {formData.countryCode}
+                      {formData.phone}
+                    </strong>{" "}
+                    shortly.
+                  </p>
+
+                  <button
+                    onClick={() => setCurrentStep("selection")}
+                    className="text-gray-500 hover:text-gray-700 underline text-sm"
+                  >
+                    ← Back to demo options
+                  </button>
+                </motion.div>
+              )}
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* WIDGET POPUP — autosize to component */}
+      <AnimatePresence>
+        {(currentStep === "widget-custom" ||
+          currentStep === "widget-sample") && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4"
+            onClick={() => setCurrentStep("selection")}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              transition={{ type: "spring", damping: 20, stiffness: 250 }}
+              className="
+          relative
+          bg-white
+          rounded-2xl
+          shadow-2xl
+          w-auto
+          max-w-4xl
+          max-h-[90vh]
+          overflow-auto
+          p-6
+        "
+              onClick={(e) => e.stopPropagation()} // Prevent closing on inner click
+            >
+              {/* Close Button */}
+              <button
+                onClick={() => setCurrentStep("selection")}
+                className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
+              >
+                <X className="w-7 h-7" />
+              </button>
+
+              {/* DYNAMIC CONTENT ONLY (auto size) */}
+              <div className="mt-4">
+                {currentStep === "widget-custom" && <Dynamic />}
+                {currentStep === "widget-sample" && <RavanForm />}
               </div>
             </motion.div>
           </motion.div>
@@ -770,43 +1069,12 @@ const DemoExperienceSection = () => {
       {/* FREEBIE POPUP */}
       <AnimatePresence>
         {showFreebiePopup && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4"
-            onClick={() => setShowFreebiePopup(false)}
-          >
-            <motion.div
-              initial={{ scale: 0.9 }}
-              animate={{ scale: 1 }}
-              className="bg-white rounded-3xl shadow-2xl max-w-md w-full p-8 text-center relative"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <button
-                onClick={() => setShowFreebiePopup(false)}
-                className="absolute top-4 right-4 text-gray-500 hover:text-gray-700"
-              >
-                <X className="w-6 h-6" />
-              </button>
-
-              <Gift className="w-16 h-16 text-[#FF6B35] mx-auto mb-6" />
-              <h3 className="text-2xl font-bold mb-4">
-                Claim Your Free AI Video!
-              </h3>
-              <p className="text-gray-600 mb-8">
-                Follow us on Instagram & tag us to unlock your personalized AI
-                influencer video!
-              </p>
-              <a
-                href="https://www.instagram.com/ravan.aiagent/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="bg-[#FF6B35] text-white px-8 py-4 rounded-full font-bold hover:bg-[#FF8B60] inline-block"
-              >
-                Let's Do It!
-              </a>
-            </motion.div>
-          </motion.div>
+          <FreebiePopup onClose={() => setShowFreebiePopup(false)} />
+        )}
+      </AnimatePresence>
+      <AnimatePresence>
+        {showBookDemoPopup && (
+          <BookDemoPopup onClose={() => setShowBookDemoPopup(false)} />
         )}
       </AnimatePresence>
     </>

@@ -329,7 +329,7 @@ const RavanForm = () => {
 
 
   return (
-    <div className="dynamic-widget-container">
+    <div className="end-widget-container">
       {expanded ? (
         <div className={`chat-window ${isMinimized ? 'minimized' : ''} ${
           isGlowing ? "border-orange-400 shadow-orange-500/50" : "border-orange-300"

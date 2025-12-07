@@ -215,7 +215,6 @@ const Dynamic = () => {
         setStoreTranscripts(null);
         setTranscripts("");
         toggleVoice(false);
-        localStorage.clear();
       }
     } catch (error) {
       console.error("Error in handleMicClick:", error);
@@ -252,7 +251,6 @@ const Dynamic = () => {
   const handleClose = async () => {
     setExpanded(false);
     await session?.leaveCall();
-    localStorage.clear();
     setTranscripts("");
     setStoreTranscripts(null);
     toggleVoice(false);
@@ -300,42 +298,21 @@ const Dynamic = () => {
   // Show form if no agent yet
   if (showForm) {
     return (
-      <div className="dynamic-widget-container flex items-center justify-center min-h-screen bg-gray-50">
+      <div className="dynamic-widget-container flex items-center justify-center bg-gray-50">
         <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full">
           <div className="flex items-center gap-3 mb-6">
             <img src={logo} alt="Ravan AI" className="w-10 h-10" />
-            <div className="flex flex-col gap-1 mb-6">
+            <div className="flex flex-col gap-1">
               <p className="text-xs font-bold tracking-wider text-orange-500 uppercase">
-                BUILD IN UNDER 1 MINUTE
+                BUILD IN FEW MINUTES
               </p>
 
-              <h2 className="text-2xl font-bold text-gray-800 leading-snug">
-                Create Your Website Widget Instantly
-              </h2>
-
-              <p className="text-sm text-gray-600">
-                Build and test your custom AI widget right here. Deploy it on
-                your website and start converting visitors into customers.
-              </p>
+            
             </div>
           </div>
 
           <form onSubmit={handleCreateAgent} className="space-y-5">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Company Name *
-              </label>
-              <input
-                type="text"
-                required
-                value={formData.companyName}
-                onChange={(e) =>
-                  setFormData({ ...formData, companyName: e.target.value })
-                }
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                placeholder="Acme Corp"
-              />
-            </div>
+           
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -368,20 +345,7 @@ const Dynamic = () => {
               />
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Agent Personality
-              </label>
-              <textarea
-                rows={3}
-                value={formData.personality}
-                onChange={(e) =>
-                  setFormData({ ...formData, personality: e.target.value })
-                }
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
-                placeholder="Friendly, professional, and helpful..."
-              />
-            </div>
+          
             <button
               type="submit"
               disabled={isCreatingAgent}
@@ -414,7 +378,7 @@ const Dynamic = () => {
 
   // Main widget (same as before, just cleaner)
   return (
-    <div className="dynamic-widget-container">
+    <div className="end-widget-container">
       {expanded ? (
         <div
           className={`chat-window ${isMinimized ? "minimized" : ""} ${
