@@ -7,7 +7,7 @@ import useSessionStore from "../store/session";
 import { useWidgetContext } from "../constexts/WidgetContext";
 import { useUltravoxStore } from "../store/ultrasession";
 import logo from "../assets/logo.png";
-
+const LOCAL_STORAGE_KEY = "ravan_demo_user_data";
 const RavanForm = () => {
   const [expanded, setExpanded] = useState(false);
   const [inputValue, setInputValue] = useState("");
@@ -171,10 +171,14 @@ const RavanForm = () => {
   const handleMicClick = async () => {
     try {
       if (!isListening) {
+        const savedUser = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY) || "{}");
         setIsGlowing(true);
         const response = await axios.post(`${baseurl}/api/start-thunder/`, {
           agent_code: agent_id,
           schema_name: schema,
+          name: savedUser.name || "",
+            email: savedUser.email || "",
+            phone: savedUser.phone || "",
         });
 
         const wssUrl = response.data.joinUrl;

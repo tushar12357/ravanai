@@ -13,7 +13,7 @@ import { UltravoxSession } from "ultravox-client";
 import useSessionStore from "../store/session";
 import { useUltravoxStore } from "../store/ultrasession";
 import logo from "../assets/logo.png";
-
+const LOCAL_STORAGE_KEY = "ravan_demo_user_data";
 const Dynamic = () => {
   const [expanded, setExpanded] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
@@ -35,6 +35,21 @@ const Dynamic = () => {
     personality: "Friendly, professional, and helpful customer support agent",
   });
 
+
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        setFormData(prev => ({
+          ...prev,
+          companyName: parsed.businessName || prev.companyName,
+        }));
+      }
+    } catch (e) {
+      // silent
+    }
+  }, []);
   // Dynamic agent code from /start-demo
   const [dynamicAgentCode, setDynamicAgentCode] = useState(null);
   const [creationStatus, setCreationStatus] = useState<string>("");
@@ -112,9 +127,13 @@ const Dynamic = () => {
       // Auto-start the call
       setTimeout(async () => {
         try {
+          const savedUser = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY) || "{}");
           const thunderRes = await axios.post(`${baseurl}/api/start-thunder/`, {
             agent_code: agent_code,
-            schema_name: schema_name || "default",
+            schema_name: schema_name,
+            name: savedUser.name || "",
+            email: savedUser.email || "",
+            phone: savedUser.phone || "",
           });
 
           const { joinUrl, callId, call_session_id } = thunderRes.data;
