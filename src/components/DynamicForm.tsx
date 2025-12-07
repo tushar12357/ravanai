@@ -56,6 +56,7 @@ const CountryDropdown = ({
 }: any) => {
   const wrapperRef = useRef<HTMLDivElement>(null);
 
+  // ✔️ click outside
   useEffect(() => {
     if (!isOpen) return;
 
@@ -76,7 +77,7 @@ const CountryDropdown = ({
     const s = search.toLowerCase().trim();
     return (
       c.name.toLowerCase().includes(s) ||
-      c.code.replace("+", "").includes(s) || // typing 91 works
+      c.code.replace("+", "").includes(s) ||
       c.code.toLowerCase().includes(s)
     );
   });
@@ -130,6 +131,7 @@ const CountryDropdown = ({
     </div>
   );
 };
+
 
 const DemoExperienceSection = () => {
   const [showInfoModal, setShowInfoModal] = useState(true);
