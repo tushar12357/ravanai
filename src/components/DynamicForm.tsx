@@ -63,31 +63,31 @@ const CountryDropdown = ({
 }) => {
   const wrapperRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    if (!isOpen) return;
+  // useEffect(() => {
+  //   if (!isOpen) return;
 
-    const handleClickOutside = (e: MouseEvent) => {
-      if (
-        wrapperRef.current &&
-        !wrapperRef.current.contains(e.target as Node)
-      ) {
-        setIsOpen(false);
-        setSearch(""); // optional: clear search when closing
-      }
-    };
+  //   const handleClickOutside = (e: MouseEvent) => {
+  //     if (
+  //       wrapperRef.current &&
+  //       !wrapperRef.current.contains(e.target as Node)
+  //     ) {
+  //       setIsOpen(false);
+  //       setSearch(""); // optional: clear search when closing
+  //     }
+  //   };
 
-    // small delay so that the click that opened the dropdown is ignored
-    const timer = setTimeout(() => {
-      document.addEventListener("mousedown", handleClickOutside);
-    }, 0);
+  //   // small delay so that the click that opened the dropdown is ignored
+  //   const timer = setTimeout(() => {
+  //     document.addEventListener("mousedown", handleClickOutside);
+  //   }, 0);
 
-    return () => {
-      clearTimeout(timer);
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [isOpen, setIsOpen, setSearch]); // ← dependencies are stable
+  //   return () => {
+  //     clearTimeout(timer);
+  //     document.removeEventListener("mousedown", handleClickOutside);
+  //   };
+  // }, [isOpen, setIsOpen, setSearch]); // ← dependencies are stable
 
-  let timer: any;
+  // let timer: any;
 
   const filtered = countryCodes.filter((c) => {
     const s = search.toLowerCase().trim();
