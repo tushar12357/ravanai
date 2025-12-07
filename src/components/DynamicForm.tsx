@@ -55,23 +55,23 @@ const CountryDropdown = ({
   setSearch,
 }: any) => {
   const wrapperRef = useRef<HTMLDivElement>(null);
+useEffect(() => {
+  if (!isOpen) return;
 
-  // ✔️ click outside
-  useEffect(() => {
-    if (!isOpen) return;
+  const handleClick = (e: MouseEvent) => {
+    if (
+      wrapperRef.current &&
+      !wrapperRef.current.contains(e.target as Node)
+    ) {
+      setIsOpen(false);
+    }
+  };
 
-    const handleClick = (e: MouseEvent) => {
-      if (
-        wrapperRef.current &&
-        !wrapperRef.current.contains(e.target as Node)
-      ) {
-        setIsOpen(false);
-      }
-    };
+  // ❗ use "click" instead of "mousedown"
+  document.addEventListener("click", handleClick, true);
+  return () => document.removeEventListener("click", handleClick, true);
+}, [isOpen, setIsOpen]);
 
-    document.addEventListener("mousedown", handleClick);
-    return () => document.removeEventListener("mousedown", handleClick);
-  }, [isOpen, setIsOpen]);
 
   const filtered = countryCodes.filter((c) => {
     const s = search.toLowerCase().trim();
