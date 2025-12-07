@@ -124,7 +124,9 @@ const CountryDropdown = ({
             autoFocus
             type="text"
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={(e) =>{
+              e.stopPropagation()
+               setSearch(e.target.value)}}
             placeholder="Search..."
             className="w-full px-3 py-2 border-b text-sm focus:outline-none"
           />
@@ -139,7 +141,9 @@ const CountryDropdown = ({
                 <button
                 key={`${c.code}-${c.name}`}
                   type="button"
-                  onClick={() => onSelect(c)}
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    onSelect(c)}}
                   className="w-full px-3 py-2 flex justify-between text-left text-sm hover:bg-gray-100"
                 >
                   <span>{c.name}</span>
