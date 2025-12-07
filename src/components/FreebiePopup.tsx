@@ -171,7 +171,7 @@ const FreebiePopup = ({ onClose }: { onClose: () => void }) => {
                 onClick={() => setShowBookDemo(true)}
                 className="bg-orange-500 text-white font-bold w-full py-2  rounded-xl hover:bg-orange-600 transition"
             >
-                Book a Consultation
+              Book A Free 1:1 AI Consultation Call
               </button>
             </>
           )}

@@ -275,7 +275,8 @@ const DemoExperienceSection = () => {
             <button
               onClick={() => setShowBookDemoPopup(true)}
               className="
-      fixed left-10  
+      fixed left-16 
+      top-[30rem]
       -rotate-90 origin-left 
       bg-white text-orange-600 font-extrabold 
       text-lg
@@ -297,14 +298,14 @@ const DemoExperienceSection = () => {
               onClick={() => setShowFreebiePopup(true)}
               className="
       fixed
-      top-40
-      right-0
+      top-[30rem]
+      right-12
       bg-gradient-to-r from-orange-500 to-orange-600
       text-white
       font-extrabold
-      text-lg
+      text-3xl
+      rounded-2xl
       px-5 py-4
-      rounded-l-2xl
       shadow-[0_0_22px_rgba(255,107,53,0.8)]
       rotate-90 origin-top-right
       z-[9999]
@@ -423,13 +424,14 @@ const DemoExperienceSection = () => {
               onClick={() => setShowFreebiePopup(true)}
               className="
     fixed
-    top-32
+    top-36
     right-0
     bg-gradient-to-r from-orange-500 to-orange-600
     text-white
+    text-lg
     font-extrabold
     px-3 py-2
-    rounded-l-xl
+    rounded-xl
     shadow-[0_0_12px_rgba(255,107,53,0.7)]
     rotate-90 origin-top-right
     z-[9999]
