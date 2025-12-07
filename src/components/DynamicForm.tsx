@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Phone,
@@ -12,6 +12,7 @@ import {
   Star,
   ChevronDown,
   ChevronRight,
+  ChevronsUpDown,
 } from "lucide-react";
 import axios from "axios";
 import Select from "react-select";
@@ -21,34 +22,11 @@ import RavanForm from "./RavanForm";
 import ravanLogo from "@/assets/logo.png";
 import FreebiePopup from "./FreebiePopup";
 import { BookDemoPopup } from "./BookDemoPopup";
+import { countryCodes } from "./countryCodes";
 
 // Replace this line:
 // import countryList from "react-select-country-list";
 
-// With this custom list (includes proper +dial codes)
-const countryOptions = [
-  { label: "United States", value: "+1", code: "US" },
-  { label: "India", value: "+91", code: "IN" },
-  { label: "United Kingdom", value: "+44", code: "GB" },
-  { label: "Canada", value: "+1", code: "CA" },
-  { label: "Australia", value: "+61", code: "AU" },
-  { label: "Germany", value: "+49", code: "DE" },
-  { label: "France", value: "+33", code: "FR" },
-  { label: "Brazil", value: "+55", code: "BR" },
-  { label: "United Arab Emirates", value: "+971", code: "AE" },
-  { label: "Saudi Arabia", value: "+966", code: "SA" },
-  { label: "Singapore", value: "+65", code: "SG" },
-  { label: "Malaysia", value: "+60", code: "MY" },
-  { label: "Indonesia", value: "+62", code: "ID" },
-  { label: "Philippines", value: "+63", code: "PH" },
-  { label: "Thailand", value: "+66", code: "TH" },
-  { label: "Vietnam", value: "+84", code: "VN" },
-  { label: "South Africa", value: "+27", code: "ZA" },
-  { label: "Nigeria", value: "+234", code: "NG" },
-  { label: "Kenya", value: "+254", code: "KE" },
-  { label: "Mexico", value: "+52", code: "MX" },
-  // Add more if needed — this covers 99% of traffic
-].sort((a, b) => a.label.localeCompare(b.label));
 interface DemoFormData {
   name: string;
   phone: string; // only the national number (no country code)
@@ -68,6 +46,91 @@ type DemoStep =
 
 const LOCAL_STORAGE_KEY = "ravan_demo_user_data";
 
+const CountryDropdown = ({
+  formData,
+  setFormData,
+  isOpen,
+  setIsOpen,
+  search,
+  setSearch,
+}: any) => {
+  const wrapperRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handleClick = (e: MouseEvent) => {
+      if (
+        wrapperRef.current &&
+        !wrapperRef.current.contains(e.target as Node)
+      ) {
+        setIsOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, [isOpen, setIsOpen]);
+
+  const filtered = countryCodes.filter((c) => {
+    const s = search.toLowerCase().trim();
+    return (
+      c.name.toLowerCase().includes(s) ||
+      c.code.replace("+", "").includes(s) || // typing 91 works
+      c.code.toLowerCase().includes(s)
+    );
+  });
+
+  const onSelect = (c: { code: string; name: string }) => {
+    setFormData((prev: any) => ({
+      ...prev,
+      countryCode: c.code,
+      countryLabel: c.name,
+    }));
+    setIsOpen(false);
+    setSearch("");
+  };
+
+  return (
+    <div ref={wrapperRef} className="relative">
+      <button
+        type="button"
+        className="w-28 px-3 py-2.5 rounded-xl border bg-gray-50 flex items-center justify-between text-sm"
+        onClick={() => setIsOpen((prev: boolean) => !prev)}
+      >
+        {formData.countryCode}
+        <ChevronsUpDown className="w-4 h-4 opacity-50" />
+      </button>
+
+      {isOpen && (
+        <div className="absolute z-50 mt-2 w-64 bg-white border rounded-xl shadow-xl max-h-72 overflow-hidden">
+          <input
+            type="text"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search..."
+            className="w-full px-3 py-2 border-b text-sm focus:outline-none"
+          />
+
+          <div className="max-h-64 overflow-y-auto">
+            {filtered.map((c) => (
+              <button
+                key={`${c.code}-${c.name}`}
+                type="button"
+                onClick={() => onSelect(c)}
+                className="w-full px-3 py-2 flex justify-between text-left text-sm hover:bg-gray-100"
+              >
+                <span>{c.name}</span>
+                <span className="text-gray-500">{c.code}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
 const DemoExperienceSection = () => {
   const [showInfoModal, setShowInfoModal] = useState(true);
   const [formData, setFormData] = useState<DemoFormData>({
@@ -78,6 +141,9 @@ const DemoExperienceSection = () => {
     countryCode: "+1",
     countryLabel: "United States",
   });
+  const [isCountryDropdownOpen, setIsCountryDropdownOpen] = useState(false);
+  const [countrySearch, setCountrySearch] = useState("");
+
   const [errors, setErrors] = useState<Partial<DemoFormData>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
@@ -93,6 +159,8 @@ const DemoExperienceSection = () => {
       localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(formData));
     }
   }, [formData]);
+
+  
   useEffect(() => {
     if (currentStep === "calling-confirm") {
       const loadSavedData = (): Partial<DemoFormData> => {
@@ -101,16 +169,16 @@ const DemoExperienceSection = () => {
           if (saved) {
             const parsed = JSON.parse(saved);
             const country =
-              countryOptions.find((c) => c.value === parsed.countryCode) ||
-              countryOptions.find((c) => c.value === "+1")!;
+              countryCodes.find((c) => c.code === parsed.countryCode) ||
+              countryCodes.find((c) => c.code === "+1")!;
 
             return {
               name: parsed.name || "",
               phone: parsed.phone || "",
               email: parsed.email || "",
               businessName: parsed.businessName || "",
-              countryCode: country.value,
-              countryLabel: country.label,
+              countryCode: country.code,
+              countryLabel: country.name,
             };
           }
         } catch (e) {
@@ -762,18 +830,13 @@ const DemoExperienceSection = () => {
                       </label>
                       <div className="flex gap-3 mt-1">
                         <div className="w-32">
-                          <Select
-                            options={countryOptions}
-                            value={countryOptions.find(
-                              (opt) => opt.value === formData.countryCode
-                            )}
-                            onChange={handleCountryChange}
-                            formatOptionLabel={formatOptionLabel}
-                            styles={selectStyles}
-                            className="react-select-container"
-                            classNamePrefix="react-select"
-                            placeholder="Code"
-                            isSearchable
+                          <CountryDropdown
+                            formData={formData}
+                            setFormData={setFormData}
+                            isOpen={isCountryDropdownOpen}
+                            setIsOpen={setIsCountryDropdownOpen}
+                            search={countrySearch}
+                            setSearch={setCountrySearch}
                           />
                         </div>
                         <div className="flex-1">
@@ -940,18 +1003,13 @@ const DemoExperienceSection = () => {
                   </p>
                   <div className="flex items-center justify-center gap-3 mb-10">
                     {/* Country Code (read only dropdown optional) */}
-                    <Select
-                      options={countryOptions}
-                      value={countryOptions.find(
-                        (opt) => opt.value === formData.countryCode
-                      )}
-                      onChange={handleCountryChange}
-                      formatOptionLabel={formatOptionLabel}
-                      styles={selectStyles}
-                      className="react-select-container"
-                      classNamePrefix="react-select"
-                      placeholder="Code"
-                      isSearchable
+                    <CountryDropdown
+                      formData={formData}
+                      setFormData={setFormData}
+                      isOpen={isCountryDropdownOpen}
+                      setIsOpen={setIsCountryDropdownOpen}
+                      search={countrySearch}
+                      setSearch={setCountrySearch}
                     />
 
                     {/* Editable phone input */}
@@ -1067,12 +1125,12 @@ const DemoExperienceSection = () => {
               onClick={(e) => e.stopPropagation()} // Prevent closing on inner click
             >
               {/* Close Button */}
-              <button
+              {/* <button
                 onClick={() => setCurrentStep("selection")}
                 className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
               >
                 <X className="w-7 h-7" />
-              </button>
+              </button> */}
 
               {/* DYNAMIC CONTENT ONLY (auto size) */}
               <div className="mt-4">

@@ -1,4 +1,6 @@
 export const countryCodes = [
+    { code: "+1", name: "United States" },
+
   { code: "+93", name: "Afghanistan" },
   { code: "+355", name: "Albania" },
   { code: "+213", name: "Algeria" },
@@ -225,7 +227,6 @@ export const countryCodes = [
   { code: "+380", name: "Ukraine" },
   { code: "+971", name: "United Arab Emirates" },
   { code: "+44", name: "United Kingdom" },
-  { code: "+1", name: "United States" },
   { code: "+598", name: "Uruguay" },
   { code: "+998", name: "Uzbekistan" },
   { code: "+678", name: "Vanuatu" },
