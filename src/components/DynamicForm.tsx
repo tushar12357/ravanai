@@ -63,31 +63,29 @@ const CountryDropdown = ({
 }) => {
   const wrapperRef = useRef<HTMLDivElement>(null);
 
-  // useEffect(() => {
-  //   if (!isOpen) return;
+  useEffect(() => {
+    if (!isOpen) return;
 
-  //   const handleClickOutside = (e: MouseEvent) => {
-  //     if (
-  //       wrapperRef.current &&
-  //       !wrapperRef.current.contains(e.target as Node)
-  //     ) {
-  //       setIsOpen(false);
-  //       setSearch(""); // optional: clear search when closing
-  //     }
-  //   };
+    const handleClickOutside = (e: MouseEvent) => {
+      if (
+        wrapperRef.current &&
+        !wrapperRef.current.contains(e.target as Node)
+      ) {
+        setIsOpen(false);
+        setSearch("");
+      }
+    };
 
-  //   // small delay so that the click that opened the dropdown is ignored
-  //   const timer = setTimeout(() => {
-  //     document.addEventListener("mousedown", handleClickOutside);
-  //   }, 0);
+    // Delay prevents the opening click from immediately closing
+    const timer = setTimeout(() => {
+      document.addEventListener("mousedown", handleClickOutside);
+    }, 100); // Increased from 0 to 100ms
 
-  //   return () => {
-  //     clearTimeout(timer);
-  //     document.removeEventListener("mousedown", handleClickOutside);
-  //   };
-  // }, [isOpen, setIsOpen, setSearch]); // ← dependencies are stable
-
-  // let timer: any;
+    return () => {
+      clearTimeout(timer);
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isOpen, setIsOpen, setSearch]);
 
   const filtered = countryCodes.filter((c) => {
     const s = search.toLowerCase().trim();
@@ -124,11 +122,10 @@ const CountryDropdown = ({
             autoFocus
             type="text"
             value={search}
-            onChange={(e) =>{
-              e.stopPropagation()
-               setSearch(e.target.value)}}
+            onChange={(e) => setSearch(e.target.value)}
             placeholder="Search..."
             className="w-full px-3 py-2 border-b text-sm focus:outline-none"
+            onMouseDown={(e) => e.stopPropagation()} // Add this
           />
 
           <div className="max-h-64 overflow-y-auto">
@@ -139,11 +136,10 @@ const CountryDropdown = ({
             ) : (
               filtered.map((c) => (
                 <button
-                key={`${c.code}-${c.name}`}
+                  key={`${c.code}-${c.name}`}
                   type="button"
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    onSelect(c)}}
+                  onClick={() => onSelect(c)}
+                  onMouseDown={(e) => e.stopPropagation()} // Add this
                   className="w-full px-3 py-2 flex justify-between text-left text-sm hover:bg-gray-100"
                 >
                   <span>{c.name}</span>
