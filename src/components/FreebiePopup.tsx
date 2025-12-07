@@ -170,8 +170,8 @@ const FreebiePopup = ({ onClose }: { onClose: () => void }) => {
              <button
                 onClick={() => setShowBookDemo(true)}
                 className="bg-orange-500 text-white font-bold w-full py-2  rounded-xl hover:bg-orange-600 transition"
-              >
-                Book a Demo
+            >
+                Book a Consultation
               </button>
             </>
           )}

@@ -271,17 +271,19 @@ const DemoExperienceSection = () => {
             </p>
           </div>
           {/* FLOATING SIDE CTA BUTTONS — MORE INWARD */}
-          {/* <div className="relative w-full">
+          <div className="relative w-full hidden md:block">
             <button
               onClick={() => setShowBookDemoPopup(true)}
               className="
-      fixed left-24   
+      fixed left-10  
       -rotate-90 origin-left 
       bg-white text-orange-600 font-extrabold 
-      px-4 py-2 rounded-xl 
-      border-2 border-orange-500 
-      shadow-[0_0_15px_rgba(255,107,53,0.6)]
-      hover:shadow-[0_0_25px_rgba(255,107,53,1)] 
+      text-lg
+      px-6 py-4
+      rounded-2xl
+      border-4 border-orange-500 
+      shadow-[0_0_25px_rgba(255,107,53,0.7)]
+      hover:shadow-[0_0_35px_rgba(255,107,53,1)] 
       hover:bg-orange-50 
       transition-all
       animate-pulse
@@ -294,22 +296,23 @@ const DemoExperienceSection = () => {
             <button
               onClick={() => setShowFreebiePopup(true)}
               className="
-      fixed top-1/2 right-24  
-      rotate-90 origin-right 
-      bg-gradient-to-r from-orange-500 to-orange-600 
-      text-white font-extrabold
-      px-4 py-2 rounded-xl 
-      shadow-[0_0_15px_rgba(255,107,53,0.7)]
-      hover:shadow-[0_0_25px_rgba(255,107,53,1)]
-      hover:opacity-90
-      transition-all 
-      animate-pulse
-      z-50
+      fixed
+      top-40
+      right-0
+      bg-gradient-to-r from-orange-500 to-orange-600
+      text-white
+      font-extrabold
+      text-lg
+      px-5 py-4
+      rounded-l-2xl
+      shadow-[0_0_22px_rgba(255,107,53,0.8)]
+      rotate-90 origin-top-right
+      z-[9999]
     "
             >
               🎁 Get Freebie
             </button>
-          </div> */}
+          </div>
 
           {/* Persistent Demo Selector Tabs */}
           {/* Persistent Demo Selector Tabs */}
@@ -408,22 +411,36 @@ const DemoExperienceSection = () => {
           <div className="block sm:hidden space-y-4 max-w-md mx-auto mb-12 px-6">
             <button
               onClick={() => setShowBookDemoPopup(true)}
-              className="w-full bg-white text-orange-600 font-extrabold py-5 rounded-2xl border-4 border-orange-500 shadow-xl hover:shadow-2xl transition-all text-lg"
+              className="w-full bg-white text-orange-600 font-extrabold py-5 rounded-2xl border-4 border-orange-500 shadow-xl hover:shadow-2xl transition-all text-lg 
+      hover:bg-orange-50 
+     
+      animate-pulse
+      z-50"
             >
               Book A Free 1:1 AI Consultation Call
             </button>
-
             <button
               onClick={() => setShowFreebiePopup(true)}
-              className="w-full bg-gradient-to-r from-orange-500 to-orange-600 text-white font-extrabold py-5 rounded-2xl shadow-xl hover:shadow-2xl transition-all text-lg flex items-center justify-center gap-3"
+              className="
+    fixed
+    top-32
+    right-0
+    bg-gradient-to-r from-orange-500 to-orange-600
+    text-white
+    font-extrabold
+    px-3 py-2
+    rounded-l-xl
+    shadow-[0_0_12px_rgba(255,107,53,0.7)]
+    rotate-90 origin-top-right
+    z-[9999]
+  "
             >
-              Get Freebie
+              🎁 Get Freebie
             </button>
           </div>
 
           {/* DESKTOP: Original floating side buttons (unchanged) */}
-          <div className="hidden sm:block">
-            {/* Book Demo - Left Side */}
+          {/* <div className="hidden sm:block">
             <button
               onClick={() => setShowBookDemoPopup(true)}
               className="fixed left-24 -rotate-90 origin-left bg-white text-orange-600 font-extrabold px-4 py-2 rounded-xl border-2 border-orange-500 shadow-[0_0_15px_rgba(255,107,53,0.6)] hover:shadow-[0_0_25px_rgba(255,107,53,1)] hover:bg-orange-50 transition-all animate-pulse z-50"
@@ -431,14 +448,13 @@ const DemoExperienceSection = () => {
               Book A Free 1:1 AI Consultation Call
             </button>
 
-            {/* Get Freebie - Right Side */}
             <button
               onClick={() => setShowFreebiePopup(true)}
               className="fixed top-1/2 right-24 rotate-90 origin-right bg-gradient-to-r from-orange-500 to-orange-600 text-white font-extrabold px-4 py-2 rounded-xl shadow-[0_0_15px_rgba(255,107,53,0.7)] hover:shadow-[0_0_25px_rgba(255,107,53,1)] hover:opacity-90 transition-all animate-pulse z-50"
             >
               🎁 Get Freebie
             </button>
-          </div>
+          </div> */}
 
           {/* Dynamic Demo Content Area */}
 
@@ -446,47 +462,47 @@ const DemoExperienceSection = () => {
             {/* Widget Flow */}
             {currentStep.startsWith("widget") && (
               <div className="hidden md:block">
-              <motion.div
-                key="widget-tabs"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                className="flex flex-row gap-6 mb-12 max-w-3xl"
-              >
-                <button
-                  onClick={() => setCurrentStep("widget-custom")}
-                  className="bg-[#ffe5d9f7] rounded-2xl shadow-md p-6 border-2 border-gray-200 hover:border-white text-left w-72 whitespace-normal break-words"
+                <motion.div
+                  key="widget-tabs"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  className="flex flex-row gap-6 mb-12 max-w-3xl"
                 >
-                  <div className="flex items-start gap-4">
-                    <Sparkles className="w-8 h-8 text-[#ff4d0c] shrink-0" />
-                    <div className="space-y-1">
-                      <h4 className="text-xl font-bold text-[#ff4d0c]">
-                        Create Custom Widget
-                      </h4>
-                      <p className="text-[#ff4d0c] text-sm">
-                        Build a speech-to-speech agent from scratch
-                      </p>
+                  <button
+                    onClick={() => setCurrentStep("widget-custom")}
+                    className="bg-[#ffe5d9f7] rounded-2xl shadow-md p-6 border-2 border-gray-200 hover:border-white text-left w-72 whitespace-normal break-words"
+                  >
+                    <div className="flex items-start gap-4">
+                      <Sparkles className="w-8 h-8 text-[#ff4d0c] shrink-0" />
+                      <div className="space-y-1">
+                        <h4 className="text-xl font-bold text-[#ff4d0c]">
+                          Create Custom Widget
+                        </h4>
+                        <p className="text-[#ff4d0c] text-sm">
+                          Build a speech-to-speech agent from scratch
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                </button>
+                  </button>
 
-                <button
-                  onClick={() => setCurrentStep("widget-sample")}
-                  className="bg-[#ffe5d9f7] rounded-2xl shadow-md p-6 border-2 border-gray-200 hover:border-white text-left w-72 whitespace-normal break-words"
-                >
-                  <div className="flex items-start gap-4">
-                    <MessageSquare className="w-8 h-8 text-[#ff4d0c] shrink-0" />
-                    <div className="space-y-1">
-                      <h4 className="text-xl font-bold text-[#ff4d0c]">
-                        Sample Bot
-                      </h4>
-                      <p className="text-[#ff4d0c] text-sm">
-                        Instant prebuilt demo
-                      </p>
+                  <button
+                    onClick={() => setCurrentStep("widget-sample")}
+                    className="bg-[#ffe5d9f7] rounded-2xl shadow-md p-6 border-2 border-gray-200 hover:border-white text-left w-72 whitespace-normal break-words"
+                  >
+                    <div className="flex items-start gap-4">
+                      <MessageSquare className="w-8 h-8 text-[#ff4d0c] shrink-0" />
+                      <div className="space-y-1">
+                        <h4 className="text-xl font-bold text-[#ff4d0c]">
+                          Sample Bot
+                        </h4>
+                        <p className="text-[#ff4d0c] text-sm">
+                          Instant prebuilt demo
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                </button>
-              </motion.div>
+                  </button>
+                </motion.div>
               </div>
             )}
 
