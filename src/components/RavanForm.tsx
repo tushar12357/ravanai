@@ -207,7 +207,6 @@ const RavanForm = () => {
 
         setTranscripts(null);
         toggleVoice(false);
-        localStorage.clear();
       }
     } catch (error) {
       console.error("Error in handleMicClick:", error);
@@ -294,7 +293,6 @@ const RavanForm = () => {
 
   const handleClose = async () => {
     setExpanded(false);
-    localStorage.clear();
     await session.leaveCall();
     const response = await axios.post(
       `${baseurl}/api/end-call-session-thunder/`,
