@@ -9,8 +9,8 @@ import Maya from "./components/maya";
 import Dynamic from "./components/Dynamic";
 import DemoExperienceSection from "./components/DynamicForm";
 function App() {
-  const { type } = useWidgetContext();
-
+  // const { type } = useWidgetContext();
+  const type = "dynamic";
   useEffect(() => {
     if (type === "zol") {
       // Apply the CSS variables when the type is 'zol'
@@ -60,13 +60,13 @@ function App() {
         <ZolOrange />
       ) : type === "formravan" ? (
         <RavanFormAI />
-      ) : type==="maya" ? (
-        <Maya/>
-      ): type==="dynamic" ? (
-        <DemoExperienceSection/>
-        ): (
-         <RavanVoiceAI />
-       )} 
+      ) : type === "maya" ? (
+        <Maya />
+      ) : type === "dynamic" ? (
+        <DemoExperienceSection />
+      ) : (
+        <RavanVoiceAI />
+      )}
       {/* <Forkartik /> */}
       {/* <RavanFormAI /> */}
 

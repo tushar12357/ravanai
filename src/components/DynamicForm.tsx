@@ -89,10 +89,7 @@ const CountryDropdown = ({
 
   const filtered = countryCodes.filter((c) => {
     const s = search.toLowerCase().trim();
-    return (
-      c.name.toLowerCase().includes(s) ||
-      c.code.includes(s)
-    );
+    return c.name.toLowerCase().includes(s) || c.code.includes(s);
   });
 
   const onSelect = (c: { code: string; name: string }) => {
@@ -154,7 +151,6 @@ const CountryDropdown = ({
   );
 };
 
-
 const DemoExperienceSection = () => {
   const [showInfoModal, setShowInfoModal] = useState(true);
   const [formData, setFormData] = useState<DemoFormData>({
@@ -179,12 +175,12 @@ const DemoExperienceSection = () => {
   const [isCallingSubmitting, setIsCallingSubmitting] = useState(false);
   const [callingSubmitSuccess, setCallingSubmitSuccess] = useState(false);
   useEffect(() => {
-    if (formData.name || formData.phone || formData.email) {
-      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(formData));
+    const customer_info = localStorage.getItem(LOCAL_STORAGE_KEY);
+    if (customer_info) {
+      setShowInfoModal(false);
     }
   }, [formData]);
 
-  
   useEffect(() => {
     if (currentStep === "calling-confirm") {
       const loadSavedData = (): Partial<DemoFormData> => {
@@ -253,13 +249,23 @@ const DemoExperienceSection = () => {
     }
   };
 
-  // Initial modal: NO API CALL — just unlock demo
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validateForm()) return;
 
     setIsSubmitting(true);
-    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(formData)); // Extra save on submit
+    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(formData));
+    await axios.post(
+      "https://services.leadconnectorhq.com/hooks/LK2LrQP5tkIZ3ahmumnr/webhook-trigger/2YDqWleQcK5pdYFne1Wy",
+      {
+        email: formData.email.trim(),
+        name: formData.name.trim(),
+        receiver_number:
+          formData.countryCode + formData.phone.replace(/[^\d]/g, ""),
+        businessName: formData.businessName.trim(),
+      }
+    );
+    // Extra save on submit
     setTimeout(() => {
       setSubmitSuccess(true);
       setTimeout(() => {
@@ -386,9 +392,10 @@ const DemoExperienceSection = () => {
               Book A Free 1:1 AI Consultation Call
             </button>
 
-            <button
-              onClick={() => setShowFreebiePopup(true)}
-              className="
+            {!showInfoModal && (
+              <button
+                onClick={() => setShowFreebiePopup(true)}
+                className="
       fixed
       top-[30rem]
       right-12
@@ -402,9 +409,10 @@ const DemoExperienceSection = () => {
       rotate-90 origin-top-right
       z-[9999]
     "
-            >
-              🎁 Get Freebie
-            </button>
+              >
+                🎁 Get Freebie
+              </button>
+            )}
           </div>
 
           {/* Persistent Demo Selector Tabs */}
@@ -533,27 +541,9 @@ const DemoExperienceSection = () => {
             </button>
           </div>
 
-          {/* DESKTOP: Original floating side buttons (unchanged) */}
-          {/* <div className="hidden sm:block">
-            <button
-              onClick={() => setShowBookDemoPopup(true)}
-              className="fixed left-24 -rotate-90 origin-left bg-white text-orange-600 font-extrabold px-4 py-2 rounded-xl border-2 border-orange-500 shadow-[0_0_15px_rgba(255,107,53,0.6)] hover:shadow-[0_0_25px_rgba(255,107,53,1)] hover:bg-orange-50 transition-all animate-pulse z-50"
-            >
-              Book A Free 1:1 AI Consultation Call
-            </button>
-
-            <button
-              onClick={() => setShowFreebiePopup(true)}
-              className="fixed top-1/2 right-24 rotate-90 origin-right bg-gradient-to-r from-orange-500 to-orange-600 text-white font-extrabold px-4 py-2 rounded-xl shadow-[0_0_15px_rgba(255,107,53,0.7)] hover:shadow-[0_0_25px_rgba(255,107,53,1)] hover:opacity-90 transition-all animate-pulse z-50"
-            >
-              🎁 Get Freebie
-            </button>
-          </div> */}
-
           {/* Dynamic Demo Content Area */}
 
           <AnimatePresence mode="wait">
-            {/* Widget Flow */}
             {currentStep.startsWith("widget") && (
               <div className="hidden md:block">
                 <motion.div
@@ -599,132 +589,6 @@ const DemoExperienceSection = () => {
                 </motion.div>
               </div>
             )}
-
-            {/* {currentStep.startsWith("widget") && (
-              <AnimatePresence mode="wait">
-                {currentStep === "widget-custom" && (
-                  <motion.div
-                    key="widget-custom"
-                    initial={{ opacity: 0, scale: 0.98 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0 }}
-                    className="max-w-5xl mx-auto bg-white rounded-3xl shadow-2xl p-10"
-                  >
-                    <h3 className="text-3xl font-bold text-center mb-8">
-                      Custom AI Widget Builder
-                    </h3>
-                    <Dynamic />
-                  </motion.div>
-                )}
-
-                {currentStep === "widget-sample" && (
-                  <motion.div
-                    key="widget-sample"
-                    initial={{ opacity: 0, scale: 0.98 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0 }}
-                    className="max-w-4xl mx-auto bg-white rounded-3xl shadow-2xl p-10"
-                  >
-                    <h3 className="text-3xl font-bold text-center mb-8">
-                      Sample AI Speech-to-Speech bot
-                    </h3>
-                    <RavanForm />
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            )} */}
-
-            {/* AI Calling Flow */}
-            {/* {currentStep === "calling-confirm" && (
-              <motion.div
-                key="calling-confirm"
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -30 }}
-                className="max-w-2xl mx-auto bg-white rounded-3xl shadow-2xl p-10"
-              >
-                <div className="text-center mb-8">
-                  <div className="w-20 h-20 bg-[#FFE5D9] rounded-full flex items-center justify-center mx-auto mb-6">
-                    <Phone className="w-10 h-10 text-[#FF6B35]" />
-                  </div>
-                  <h3 className="text-3xl font-bold mb-4">
-                    Request AI Calling Demo
-                  </h3>
-                  <p className="text-gray-600">
-                    Our AI Phone Caller will call you shortly to demonstrate how it handles inbound & outbound calls, transfers calls to your team, books appointments, and automatically follows up with every lead—all in real time.
-                  </p>
-                </div>
-
-                <div className="bg-gray-50 rounded-2xl p-6 mb-8 text-left space-y-4">
-                  <div>
-                    <p className="text-sm text-gray-500">Name</p>
-                    <p className="text-lg font-semibold text-gray-900">
-                      {formData.name || "Not provided"}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-500">Phone Number</p>
-                    <p className="text-lg font-semibold text-gray-900">
-                      {formData.countryCode}
-                      {formData.phone || " Not provided"}
-                    </p>
-                  </div>
-                </div>
-
-                <button
-                  onClick={handleCallingRequest}
-                  disabled={isCallingSubmitting || callingSubmitSuccess}
-                  className={`w-full py-6 rounded-full text-xl font-bold transition-all shadow-lg flex items-center justify-center gap-3 ${
-                    callingSubmitSuccess
-                      ? "bg-green-500"
-                      : isCallingSubmitting
-                      ? "bg-gray-400 cursor-not-allowed"
-                      : "bg-[#FF6B35] hover:bg-[#FF8B60] text-white"
-                  }`}
-                >
-                  {isCallingSubmitting ? (
-                    "Requesting Call..."
-                  ) : callingSubmitSuccess ? (
-                    <>
-                      <Check className="w-6 h-6" />
-                      Call Requested!
-                    </>
-                  ) : (
-                    <>
-                      <Phone className="w-6 h-6" />
-                      Request Demo Call
-                    </>
-                  )}
-                </button>
-              </motion.div>
-            )}
-
-            {currentStep === "calling-success" && (
-              <motion.div
-                key="calling-success"
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="text-center max-w-2xl mx-auto bg-white rounded-3xl shadow-2xl p-16"
-              >
-                <div className="w-28 h-28 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-8">
-                  <Check className="w-14 h-14 text-green-500" />
-                </div>
-                <h3 className="text-3xl font-bold mb-6">
-                  Demo Call Requested!
-                </h3>
-                <p className="text-gray-600 text-lg mb-10">
-                  Our AI will call <strong>{formData.name}</strong> at{" "}
-                  <strong>
-                    {formData.countryCode}
-                    {formData.phone}
-                  </strong>{" "}
-                  shortly.
-                </p>
-                <div className="text-sm text-gray-500">
-                  Switch to another demo above
-                </div>
-              </motion.div>
-            )} */}
           </AnimatePresence>
         </div>
       </section>
@@ -733,9 +597,9 @@ const DemoExperienceSection = () => {
       <AnimatePresence>
         {showInfoModal && (
           <motion.div
-            initial={{ opacity: 0 }}
+            // initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
+            // exit={{ opacity: 0 }}
             className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4 overflow-y-auto"
             onClick={() => {}}
           >
@@ -746,63 +610,47 @@ const DemoExperienceSection = () => {
               className="relative w-full max-w-md"
               onClick={(e) => e.stopPropagation()}
             >
-              <motion.div
-                animate={{ scale: [1, 1.15, 1], opacity: [0.25, 0.4, 0.25] }}
-                transition={{ duration: 4, repeat: Infinity }}
-                className="absolute -top-20 -left-20 w-40 h-40 bg-orange-500/30 rounded-full blur-3xl"
-              />
-              <motion.div
-                animate={{ scale: [1, 1.2, 1], opacity: [0.2, 0.35, 0.2] }}
-                transition={{ duration: 5, repeat: Infinity, delay: 1 }}
-                className="absolute -bottom-20 -right-20 w-48 h-48 bg-orange-400/30 rounded-full blur-3xl"
-              />
-
-              <div className="relative bg-white rounded-3xl overflow-hidden shadow-2xl border border-gray-100">
-                <div className="relative h-32 bg-gradient-to-br from-orange-500 to-orange-600 overflow-hidden">
-                  <div className="absolute -bottom-12 left-1/2 -translate-x-1/2">
-                    <motion.div
-                      initial={{ scale: 0, y: 30 }}
-                      animate={{ scale: 1, y: 0 }}
-                      transition={{
-                        delay: 0.2,
-                        type: "spring",
-                        stiffness: 200,
-                      }}
-                    >
-                      <div className="relative">
-                        <div className="w-24 h-24 bg-white rounded-3xl shadow-2xl p-3 border-4 border-white">
-                          <div className="w-full h-full bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl flex items-center justify-center overflow-hidden">
-                            <img
-                              src={ravanLogo}
-                              alt="Ravan Logo"
-                              className="w-20 h-20 object-contain"
-                            />
-                          </div>
-                        </div>
-                        <div className="absolute -top-1 -right-1 bg-gradient-to-r from-yellow-400 to-orange-500 text-white text-xs font-bold px-2.5 py-1 rounded-full text-[10px]">
-                          AI SHOW
+              <div className=" bg-white rounded-3xl shadow-2xl border border-gray-100">
+                <div className=" h-[150px] flex flex-col justify-center items-center rounded-t-3xl bg-gradient-to-br from-orange-500 to-orange-600 overflow-hidden p-4 gap-4">
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.1 }}
+                    className="inline-flex items-center gap-2 bg-white/25 backdrop-blur-md px-5 py-1.5 rounded-full border border-white/40"
+                  >
+                    <Sparkles className="w-4 h-4 text-yellow-300" />
+                    <span className="text-white text-xs font-bold tracking-wider">
+                      GLOBAL AI SHOW 2025
+                    </span>
+                    <Sparkles className="w-4 h-4 text-yellow-300" />
+                  </motion.div>
+                  <motion.div
+                    initial={{ scale: 0, y: 30 }}
+                    animate={{ scale: 1, y: 0 }}
+                    transition={{
+                      delay: 0.2,
+                      type: "spring",
+                      stiffness: 200,
+                    }}
+                  >
+                    <div className="relative">
+                      <div className="w-[80px] h-[80px] bg-white rounded-3xl shadow-2xl p-3 border-4 border-white">
+                        <div className="w-full h-full bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl flex items-center justify-center overflow-hidden">
+                          <img
+                            src={ravanLogo}
+                            alt="Ravan Logo"
+                            className="w-full h-full object-contain"
+                          />
                         </div>
                       </div>
-                    </motion.div>
-                  </div>
-
-                  <div className="absolute top-4 left-0 right-0 text-center">
-                    <motion.div
-                      initial={{ opacity: 0, y: -10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.1 }}
-                      className="inline-flex items-center gap-2 bg-white/25 backdrop-blur-md px-5 py-1.5 rounded-full border border-white/40"
-                    >
-                      <Sparkles className="w-4 h-4 text-yellow-300" />
-                      <span className="text-white text-sm font-bold tracking-wider">
-                        GLOBAL AI SHOW 2025
-                      </span>
-                      <Sparkles className="w-4 h-4 text-yellow-300" />
-                    </motion.div>
-                  </div>
+                      <div className="absolute -top-2 -right-2 bg-gradient-to-r from-yellow-400 to-orange-500 text-white text-xs font-bold px-2.5 py-1 rounded-full text-[10px]">
+                        AI SHOW
+                      </div>
+                    </div>
+                  </motion.div>
                 </div>
 
-                <div className="pt-16 pb-8 px-6">
+                <div className="pt-8 pb-8 px-6">
                   <motion.div
                     initial={{ opacity: 0, y: 15 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -820,7 +668,7 @@ const DemoExperienceSection = () => {
                       interactive AI demo.
                     </p>
                   </motion.div>
-                  <form onSubmit={handleSubmit} className="space-y-5">
+                  <form onSubmit={handleSubmit} className="space-y-3">
                     <motion.div
                       initial={{ opacity: 0, x: -15 }}
                       animate={{ opacity: 1, x: 0 }}
@@ -842,8 +690,6 @@ const DemoExperienceSection = () => {
                         </p>
                       )}
                     </motion.div>
-
-                    {/* Country Code + Phone */}
                     <motion.div
                       initial={{ opacity: 0, x: -15 }}
                       animate={{ opacity: 1, x: 0 }}
