@@ -509,20 +509,21 @@ const DemoExperienceSection = () => {
           </div>
 
           {/* MOBILE ONLY: Freebie + Book Demo Buttons (stacked below cards) */}
-          <div className="block sm:hidden space-y-4 max-w-md mx-auto mb-12 px-6">
-            <button
-              onClick={() => setShowBookDemoPopup(true)}
-              className="w-full bg-white text-orange-600 font-extrabold py-5 rounded-2xl border-4 border-orange-500 shadow-xl hover:shadow-2xl transition-all text-lg 
+          {!showInfoModal && (
+            <div className="block sm:hidden space-y-4 max-w-md mx-auto mb-12 px-6">
+              <button
+                onClick={() => setShowBookDemoPopup(true)}
+                className="w-full bg-white text-orange-600 font-extrabold py-5 rounded-2xl border-4 border-orange-500 shadow-xl hover:shadow-2xl transition-all text-lg 
       hover:bg-orange-50 
      
       animate-pulse
       z-50"
-            >
-              Book A Free 1:1 AI Consultation Call
-            </button>
-            <button
-              onClick={() => setShowFreebiePopup(true)}
-              className="
+              >
+                Book A Free 1:1 AI Consultation Call
+              </button>
+              <button
+                onClick={() => setShowFreebiePopup(true)}
+                className="
     fixed
     top-36
     right-0
@@ -536,10 +537,11 @@ const DemoExperienceSection = () => {
     rotate-90 origin-top-right
     z-[9999]
   "
-            >
-              🎁 Get Freebie
-            </button>
-          </div>
+              >
+                🎁 Get Freebie
+              </button>
+            </div>
+          )}
 
           {/* Dynamic Demo Content Area */}
 
