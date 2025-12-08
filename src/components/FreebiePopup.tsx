@@ -1,22 +1,99 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Gift, Check, ArrowRight } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { BookDemoPopup } from "./BookDemoPopup";
+import axios from "axios";
+import { Loader2 } from "lucide-react";
 type FreebieStep = "intro" | "steps" | "details" | "success";
 
 const FreebiePopup = ({ onClose }: { onClose: () => void }) => {
+  const LOCAL_STORAGE_KEY = "ravan_demo_user_data";
   const [step, setStep] = useState<FreebieStep>("intro");
   const [showBookDemo, setShowBookDemo] = useState(false); // 👈 NEW
   const [error, setError] = useState("");
-  const [storyLink, setStoryLink] = useState("");
+  const [videoUrl, setVideoUrl] = useState("");
+  const user_info = useRef<{
+    email: string;
+    name: string;
+    phone: string;
+    countryCode: string;
+    businessName: string;
+  }>({ email: "", name: "", phone: "", countryCode: "", businessName: "" });
+  const [companyWebsite, setCompanyWebsite] = useState("");
+  const [competitorName, setCompetitorName] = useState("");
+  const [targetAudience, setTargetAudience] = useState("");
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (storyLink.trim()) {
+    const customer_info = localStorage.getItem(LOCAL_STORAGE_KEY);
+    if (customer_info) {
+      user_info.current = JSON.parse(customer_info);
+    }
+    if (videoUrl.trim()) {
+      setError("");
+    }
+  }, [videoUrl]);
+
+  const handlevideourlSubmit = async () => {
+    if (videoUrl.trim()) {
       setError("");
     } else {
       setError("Please paste your Instagram story link.");
+      return;
     }
-  }, [storyLink]);
+    setLoading(true);
+    await axios.post(
+      "https://services.leadconnectorhq.com/hooks/LK2LrQP5tkIZ3ahmumnr/webhook-trigger/0725d46e-622e-45e5-bfc5-20061f7750e6",
+      {
+        email: user_info.current.email,
+        name: user_info.current.name,
+        phone:
+          user_info.current.countryCode +
+          user_info.current.phone.replace(/[^\d]/g, ""),
+        businessName: user_info.current.businessName,
+        videoUrl: videoUrl,
+      }
+    );
+    setStep("details");
+    setLoading(false);
+  };
+
+  const handleDetailsSubmit = async () => {
+    if (companyWebsite.trim()) {
+      setError("");
+    } else {
+      setError("Please enter your company website.");
+      return;
+    }
+    setLoading(true);
+    await axios.post(
+      "https://services.leadconnectorhq.com/hooks/LK2LrQP5tkIZ3ahmumnr/webhook-trigger/8ee0dcd6-2203-446f-a019-ad38dc1d81ab",
+      {
+        email: user_info.current.email,
+        name: user_info.current.name,
+        phone:
+          user_info.current.countryCode +
+          user_info.current.phone.replace(/[^\d]/g, ""),
+        businessName: user_info.current.businessName,
+        companyWebsite: companyWebsite,
+        competitorName: competitorName,
+        targetAudience: targetAudience,
+      }
+    );
+    // await axios.post(
+    //   "https://aiinfluencer.ravan.ai/api/v1/protected/demo/generate-business-info-video/",
+    //   {
+    //     user_id: "0e866be4-ab17-466e-b865-808dc277a780",
+    //     website_url: companyWebsite,
+    //     project_id: "d5d7cd9e-1bff-4a0b-bdb3-a5db96bdda3d",
+    //     client_email: user_info.current.email,
+    //     key_competitors: competitorName,
+    //   }
+    // );
+    setStep("success");
+    setLoading(false);
+  };
+
   return (
     <AnimatePresence>
       <motion.div
@@ -101,6 +178,8 @@ const FreebiePopup = ({ onClose }: { onClose: () => void }) => {
                     type="text"
                     placeholder="Paste Instagram story link..."
                     className="w-full border rounded-xl px-3 py-2 text-sm"
+                    value={videoUrl}
+                    onChange={(e) => setVideoUrl(e.target.value)}
                   />
                   {error && <p className="text-red-500 text-sm">{error}</p>}
                 </div>
@@ -108,15 +187,21 @@ const FreebiePopup = ({ onClose }: { onClose: () => void }) => {
 
               <button
                 onClick={() => {
-                  if (document.querySelector("input")?.value.trim()) {
-                    setStep("details");
-                  } else {
-                    setError("Please paste your Instagram story link.");
-                  }
+                  handlevideourlSubmit();
                 }}
-                className="bg-orange-500 text-white font-bold w-full py-4 rounded-xl mt-6 hover:bg-orange-600 transition"
+                className={`bg-orange-500 text-white font-bold w-full py-4 rounded-xl mt-6 hover:bg-orange-600 transition flex items-center justify-center gap-2 ${
+                  loading ? "opacity-50 cursor-not-allowed" : ""
+                }`}
+                disabled={loading}
               >
-                I’ve Done It! Get My Video
+                {loading ? (
+                  <>
+                    <Loader2 className="animate-spin" size={20} />
+                    Generating...
+                  </>
+                ) : (
+                  "I've Done It! Get My Video"
+                )}
               </button>
             </>
           )}
@@ -133,24 +218,43 @@ const FreebiePopup = ({ onClose }: { onClose: () => void }) => {
                   type="text"
                   placeholder="Company Website URL *"
                   className="w-full border rounded-xl px-3 py-2 text-sm"
+                  value={companyWebsite}
+                  onChange={(e) => setCompanyWebsite(e.target.value)}
                 />
+                {error && <p className="text-red-500 text-sm">{error}</p>}
                 <input
                   type="text"
                   placeholder="Competitors Name  (optional but recommended)"
                   className="w-full border rounded-xl px-3 py-2 text-sm"
+                  value={competitorName}
+                  onChange={(e) => setCompetitorName(e.target.value)}
                 />
                 <input
                   type="text"
                   placeholder="Target audience  (optional but recommended)"
                   className="w-full border rounded-xl px-3 py-2 text-sm"
+                  value={targetAudience}
+                  onChange={(e) => setTargetAudience(e.target.value)}
                 />
               </div>
 
               <button
-                onClick={() => setStep("success")}
-                className="bg-orange-500 text-white font-bold w-full py-4 rounded-xl mt-6 hover:bg-orange-600"
+                onClick={() => {
+                  handleDetailsSubmit();
+                }}
+                className={`bg-orange-500 text-white font-bold w-full py-4 rounded-xl mt-6 hover:bg-orange-600 transition flex items-center justify-center gap-2 ${
+                  loading ? "opacity-50 cursor-not-allowed" : ""
+                }`}
+                disabled={loading}
               >
-                Generate My Free AI Video!
+                {loading ? (
+                  <>
+                    <Loader2 className="animate-spin" size={20} />
+                    Generating Your Video...
+                  </>
+                ) : (
+                  "Generate My Free AI Video!"
+                )}
               </button>
             </>
           )}
@@ -176,7 +280,10 @@ const FreebiePopup = ({ onClose }: { onClose: () => void }) => {
               </p>
               <button
                 onClick={() => setShowBookDemo(true)}
-                className="bg-orange-500 text-white font-bold w-full py-2  rounded-xl hover:bg-orange-600 transition"
+                className={`bg-orange-500 text-white font-bold w-full py-2  rounded-xl hover:bg-orange-600 transition ${
+                  loading ? "opacity-50 cursor-not-allowed" : ""
+                }`}
+                disabled={loading}
               >
                 Book A Free 1:1 AI Consultation Call
               </button>

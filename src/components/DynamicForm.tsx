@@ -458,7 +458,8 @@ const DemoExperienceSection = () => {
                         Create Custom Widget
                       </h4>
                       <p className="text-[#ff4d0c] text-sm">
-                        Build a speech-to-speech agent from scratch
+                        Build your AI VoiceBot in a minute— instantly trained
+                        with your company’s info.
                       </p>
                     </div>
                   </button>
@@ -566,7 +567,8 @@ const DemoExperienceSection = () => {
                           Create Custom Widget
                         </h4>
                         <p className="text-[#ff4d0c] text-sm">
-                          Build a speech-to-speech agent from scratch
+                          Build your AI VoiceBot in a minute— instantly trained
+                          with your company’s info.
                         </p>
                       </div>
                     </div>
