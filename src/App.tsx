@@ -9,8 +9,8 @@ import Maya from "./components/maya";
 import Dynamic from "./components/Dynamic";
 import DemoExperienceSection from "./components/DynamicForm";
 function App() {
-  // const { type } = useWidgetContext();
-  const type = "dynamic";
+  const { type } = useWidgetContext();
+  // const type = "zol";
   useEffect(() => {
     if (type === "zol") {
       // Apply the CSS variables when the type is 'zol'
