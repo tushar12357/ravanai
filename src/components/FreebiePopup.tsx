@@ -271,8 +271,7 @@ const FreebiePopup = ({ onClose }: { onClose: () => void }) => {
               </h2>
 
               <p className="text-gray-600 text-center text-sm leading-relaxed mb-4">
-                Your AI video is being processed. You will receive it in 15–20
-                minutes via email from info@ravan.ai.
+                You will receive it shortly via email from info@ravan.ai.
               </p>
 
               <p className="text-gray-400 text-center text-xs mb-3">
