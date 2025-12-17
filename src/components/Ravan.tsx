@@ -7,7 +7,7 @@ import useSessionStore from "../store/session";
 import { useWidgetContext } from "../constexts/WidgetContext";
 import { useUltravoxStore } from "../store/ultrasession";
 import logo from "../assets/logo.png";
-
+import santa from "../assets/santa-hat.png";
 const RavanVoiceAI = () => {
   const [expanded, setExpanded] = useState(false);
   const [inputValue, setInputValue] = useState("");
@@ -15,9 +15,10 @@ const RavanVoiceAI = () => {
   const containerRef = useRef(null);
   const [isGlowing, setIsGlowing] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
+  const [isMutedMic, setIsMutedMic] = useState(false);
   const [speech, setSpeech] = useState("");
   const [isVisible, setIsVisible] = useState(true);
-  const {agent_id,schema}=useWidgetContext()
+  // const {agent_id,schema}=useWidgetContext()
   const [auto_end_call, setAutoEndCall] = useState(false);
   const [pulseEffects, setPulseEffects] = useState({
     small: false,
@@ -27,7 +28,7 @@ const RavanVoiceAI = () => {
   const [message, setMessage] = useState("");
   const [isMinimized, setIsMinimized] = useState(false);
 
-  // const { agent_id, schema } = useWidgetContext();
+  const { agent_id, schema } = useWidgetContext();
   const { callId, callSessionId, setCallId, setCallSessionId } =
     useSessionStore();
   const {
@@ -134,14 +135,17 @@ const RavanVoiceAI = () => {
     console.log("status", status);
     const callId = localStorage.getItem("callId");
     if (
-      // callId && 
-      status === "disconnecting") {
+      // callId &&
+      status === "disconnecting"
+    ) {
       console.log("reconnecting");
       setIsMuted(true);
+      setIsMutedMic(true);
       // handleMicClickForReconnect(callId);
-      handleClose()
+      handleClose();
     } else if (status === "listening" && callId && isMuted) {
       session.muteSpeaker();
+      session.muteMic();
     }
   }, [status]);
 
@@ -268,7 +272,9 @@ const RavanVoiceAI = () => {
     }
     if (session.isSpeakerMuted) {
       setIsMuted(false);
+      setIsMutedMic(false);
       session.unmuteSpeaker();
+      session.unmuteMic();
     }
 
     setExpanded(!expanded);
@@ -281,6 +287,14 @@ const RavanVoiceAI = () => {
       session.unmuteSpeaker();
     } else {
       session.muteSpeaker();
+    }
+  };
+  const toggleMuteMic = () => {
+    setIsMutedMic(!isMutedMic);
+    if (session.isMicMuted) {
+      session.unmuteMic();
+    } else {
+      session.muteMic();
     }
   };
 
@@ -325,14 +339,27 @@ const RavanVoiceAI = () => {
     }
   }, [status]);
 
-
   return (
     <div className="widget-container">
       {expanded ? (
-        <div className={`chat-window ${isMinimized ? 'minimized' : ''} ${
-          isGlowing ? "border-orange-400 shadow-orange-500/50" : "border-orange-300"
-        }`}>
-          <div className="chat-header">
+        <>
+         <div className="absolute -top-10 -left-8 z-20 -rotate-12 pointer-events-none">
+              <img
+                src={santa}
+
+                alt="Santa Hat"
+                className="w-20 h-20 object-contain drop-shadow-lg -rotate-12"
+              />
+            </div>
+        <div
+          className={`chat-window ${isMinimized ? "minimized" : ""} ${
+            isGlowing
+              ? "border-orange-400 shadow-orange-500/50"
+              : "border-orange-300"
+          }`}
+        >
+           
+          <div className="chat-header relative">
             <div className="header-logo">
               <div className="logo-container">
                 <img src={logo} alt="Ravan AI logo" className="w-6 h-6" />
@@ -340,6 +367,13 @@ const RavanVoiceAI = () => {
               <span className="header-title">Ravan AI</span>
             </div>
             <div className="header-controls">
+              <button
+                onClick={toggleMuteMic}
+                className="control-button"
+                title={isMutedMic ? "Unmute" : "Mute"}
+              >
+                {isMutedMic ? <MicOff size={18} /> : <Mic size={18} />}
+              </button>
               <button
                 onClick={toggleMute}
                 className="control-button"
@@ -369,9 +403,18 @@ const RavanVoiceAI = () => {
               <div className="mic-button-container">
                 {isRecording && (
                   <>
-                    <div className="pulse-ring" style={{ '--delay': '0s' }}></div>
-                    <div className="pulse-ring" style={{ '--delay': '0.5s' }}></div>
-                    <div className="pulse-ring" style={{ '--delay': '1s' }}></div>
+                    <div
+                      className="pulse-ring"
+                      style={{ "--delay": "0s" }}
+                    ></div>
+                    <div
+                      className="pulse-ring"
+                      style={{ "--delay": "0.5s" }}
+                    ></div>
+                    <div
+                      className="pulse-ring"
+                      style={{ "--delay": "1s" }}
+                    ></div>
                   </>
                 )}
                 <button
@@ -381,26 +424,26 @@ const RavanVoiceAI = () => {
                 >
                   <div className="relative">
                     {isGlowing && <div className="glow-effect"></div>}
-                    <img 
-                      src={logo} 
-                      alt="Ravan AI logo" 
+                    <img
+                      src={logo}
+                      alt="Ravan AI logo"
                       className={`w-12 h-12 transition-transform duration-300 ${
                         isRecording ? "scale-110" : ""
-                      }`} 
+                      }`}
                     />
                   </div>
                 </button>
               </div>
 
-              <div className="status-badge">
-                {speech}
-              </div>
+              <div className="status-badge">{speech}</div>
 
               <div className="transcript-container" ref={containerRef}>
                 <div className="relative">
                   <span className="transcript-text">{transcripts}</span>
                   {!transcripts && (
-                    <span className="text-gray-400 italic">Your conversation will appear here...</span>
+                    <span className="text-gray-400 italic">
+                      Your conversation will appear here...
+                    </span>
                   )}
                 </div>
               </div>
@@ -409,7 +452,9 @@ const RavanVoiceAI = () => {
                 <div className="input-container">
                   <input
                     type="text"
-                    disabled={status === "disconnected" || status === "connecting"}
+                    disabled={
+                      status === "disconnected" || status === "connecting"
+                    }
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
                     onKeyDown={(e) => {
@@ -423,7 +468,11 @@ const RavanVoiceAI = () => {
                   <button
                     type="button"
                     onClick={handleSubmit}
-                    disabled={!message.trim() || status === "disconnected" || status === "connecting"}
+                    disabled={
+                      !message.trim() ||
+                      status === "disconnected" ||
+                      status === "connecting"
+                    }
                     className="send-button"
                   >
                     <Send size={20} className="text-white" />
@@ -433,21 +482,34 @@ const RavanVoiceAI = () => {
             </div>
           )}
         </div>
+        </>
       ) : (
         <div className="floating-button-container flex flex-col items-center">
-        <button
-          onClick={toggleExpand}
-          // disabled={isDisconnecting || isConnecting}
-          className="floating-button"
-        >
-          <div className="relative">
-            {/* {!isDisconnecting && !isConnecting && <div className="glow-ring"></div>} */}
-            <img src={logo} alt="Ravan AI logo" className="w-8 h-8 relative z-10" />
-          </div>
-        </button>
-        <span className="talk-to-me text-sm font-medium px-3 py-1 mt-2">
-      Talk to Maya
-    </span>        </div>
+          <button
+            onClick={toggleExpand}
+            // disabled={isDisconnecting || isConnecting}
+            className="floating-button"
+          >
+              <div className="absolute -top-10 -left-3 rotate-12  pointer-events-none">
+                <img
+                  src={santa}
+                  alt="Santa Hat"
+                  className="w-16 h-16 object-contain drop-shadow-md -rotate-12"
+                />
+              </div>
+            <div className="relative">
+              {/* {!isDisconnecting && !isConnecting && <div className="glow-ring"></div>} */}
+              <img
+                src={logo}
+                alt="Ravan AI logo"
+                className="w-8 h-8 relative z-10"
+              />
+            </div>
+          </button>
+          <span className="talk-to-me text-sm font-medium px-3 py-1 mt-2">
+            Talk to Maya
+          </span>{" "}
+        </div>
       )}
     </div>
   );
