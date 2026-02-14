@@ -64,7 +64,7 @@ const Dynamic = () => {
     setStatus,
   } = useUltravoxStore();
 
-  const baseurl = "https://test.snowie.ai";
+  const baseurl = "https://app.snowie.ai";
   const sessionRef = useRef(null);
 
   // Initialize Ultravox Session once
@@ -188,9 +188,10 @@ const Dynamic = () => {
     try {
       if (!isListening) {
         setIsGlowing(true);
-        const response = await axios.post(`${baseurl}/api/start-thunder/`, {
+        const response = await axios.post(`${baseurl}/api/create-room/`, {
           agent_code: dynamicAgentCode,
-          schema_name: "default", // or pass dynamically if needed
+          schema_name: "default",
+          "provider":"thunderemotionlite" // or pass dynamically if needed
         });
 
         const wssUrl = response.data.joinUrl;
@@ -207,11 +208,6 @@ const Dynamic = () => {
       } else {
         setIsGlowing(false);
         await session?.leaveCall();
-        await axios.post(`${baseurl}/api/end-call-session-thunder/`, {
-          call_session_id: callSessionId,
-          call_id: callId,
-          schema_name: "default",
-        });
         setStoreTranscripts(null);
         setTranscripts("");
         toggleVoice(false);
