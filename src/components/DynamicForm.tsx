@@ -319,6 +319,8 @@ const Dynamic = () => {
 
     useEffect(() => {
         const saved = localStorage.getItem("ravan_demo_user_data");
+        const isSubmitting=localStorage.getItem("IsSubmittingLead")=== "True"
+        console.log("isSubmitting",isSubmitting)
         if (saved) {
             try {
                 const parsed = JSON.parse(saved);
@@ -326,6 +328,9 @@ const Dynamic = () => {
             } catch (e) {
                 // ignore
             }
+        }
+        if(isSubmitting){
+          setStep("MENU");
         }
     }, []);
 
@@ -377,6 +382,7 @@ const Dynamic = () => {
             phone: fullPhone,
             businessName: leadData.company,
         }));
+        localStorage.setItem("IsSubmittingLead","True")
         setIsSubmittingLead(false);
         setStep("MENU");
     };
