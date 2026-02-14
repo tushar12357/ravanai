@@ -403,20 +403,44 @@ const DemoExperienceSection = () => {
         className="py-20 bg-[#FDF9F5] relative overflow-hidden"
       >
         <div className="container mx-auto px-6 max-w-6xl">
-          <div className="text-center mb-16">
+          {/* <div className="text-center mb-16">
             <span className="inline-block px-5 py-2 bg-[#FFE5D9] text-[#FF6B35] rounded-full text-sm font-semibold tracking-wide">
               Interactive Demo
             </span>
-            <h2 className="mt-6 text-5xl font-black text-gray-900 leading-tight">
+            <p className=" mt-4 text-lg text-gray-600 max-w-2xl mx-auto">
+              AI Impact Expo 2026 — See What Happens When Your Website Starts
+              Talking
+            </p>
+            <h2 className="mt-2 text-5xl font-black text-gray-900 leading-tight">
               Experience Our AI Solutions
             </h2>
+
             <p className="mt-4 text-lg text-gray-600 max-w-2xl mx-auto">
+              Try live demos of our AI solutions and see how they can transform
+              your business instantly.
+            </p>
+          </div> */}
+
+          <div className="mx-auto mb-20 max-w-3xl text-center">
+            <span className="inline-flex items-center justify-center rounded-full bg-[#FFE5D9] px-6 py-2 text-sm font-semibold tracking-wide text-[#FF6B35]">
+              Interactive Demo
+            </span>
+
+            <p className="mx-auto mt-6 max-w-2xl text-lg font-medium leading-relaxed text-gray-600">
+              AI Impact Expo 2026 — See What Happens When Your Website Starts
+              Talking
+            </p>
+
+            <h2 className="mt-4 text-4xl font-extrabold leading-tight tracking-tight text-gray-900 sm:text-5xl">
+              Experience Our AI Solutions
+            </h2>
+
+            <p className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-gray-600">
               Try live demos of our AI solutions and see how they can transform
               your business instantly.
             </p>
           </div>
 
-          {/* Demo Cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
             {/* AI Website Voice Widget */}
             <motion.div
