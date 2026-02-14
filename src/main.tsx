@@ -6,7 +6,7 @@ import { WidgetProvider } from "./constexts/WidgetContext";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <WidgetProvider agent_id="1" schema="1" type="zol">
+    <WidgetProvider agent_id="1" schema="1" type="dynamic">
       <App />
     </WidgetProvider>
   </StrictMode>
