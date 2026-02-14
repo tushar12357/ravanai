@@ -478,7 +478,7 @@ const Dynamic = () => {
     // 1. LEAD CAPTURE
     if (step === "LEAD") {
         return (
-            <div className="expo-bg z-[1000] backdrop-blur-md">
+            <div className="expo-bg  backdrop-blur-md">
                 <div className="expo-container">
                     <div className="glass-card lead-card shadow-2xl">
                         <div className="lead-header-bg relative flex flex-col items-center justify-center text-center p-6">
