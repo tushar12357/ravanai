@@ -128,7 +128,7 @@ const Dynamic = () => {
       setTimeout(async () => {
         try {
           const savedUser = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY) || "{}");
-          const thunderRes = await axios.post(`${baseurl}/api/start-thunder/`, {
+          const thunderRes = await axios.post(`${baseurl}/api/create-room/`, {
             agent_code: agent_code,
             schema_name: schema_name,
             name: savedUser.name || "",
@@ -136,7 +136,7 @@ const Dynamic = () => {
             phone: savedUser.phone || "",
           });
 
-          const { joinUrl, callId, call_session_id } = thunderRes.data;
+          const { joinUrl, callId, call_session_id } = thunderRes.data.response;
 
           localStorage.setItem("callId", callId);
           setCallId(callId);
