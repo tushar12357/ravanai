@@ -704,9 +704,7 @@ const Dynamic = () => {
      if (step === "MENU") {
         return (
             <div className=" bg-[#F8F7F4] ">
-                <div className="absolute w-full inset-[-40%] opacity-100 animate-[bgPulse_20s_ease-in-out_infinite_alternate]" style={{
-                    background: 'radial-gradient(circle at 30% 20%, rgba(255, 107, 44, 0.08), transparent 40%), radial-gradient(circle at 70% 80%, rgba(255, 143, 89, 0.06), transparent 40%)'
-                }} />
+                
                 
                 <div className="relative z-10 flex items-center justify-center w-full h-full p-6">
                     <div className="relative z-[2] py-12 px-8 max-w-[880px] w-full flex flex-col items-center gap-12">
@@ -886,9 +884,6 @@ const Dynamic = () => {
     if (step === "WIDGET_FORM") {
         return (
             <div className="bg-[#F8F7F4]">
-                <div className="absolute inset-[-40%] opacity-100 animate-[bgPulse_20s_ease-in-out_infinite_alternate]" style={{
-                    background: 'radial-gradient(circle at 30% 20%, rgba(255, 107, 44, 0.08), transparent 40%), radial-gradient(circle at 70% 80%, rgba(255, 143, 89, 0.06), transparent 40%)'
-                }} />
                 
                 <div className="relative z-10 flex items-center justify-center w-full h-full p-6">
                     <div className="w-full max-w-[440px] py-12 px-10 bg-white/98 backdrop-blur-xl border border-black/[0.08] rounded-[28px] shadow-[0_24px_60px_-12px_rgba(50,50,93,0.1),0_12px_36px_-8px_rgba(0,0,0,0.05)]">
@@ -966,9 +961,7 @@ const Dynamic = () => {
     if (step === "CALLING") {
         return (
             <div className=" bg-[#F8F7F4]">
-                <div className="absolute inset-[-40%] opacity-100 animate-[bgPulse_20s_ease-in-out_infinite_alternate]" style={{
-                    background: 'radial-gradient(circle at 30% 20%, rgba(255, 107, 44, 0.08), transparent 40%), radial-gradient(circle at 70% 80%, rgba(255, 143, 89, 0.06), transparent 40%)'
-                }} />
+                
                 
                 <div className="relative z-10 flex items-center justify-center w-full h-full p-6">
                     <div className="w-full max-w-[440px] py-12 px-10 bg-white/98 backdrop-blur-xl border border-black/[0.08] rounded-[28px] shadow-[0_24px_60px_-12px_rgba(50,50,93,0.1),0_12px_36px_-8px_rgba(0,0,0,0.05)] flex flex-col items-center justify-center text-center">
@@ -995,10 +988,7 @@ const Dynamic = () => {
     // 5. WIDGET ACTIVE (LiveKit)
     return (
         <div className=" bg-[#F8F7F4]">
-            <div className="absolute w-full inset-[-40%] opacity-100 animate-[bgPulse_20s_ease-in-out_infinite_alternate]" style={{
-                background: 'radial-gradient(circle at 30% 20%, rgba(255, 107, 44, 0.08), transparent 40%), radial-gradient(circle at 70% 80%, rgba(255, 143, 89, 0.06), transparent 40%)'
-            }} />
-            
+           
             
             <div className="relative z-10 flex items-center justify-center w-full h-full p-6">
                 {token && (
