@@ -603,7 +603,7 @@ const Dynamic = () => {
     // 2. SELECTION MENU
     if (step === "MENU") {
         return (
-            <div className="expo-bg">
+            <div className="">
                 <div className="expo-container">
                     <div className="menu-page">
                         {/* Header */}
@@ -715,7 +715,7 @@ const Dynamic = () => {
     // 3. WIDGET FORM (Existing)
     if (step === "WIDGET_FORM") {
         return (
-            <div className="expo-bg">
+            <div className="">
                 <div className="expo-container">
                     <div className="glass-card form-page">
                         <div className="form-header">
@@ -757,7 +757,7 @@ const Dynamic = () => {
     // 4. CALLING ACTIVE
     if (step === "CALLING") {
         return (
-            <div className="expo-bg">
+            <div className="">
                 <div className="expo-container">
                     <div className="glass-card form-page flex flex-col items-center justify-center text-center">
                         <div className="p-6 bg-orange-50 rounded-full mb-6 relative">
@@ -775,7 +775,7 @@ const Dynamic = () => {
 
     // 5. WIDGET ACTIVE (LiveKit)
     return (
-        <div className="expo-bg">
+        <div className="">
             <div className="expo-container">
                 {token && (
                     <LiveKitRoom
