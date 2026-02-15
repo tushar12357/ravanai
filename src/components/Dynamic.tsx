@@ -548,7 +548,7 @@ const Dynamic = () => {
     // 1. LEAD CAPTURE
     if (step === "LEAD") {
         return (
-            <div className="fixed inset-0 bg-[#F8F7F4]">
+            <div className="fixed inset-0 bg-[#F8F7F4] z-50">
                 <style>{`
                     @keyframes bgPulse {
                         0% { opacity: 0.8; }
