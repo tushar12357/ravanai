@@ -166,9 +166,9 @@ const RoomContent = ({
     }, [room, localParticipant, agentName]);
 
     // Only scroll transcripts, not chat
-    useEffect(() => { 
-        transcriptEndRef.current?.scrollIntoView({ behavior: "smooth" }); 
-    }, [transcripts]);
+    // useEffect(() => { 
+    //     transcriptEndRef.current?.scrollIntoView({ behavior: "smooth" }); 
+    // }, [transcripts]);
 
     const handleSendChat = useCallback(async () => {
         if (!inputText.trim() || isSending) return;
@@ -197,7 +197,7 @@ const RoomContent = ({
     };
 
     return (
-        <div className="w-full max-w-[480px] h-full max-h-[720px] bg-white rounded-[28px] shadow-[0_24px_60px_rgba(0,0,0,0.1),0_0_0_1px_rgba(0,0,0,0.03)] flex flex-col overflow-hidden animate-[widgetCardEnter_0.5s_cubic-bezier(0.16,1,0.3,1)] mx-auto">
+        <div className="w-full max-w-[480px] h-[720px] bg-white rounded-[28px] shadow-[0_24px_60px_rgba(0,0,0,0.1),0_0_0_1px_rgba(0,0,0,0.03)] flex flex-col overflow-hidden animate-[widgetCardEnter_0.5s_cubic-bezier(0.16,1,0.3,1)] mx-auto">
             <style>{`
                 @keyframes widgetCardEnter {
                     from { opacity: 0; transform: translateY(20px) scale(0.97); }
@@ -400,6 +400,8 @@ const Dynamic = () => {
 
     useEffect(() => {
         const saved = localStorage.getItem("ravan_demo_user_data");
+        const isSubmitting = localStorage.getItem("isSubmittingLead") === "True";
+        
         if (saved) {
             try {
                 const parsed = JSON.parse(saved);
@@ -407,6 +409,10 @@ const Dynamic = () => {
             } catch (e) {
                 // ignore
             }
+        }
+        if(isSubmitting ){
+          setStep("MENU");
+          
         }
     }, []);
 
@@ -458,6 +464,7 @@ const Dynamic = () => {
             businessName: leadData.company,
         }));
         setIsSubmittingLead(false);
+        localStorage.setItem("isSubmittingLead", "True")
         setStep("MENU");
     };
 
@@ -700,10 +707,10 @@ const Dynamic = () => {
     }
 
     // 2. SELECTION MENU
-    if (step === "MENU") {
+     if (step === "MENU") {
         return (
-            <div className="bg-[#F8F7F4]">
-                <div className="absolute inset-[-40%] opacity-100 animate-[bgPulse_20s_ease-in-out_infinite_alternate]" style={{
+            <div className="fixed inset-0 bg-[#F8F7F4]">
+                <div className="absolute w-full inset-[-40%] opacity-100 animate-[bgPulse_20s_ease-in-out_infinite_alternate]" style={{
                     background: 'radial-gradient(circle at 30% 20%, rgba(255, 107, 44, 0.08), transparent 40%), radial-gradient(circle at 70% 80%, rgba(255, 143, 89, 0.06), transparent 40%)'
                 }} />
                 
@@ -869,11 +876,11 @@ const Dynamic = () => {
                                 </button>
                             </div>
                             <iframe
-                                src="https://link.ravan.ai/widget/booking/z0y3cgJJ3zTzb7hW7bLg"
-                                style={{ width: "100%", height: "calc(100% - 56px)", border: "none", overflow: "hidden" }}
-                                scrolling="no"
-                                title="Book a Call"
-                            />
+    src="https://link.ravan.ai/widget/booking/z0y3cgJJ3zTzb7hW7bLg"
+    style={{ width: "100%", height: "calc(100% - 56px)", border: "none" }}
+    scrolling="yes"
+    title="Book a Call"
+/>
                         </div>
                     </div>
                 )}
@@ -989,12 +996,15 @@ const Dynamic = () => {
         );
     }
 
+   
+
     // 5. WIDGET ACTIVE (LiveKit)
     return (
         <div className=" bg-[#F8F7F4]">
-            <div className="absolute inset-[-40%] opacity-100 animate-[bgPulse_20s_ease-in-out_infinite_alternate]" style={{
+            <div className="absolute w-full inset-[-40%] opacity-100 animate-[bgPulse_20s_ease-in-out_infinite_alternate]" style={{
                 background: 'radial-gradient(circle at 30% 20%, rgba(255, 107, 44, 0.08), transparent 40%), radial-gradient(circle at 70% 80%, rgba(255, 143, 89, 0.06), transparent 40%)'
             }} />
+            
             
             <div className="relative z-10 flex items-center justify-center w-full h-full p-6">
                 {token && (
