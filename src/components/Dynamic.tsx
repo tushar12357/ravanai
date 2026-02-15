@@ -244,32 +244,32 @@ const RoomContent = ({
                         {/* Orb rings */}
                         <div className={`absolute w-14 h-14 rounded-full border-[1.5px] border-[#80002014] transition-all ${isSpeaking ? 'border-[#80002033] animate-[ringPulse1_1.4s_ease-in-out_infinite]' : ''}`} />
                         <div className={`absolute w-16 h-16 rounded-full border-[1.5px] border-[#80002014] transition-all ${isSpeaking ? 'border-[#8000201f] animate-[ringPulse2_1.4s_ease-in-out_infinite_0.2s]' : ''}`} />
-                        
+
                         <div className={`w-11 h-11 rounded-full bg-gradient-to-br from-[#800020] to-[#B8002B] flex items-center justify-center z-10 shadow-[0_6px_16px_rgba(128,0,32,0.3)] transition-all ${isSpeaking ? 'animate-[pulseOrb_1s_infinite_alternate] shadow-[0_8px_24px_rgba(128,0,32,0.4)]' : ''} ${isListening ? 'shadow-[0_6px_20px_rgba(128,0,32,0.25)]' : ''}`}>
                             <img src={LOGO_URL} alt="Agent" className="w-5 h-5 brightness-[10]" />
                         </div>
                     </div>
                     {(isSpeaking || isListening) && (
                         <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 w-24 h-4 flex items-center justify-center">
-                            <BarVisualizer 
-                                state={state} 
-                                trackRef={audioTrack} 
-                                barCount={7} 
-                                style={{ width: "100%", height: "100%", "--lk-va-bar-color": "#800020", background: "transparent" } as React.CSSProperties} 
+                            <BarVisualizer
+                                state={state}
+                                trackRef={audioTrack}
+                                barCount={7}
+                                style={{ width: "100%", height: "100%", "--lk-va-bar-color": "#800020", background: "transparent" } as React.CSSProperties}
                             />
                         </div>
                     )}
                 </div>
 
                 <div className="flex gap-2.5">
-                    <button 
-                        onClick={toggleMute} 
+                    <button
+                        onClick={toggleMute}
                         className={`w-10 h-10 rounded-full border border-gray-200 bg-white flex items-center justify-center cursor-pointer text-[#6E6E80] transition-all hover:bg-gray-50 hover:-translate-y-0.5 ${isMuted ? 'bg-[#8000200a] text-[#800020] border-[#80002033]' : ''}`}
                     >
                         {isMuted ? <MicOff size={20} /> : <Mic size={20} />}
                     </button>
-                    <button 
-                        onClick={onClose} 
+                    <button
+                        onClick={onClose}
                         className="w-10 h-10 rounded-full border border-red-100 bg-red-50 flex items-center justify-center cursor-pointer text-red-500 transition-all hover:bg-red-100"
                     >
                         <PhoneOff size={20} />
@@ -290,12 +290,12 @@ const RoomContent = ({
             {/* Content Area */}
             <div className="flex-1 relative flex flex-col bg-[#FAFAFA] overflow-hidden">
                 {/* Transcript Stream */}
-                <div 
+                <div
                     className="flex-1 overflow-y-auto p-5 px-6 flex flex-col gap-3 [mask-image:linear-gradient(to_bottom,transparent_0%,black_5%,black_95%,transparent_100%)]"
                     style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
                 >
                     <style>{`.flex-1::-webkit-scrollbar { display: none; }`}</style>
-                    
+
                     {transcripts.length === 0 && chatMessages.length === 0 ? (
                         <div className="h-full flex flex-col items-center justify-center gap-1">
                             <div className="w-14 h-14 rounded-full bg-[#8000200a] flex items-center justify-center text-[#80002026] mb-2">
@@ -307,8 +307,8 @@ const RoomContent = ({
                     ) : (
                         <div className="flex flex-col gap-3">
                             {transcripts.map((t) => (
-                                <div 
-                                    key={t.id} 
+                                <div
+                                    key={t.id}
                                     className={`text-sm leading-relaxed text-[#6E6E80] animate-[fadeIn_0.3s_ease-out] px-3 py-2 rounded-xl transition-colors ${t.participantName === "You" ? 'bg-black/[0.02]' : 'bg-[#80002005]'} ${!t.isFinal ? 'opacity-50' : ''}`}
                                 >
                                     <style>{`@keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }`}</style>
@@ -323,7 +323,7 @@ const RoomContent = ({
 
                 {/* Chat Overlay - No auto-scroll */}
                 {chatMessages.length > 0 && (
-                    <div 
+                    <div
                         className="absolute bottom-0 left-0 right-0 max-h-[40%] overflow-y-auto pointer-events-none flex flex-col justify-end p-4 gap-2 bg-gradient-to-t from-[#fafafafa] to-transparent"
                         style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
                     >
@@ -342,17 +342,17 @@ const RoomContent = ({
             {/* Footer */}
             <div className="p-3.5 px-5 bg-white border-t border-black/5 flex-shrink-0">
                 <div className="flex items-center bg-[#F5F5F7] rounded-full px-4.5 py-1.5 pr-1.5 border border-transparent transition-all focus-within:bg-white focus-within:border-[#8000204d] focus-within:shadow-[0_0_0_3px_rgba(128,0,32,0.06)]">
-                    <input 
-                        type="text" 
-                        value={inputText} 
-                        onChange={(e) => setInputText(e.target.value)} 
-                        onKeyDown={(e) => e.key === "Enter" && handleSendChat()} 
-                        placeholder="Type a message..." 
+                    <input
+                        type="text"
+                        value={inputText}
+                        onChange={(e) => setInputText(e.target.value)}
+                        onKeyDown={(e) => e.key === "Enter" && handleSendChat()}
+                        placeholder="Type a message..."
                         disabled={!isConnected}
                         className="flex-1 bg-transparent border-none outline-none text-sm text-[#1A1A2E]"
                     />
-                    <button 
-                        onClick={handleSendChat} 
+                    <button
+                        onClick={handleSendChat}
                         disabled={!inputText.trim() || isSending}
                         className="w-[34px] h-[34px] rounded-full bg-gradient-to-br from-[#800020] to-[#B8002B] text-white border-none flex items-center justify-center cursor-pointer transition-all shadow-[0_2px_8px_rgba(128,0,32,0.2)] hover:scale-110 hover:shadow-[0_4px_12px_rgba(128,0,32,0.3)] disabled:bg-zinc-300 disabled:shadow-none disabled:scale-100"
                     >
@@ -380,7 +380,11 @@ const Dynamic = () => {
         agentName: "Maya",
         websiteUrl: "",
         personality: "Friendly, professional, and helpful customer support agent",
+        phone: "",
+        name: "",
+        email: ""
     });
+    console.log("formData", formData)
 
     // LiveKit State
     const [token, setToken] = useState<string>("");
@@ -400,19 +404,18 @@ const Dynamic = () => {
 
     useEffect(() => {
         const saved = localStorage.getItem("ravan_demo_user_data");
-        const isSubmitting = localStorage.getItem("isSubmittingLead") === "True";
-        
+
         if (saved) {
             try {
                 const parsed = JSON.parse(saved);
-                setFormData((prev) => ({ ...prev, companyName: parsed.businessName || prev.companyName }));
+                setFormData(parsed);
             } catch (e) {
                 // ignore
             }
         }
-        if(isSubmitting ){
-          setStep("MENU");
-          
+        if (saved) {
+            setStep("MENU");
+
         }
     }, []);
 
@@ -457,14 +460,21 @@ const Dynamic = () => {
         } catch (err) {
             console.error("Webhook error:", err);
         }
-        localStorage.setItem("ravan_demo_user_data", JSON.stringify({
+
+        // ✅ Save with correct field names
+        const userData = {
             name: leadData.name,
             email: leadData.email,
             phone: fullPhone,
-            businessName: leadData.company,
-        }));
+            companyName: leadData.company,  // Changed from businessName
+            agentName: "Maya",
+            websiteUrl: "",
+            personality: "Friendly, professional, and helpful customer support agent"
+        };
+
+        localStorage.setItem("ravan_demo_user_data", JSON.stringify(userData));
+        setFormData(userData);  // Also update formData state
         setIsSubmittingLead(false);
-        localStorage.setItem("isSubmittingLead", "True")
         setStep("MENU");
     };
 
@@ -518,14 +528,20 @@ const Dynamic = () => {
     const handleInitiateCall = async () => {
         setStep("CALLING");
         setIsCalling(true);
-        const fullNumber = `${leadData.countryCode}${leadData.phone}`;
+        const fullNumber = formData.phone;
         setCallStatus(`Calling ${fullNumber}...`);
 
         try {
             await axios.post(
                 "https://app.snowie.ai/api/trigger-call/",
                 {
+                    agent_code: "2c071721-531f-4d57-89fa-45943429e6d1",
+                    schema_name: "6af30ad4-a50c-4acc-8996-d5f562b6987f",
                     phone_number: fullNumber,
+                    provider: "thunderemotionlite",
+                    name: formData.name,
+                    email: formData.email,
+                    phone: formData.phone
                 },
             );
 
@@ -568,19 +584,29 @@ const Dynamic = () => {
                         to { opacity: 1; transform: translateY(0); }
                     }
                 `}</style>
-                
+
                 <div className="relative z-10  flex items-center justify-center w-full h-full p-6">
                     <div className="w-full max-w-[440px] h-[700px] rounded-3xl overflow-hidden bg-white border-none shadow-[0_24px_60px_-12px_rgba(50,50,93,0.1),0_12px_36px_-8px_rgba(0,0,0,0.05)]">
-                     
+
+
                         <div className="relative flex flex-col items-center justify-center text-center p-6  pb-[60px] z-10 shadow-[0_4px_20px_rgba(128,0,32,0.25)] bg-gradient-to-br from-[#800020] to-[#a31d24]">
+                            <button
+                                onClick={() => { setStep("MENU"); }}
+                                aria-label="Close"
+                                className="absolute top-3 right-2 z-20 w-9 h-9 flex items-center justify-center rounded-full bg-white/20 text-white backdrop-blur-md hover:bg-white/30 hover:scale-105 transition-all duration-200"
+                            >
+                                ✕
+                            </button>
                             <div className="absolute inset-0 pointer-events-none" style={{
                                 background: 'radial-gradient(circle at 20% 30%, rgba(255, 255, 255, 0.15) 0%, transparent 40%), radial-gradient(circle at 80% 70%, rgba(255, 255, 255, 0.1) 0%, transparent 40%)'
                             }} />
-                            
-                            <div className="relative z-10 w-full max-w-md  px-2">
-                                <h1 className="text-3xl font-extrabold text-white leading-tight mb- tracking-wide drop-shadow-lg uppercase">
-                                    AI Impact Expo 2026
+
+                            <div className="relative flex justify-center items-center z-10 w-full max-w-md  px-2 gap-2">
+                                <img className="w-10 h-10 rounded" src="https://storage.googleapis.com/msgsndr/LK2LrQP5tkIZ3ahmumnr/media/69923c621d5e0441112aa1b7.jpeg" alt="" />
+                                <h1 className=" text-lg font-extrabold text-white leading-tight mb- tracking-wide drop-shadow-lg uppercase">
+                                    India AI Impact Summit 2026
                                 </h1>
+
                             </div>
 
                             <div className="absolute bottom-[-50px] w-[100px] h-[100px] bg-white rounded-3xl shadow-[0_16px_40px_rgba(243,108,33,0.2)] p-2 flex items-center justify-center border-4 border-white">
@@ -588,10 +614,10 @@ const Dynamic = () => {
                             </div>
                         </div>
 
-                        
+
                         <div className="pt-16 px-8 pb-10">
                             <div className="text-center mb-6">
-                                <h1 className="text-xl font-bold text-[#1A1A2E]">Welcome to <span className="text-[#800020]">Agni By Ravan.ai</span></h1>
+                                <h1 className="text-xl font-bold text-[#1A1A2E]">Welcome to <span className="text-[#800020]"> Ravan.ai</span></h1>
                                 <p className="text-sm text-gray-500 mt-1">Please fill in your details to start the demo</p>
                             </div>
 
@@ -685,9 +711,9 @@ const Dynamic = () => {
                                     />
                                 </div>
 
-                                <button 
-                                    type="submit" 
-                                    disabled={isSubmittingLead} 
+                                <button
+                                    type="submit"
+                                    disabled={isSubmittingLead}
                                     className="w-full px-4 py-4 bg-gradient-to-br from-[#800020] to-[#600018] text-white border-none rounded-[14px] font-bold text-lg tracking-wide mt-6 cursor-pointer shadow-[0_10px_25px_rgba(128,0,32,0.3)] transition-all flex items-center justify-center gap-2.5 relative overflow-hidden hover:-translate-y-1 hover:shadow-[0_15px_35px_rgba(128,0,32,0.4)] hover:bg-gradient-to-br hover:from-[#900024] hover:to-[#70001C] active:-translate-y-0.5 disabled:opacity-70 disabled:transform-none"
                                 >
                                     {isSubmittingLead ? <Loader2 className="animate-spin" /> : <>Continue to Demo <ArrowRight size={18} /></>}
@@ -701,11 +727,11 @@ const Dynamic = () => {
     }
 
     // 2. SELECTION MENU
-     if (step === "MENU") {
+    if (step === "MENU") {
         return (
             <div className=" bg-[#F8F7F4] ">
-                
-                
+
+
                 <div className="relative z-10 flex items-center justify-center w-full h-full p-6">
                     <div className="relative z-[2] py-12 px-8 max-w-[880px] w-full flex flex-col items-center gap-12">
                         <style>{`
@@ -747,16 +773,16 @@ const Dynamic = () => {
                         {/* Cards */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
                             {/* Card 1 — Voice Widget */}
-                            <div 
+                            <div
                                 className="relative rounded-[20px] cursor-pointer overflow-hidden opacity-0 animate-[cardReveal_0.7s_cubic-bezier(0.16,1,0.3,1)_0.15s_forwards] transition-transform duration-400 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-2"
-                                onClick={() => setStep("WIDGET_FORM")}
+                                onClick={() => { formData.name && formData.phone ? setStep("WIDGET_FORM") : setStep("LEAD") }}
                             >
                                 {/* Shimmer border */}
                                 <div className="absolute inset-0 rounded-[20px] z-0 bg-[length:300%_300%] animate-[shimmerBorder_6s_linear_infinite] transition-all duration-400" style={{
                                     background: 'linear-gradient(135deg, rgba(128, 0, 32, 0.08) 0%, rgba(212, 160, 23, 0.06) 50%, rgba(128, 0, 32, 0.08) 100%)',
                                     backgroundSize: '300% 300%'
                                 }} />
-                                
+
                                 {/* Card body */}
                                 <div className="relative z-[1] m-[1px] bg-white/92 backdrop-blur-xl border border-white/70 rounded-[19px] p-8 flex flex-col gap-3.5 transition-all duration-[350ms] hover:bg-white hover:border-[#8000201a] hover:shadow-[0_20px_50px_rgba(0,0,0,0.06),0_0_0_1px_rgba(128,0,32,0.04)]">
                                     <div className="flex items-center justify-between">
@@ -785,16 +811,14 @@ const Dynamic = () => {
                             </div>
 
                             {/* Card 2 — AI Calling */}
-                            <div 
-                                className="relative rounded-[20px] cursor-pointer overflow-hidden opacity-0 animate-[cardReveal_0.7s_cubic-bezier(0.16,1,0.3,1)_0.3s_forwards] transition-transform duration-400 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-2"
-                                onClick={handleInitiateCall}
-                            >
+                            <div className="relative rounded-[20px] cursor-pointer overflow-hidden opacity-0 animate-[cardReveal_0.7s_cubic-bezier(0.16,1,0.3,1)_0.3s_forwards] transition-transform duration-400 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-2"
+                                onClick={() => { formData.name && formData.phone ? handleInitiateCall() : setStep("LEAD") }}>
                                 {/* Shimmer border */}
                                 <div className="absolute inset-0 rounded-[20px] z-0 bg-[length:300%_300%] animate-[shimmerBorder_6s_linear_infinite] transition-all duration-400" style={{
                                     background: 'linear-gradient(135deg, rgba(128, 0, 32, 0.08) 0%, rgba(212, 160, 23, 0.06) 50%, rgba(128, 0, 32, 0.08) 100%)',
                                     backgroundSize: '300% 300%'
                                 }} />
-                                
+
                                 {/* Card body */}
                                 <div className="relative z-[1] m-[1px] bg-white/92 backdrop-blur-xl border border-white/70 rounded-[19px] p-8 flex flex-col gap-3.5 transition-all duration-[350ms] hover:bg-white hover:border-[#8000201a] hover:shadow-[0_20px_50px_rgba(0,0,0,0.06),0_0_0_1px_rgba(128,0,32,0.04)]">
                                     <div className="flex items-center justify-between">
@@ -823,6 +847,35 @@ const Dynamic = () => {
                             </div>
                         </div>
 
+
+                        <a target="_blank"
+                            href="https://rzp.io/rzp/TpFhZ8yj"
+                            rel="noopener noreferrer"
+                            className="group relative mx-auto mt-6 flex items-center justify-between w-[320px] rounded-full bg-gradient-to-r from-black via-gray-900 to-black px-6 py-4 text-white shadow-[0_12px_30px_rgba(0,0,0,0.25),0_0_0_1px_rgba(199,119,58,0.1)] transition-all duration-500 hover:shadow-[0_16px_40px_rgba(199,119,58,0.45),0_0_0_2px_rgba(199,119,58,0.3)] hover:scale-105 active:scale-95"
+                        >
+                            {/* Animated gradient overlay */}
+                            <span className="absolute inset-0 rounded-full bg-gradient-to-r from-[#C7773A] via-[#E89D5E] to-[#C7773A] opacity-0 transition-opacity duration-500 group-hover:opacity-100"></span>
+
+                            {/* Shimmer effect */}
+                            <span className="absolute inset-0 rounded-full overflow-hidden">
+                                <span className="absolute inset-0 translate-x-[-100%] bg-gradient-to-r from-transparent via-white/20 to-transparent transition-transform duration-1000 group-hover:translate-x-[100%]"></span>
+                            </span>
+
+                            {/* Button text */}
+                            <span className="relative z-10 mx-auto font-extrabold tracking-wide text-[15px] transition-all duration-300 group-hover:text-black drop-shadow-sm">
+                                Claim Your Spot
+                            </span>
+
+                            {/* Arrow icon */}
+                            <span className="relative z-10 ml-4 flex h-10 w-10  items-center justify-center rounded-full bg-white text-black transition-all duration-500 group-hover:bg-black group-hover:text-white  shadow-lg">
+                                <span className="text-xl font-bold"><ArrowRight /></span>
+                            </span>
+                        </a>
+
+
+
+
+
                         <p className="text-xs text-[#AAAAAA] text-center tracking-wide">
                             Powered by <strong className="text-[#800020] font-bold">Agni By Ravan.ai</strong> · Enterprise AI Platform
                         </p>
@@ -830,7 +883,7 @@ const Dynamic = () => {
                 </div>
 
                 {/* Book a Call — Fixed Side Tab */}
-                <div 
+                <div
                     className="fixed right-0 top-1/2 -translate-y-1/2 z-[900] flex items-center gap-1.5 bg-gradient-to-br from-[#800020] to-[#B8002B] text-white text-xs font-bold tracking-wide px-3.5 py-2.5 rounded-l-[10px] cursor-pointer [writing-mode:vertical-rl] [text-orientation:mixed] shadow-[-3px_0_16px_rgba(128,0,32,0.2)] transition-all duration-300 hover:pr-4.5 hover:shadow-[-6px_0_24px_rgba(128,0,32,0.35)]"
                     onClick={() => setShowCalendar(true)}
                 >
@@ -840,8 +893,8 @@ const Dynamic = () => {
 
                 {/* Calendar Slider Overlay */}
                 {showCalendar && (
-                    <div 
-                        className="fixed inset-0 z-[1000] bg-black/40 backdrop-blur-sm flex justify-end animate-[calFadeIn_0.35s_cubic-bezier(0.16,1,0.3,1)]" 
+                    <div
+                        className="fixed inset-0 z-[1000] bg-black/40 backdrop-blur-sm flex justify-end animate-[calFadeIn_0.35s_cubic-bezier(0.16,1,0.3,1)]"
                         onClick={() => setShowCalendar(false)}
                     >
                         <style>{`
@@ -854,13 +907,13 @@ const Dynamic = () => {
                                 to { transform: translateX(0); opacity: 1; }
                             }
                         `}</style>
-                        <div 
-                            className="w-[440px] max-w-[92vw] h-full bg-white shadow-[-8px_0_40px_rgba(0,0,0,0.12)] flex flex-col animate-[calSlideIn_0.45s_cubic-bezier(0.22,1,0.36,1)]" 
+                        <div
+                            className="w-[440px] max-w-[92vw] h-full bg-white shadow-[-8px_0_40px_rgba(0,0,0,0.12)] flex flex-col animate-[calSlideIn_0.45s_cubic-bezier(0.22,1,0.36,1)]"
                             onClick={(e) => e.stopPropagation()}
                         >
                             <div className="flex items-center justify-between px-5 py-3.5 border-b border-[#F0F0F2]">
                                 <h3 className="text-lg font-extrabold text-[#1A1A2E] tracking-tight">Book a Call</h3>
-                                <button 
+                                <button
                                     className="flex items-center justify-center w-8 h-8 rounded-lg border-none bg-[#F5F5F7] text-[#666] cursor-pointer transition-all duration-200 hover:bg-[#E8E8EC] hover:text-[#1A1A2E]"
                                     onClick={() => setShowCalendar(false)}
                                 >
@@ -868,11 +921,11 @@ const Dynamic = () => {
                                 </button>
                             </div>
                             <iframe
-    src="https://link.ravan.ai/widget/booking/z0y3cgJJ3zTzb7hW7bLg"
-    style={{ width: "100%", height: "calc(100% - 56px)", border: "none" }}
-    scrolling="yes"
-    title="Book a Call"
-/>
+                                src="https://link.ravan.ai/widget/booking/z0y3cgJJ3zTzb7hW7bLg"
+                                style={{ width: "100%", height: "calc(100% - 56px)", border: "none" }}
+                                scrolling="yes"
+                                title="Book a Call"
+                            />
                         </div>
                     </div>
                 )}
@@ -884,7 +937,7 @@ const Dynamic = () => {
     if (step === "WIDGET_FORM") {
         return (
             <div className="bg-[#F8F7F4]">
-                
+
                 <div className="relative z-10 flex items-center justify-center w-full h-full p-6">
                     <div className="w-full max-w-[440px] py-12 px-10 bg-white/98 backdrop-blur-xl border border-black/[0.08] rounded-[28px] shadow-[0_24px_60px_-12px_rgba(50,50,93,0.1),0_12px_36px_-8px_rgba(0,0,0,0.05)]">
                         <div className="text-center mb-10 flex flex-col items-center gap-4">
@@ -905,30 +958,30 @@ const Dynamic = () => {
                         <form onSubmit={handleCreateAgent} className="flex flex-col gap-5">
                             <div>
                                 <label className="block text-xs font-semibold uppercase text-[#6E6E80] mb-1.5">Agent Name</label>
-                                <input 
-                                    type="text" 
-                                    value={formData.agentName} 
-                                    onChange={(e) => setFormData({ ...formData, agentName: e.target.value })} 
+                                <input
+                                    type="text"
+                                    value={formData.agentName}
+                                    onChange={(e) => setFormData({ ...formData, agentName: e.target.value })}
                                     className="w-full px-4 py-3.5 rounded-[14px] border border-[#E2E2E2] text-base outline-none transition-all bg-white focus:border-[#FF6B2C] focus:shadow-[0_0_0_3px_rgba(255,107,44,0.1)]"
-                                    placeholder="Maya" 
+                                    placeholder="Maya"
                                 />
                             </div>
                             <div>
                                 <label className="block text-xs font-semibold uppercase text-[#6E6E80] mb-1.5">
                                     Website URL <span className="text-red-500">*</span>
                                 </label>
-                                <input 
-                                    type="text" 
-                                    required 
-                                    value={formData.websiteUrl} 
-                                    onChange={(e) => setFormData({ ...formData, websiteUrl: e.target.value })} 
+                                <input
+                                    type="text"
+                                    required
+                                    value={formData.websiteUrl}
+                                    onChange={(e) => setFormData({ ...formData, websiteUrl: e.target.value })}
                                     className="w-full px-4 py-3.5 rounded-[14px] border border-[#E2E2E2] text-base outline-none transition-all bg-white focus:border-[#FF6B2C] focus:shadow-[0_0_0_3px_rgba(255,107,44,0.1)]"
-                                    placeholder="https://yourcompany.com" 
+                                    placeholder="https://yourcompany.com"
                                 />
                             </div>
-                            <button 
-                                type="submit" 
-                                disabled={isCreatingAgent} 
+                            <button
+                                type="submit"
+                                disabled={isCreatingAgent}
                                 className="w-full px-4 py-4 bg-gradient-to-br from-[#800020] to-[#600018] text-white border-none rounded-[14px] font-bold text-lg tracking-wide mt-6 cursor-pointer shadow-[0_10px_25px_rgba(128,0,32,0.3)] transition-all flex items-center justify-center gap-2.5 relative overflow-hidden hover:-translate-y-1 hover:shadow-[0_15px_35px_rgba(128,0,32,0.4)] hover:bg-gradient-to-br hover:from-[#900024] hover:to-[#70001C] active:-translate-y-0.5 disabled:opacity-70 disabled:transform-none"
                             >
                                 {isCreatingAgent ? (
@@ -943,9 +996,32 @@ const Dynamic = () => {
                                     </>
                                 )}
                             </button>
-                            <button 
-                                type="button" 
-                                onClick={() => setStep("MENU")} 
+                            <a target="_blank"
+                                href="https://rzp.io/rzp/TpFhZ8yj"
+                                rel="noopener noreferrer"
+                                className="group relative mx-auto mt-6 flex items-center justify-between w-[320px] rounded-full bg-gradient-to-r from-black via-gray-900 to-black px-6 py-4 text-white shadow-[0_12px_30px_rgba(0,0,0,0.25),0_0_0_1px_rgba(199,119,58,0.1)] transition-all duration-500 hover:shadow-[0_16px_40px_rgba(199,119,58,0.45),0_0_0_2px_rgba(199,119,58,0.3)] hover:scale-105 active:scale-95"
+                            >
+                                {/* Animated gradient overlay */}
+                                <span className="absolute inset-0 rounded-full bg-gradient-to-r from-[#C7773A] via-[#E89D5E] to-[#C7773A] opacity-0 transition-opacity duration-500 group-hover:opacity-100"></span>
+
+                                {/* Shimmer effect */}
+                                <span className="absolute inset-0 rounded-full overflow-hidden">
+                                    <span className="absolute inset-0 translate-x-[-100%] bg-gradient-to-r from-transparent via-white/20 to-transparent transition-transform duration-1000 group-hover:translate-x-[100%]"></span>
+                                </span>
+
+                                {/* Button text */}
+                                <span className="relative z-10 mx-auto font-extrabold tracking-wide text-[15px] transition-all duration-300 group-hover:text-black drop-shadow-sm">
+                                    Claim Your Spot
+                                </span>
+
+                                {/* Arrow icon */}
+                                <span className="relative z-10 ml-4 flex h-10 w-10  items-center justify-center rounded-full bg-white text-black transition-all duration-500 group-hover:bg-black group-hover:text-white  shadow-lg">
+                                    <span className="text-xl font-bold"><ArrowRight /></span>
+                                </span>
+                            </a>
+                            <button
+                                type="button"
+                                onClick={() => setStep("MENU")}
                                 className="text-sm text-gray-400 mt-2 hover:text-gray-600 transition-colors"
                             >
                                 Start Over
@@ -961,8 +1037,8 @@ const Dynamic = () => {
     if (step === "CALLING") {
         return (
             <div className=" bg-[#F8F7F4]">
-                
-                
+
+
                 <div className="relative z-10 flex items-center justify-center w-full h-full p-6">
                     <div className="w-full max-w-[440px] py-12 px-10 bg-white/98 backdrop-blur-xl border border-black/[0.08] rounded-[28px] shadow-[0_24px_60px_-12px_rgba(50,50,93,0.1),0_12px_36px_-8px_rgba(0,0,0,0.05)] flex flex-col items-center justify-center text-center">
                         <div className="relative p-6 bg-orange-50 rounded-full mb-6">
@@ -971,8 +1047,8 @@ const Dynamic = () => {
                         </div>
                         <h2 className="text-2xl font-bold mb-2 text-[#1A1A2E]">Calling You Now</h2>
                         <p className="text-[#6E6E80] mb-8 max-w-xs">{callStatus}</p>
-                        <button 
-                            onClick={() => setStep("MENU")} 
+                        <button
+                            onClick={() => setStep("MENU")}
                             className="text-sm font-semibold text-[#FF6B2C] hover:underline"
                         >
                             Cancel
@@ -983,21 +1059,21 @@ const Dynamic = () => {
         );
     }
 
-   
+
 
     // 5. WIDGET ACTIVE (LiveKit)
     return (
         <div className=" bg-[#F8F7F4]">
-           
-            
+
+
             <div className="relative z-10 flex items-center justify-center w-full h-full p-6">
                 {token && (
                     <LiveKitRoom
-                        video={false} 
+                        video={false}
                         audio={true}
-                        token={token} 
+                        token={token}
                         serverUrl={serverUrl}
-                        connect={connect} 
+                        connect={connect}
                         data-lk-theme="default"
                         onDisconnected={() => setConnect(false)}
                         style={{ width: "100%", height: "100%", background: "transparent", display: "flex", alignItems: "center", justifyContent: "center" }}
