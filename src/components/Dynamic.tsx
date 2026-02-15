@@ -557,7 +557,7 @@ const Dynamic = () => {
     // 1. LEAD CAPTURE
     if (step === "LEAD") {
         return (
-            <div className="fixed inset-0 bg-gradient-to-br from-white/10 via-white/5 to-white/10 backdrop-blur-2xl z-50">
+            <div className="fixed  inset-0 bg-gradient-to-br from-white/10 via-white/5 to-white/10 backdrop-blur-2xl z-50">
                 <style>{`
                     @keyframes bgPulse {
                         0% { opacity: 0.8; }
@@ -572,32 +572,29 @@ const Dynamic = () => {
                     background: 'radial-gradient(circle at 30% 20%, rgba(255, 107, 44, 0.08), transparent 40%), radial-gradient(circle at 70% 80%, rgba(255, 143, 89, 0.06), transparent 40%)'
                 }} />
                 
-                <div className="relative z-10 flex items-center justify-center w-full h-full p-6">
-                    <div className="w-full max-w-[440px] rounded-3xl overflow-hidden bg-white border-none shadow-[0_24px_60px_-12px_rgba(50,50,93,0.1),0_12px_36px_-8px_rgba(0,0,0,0.05)]">
-                        {/* Header */}
-                        <div className="relative flex flex-col items-center justify-center text-center p-6 min-h-[240px] pb-[60px] z-10 shadow-[0_4px_20px_rgba(128,0,32,0.25)] bg-gradient-to-br from-[#800020] to-[#a31d24]">
+                <div className="relative z-10  flex items-center justify-center w-full h-full p-6">
+                    <div className="w-full max-w-[440px] h-[700px] rounded-3xl overflow-hidden bg-white border-none shadow-[0_24px_60px_-12px_rgba(50,50,93,0.1),0_12px_36px_-8px_rgba(0,0,0,0.05)]">
+                     
+                        <div className="relative flex flex-col items-center justify-center text-center p-6  pb-[60px] z-10 shadow-[0_4px_20px_rgba(128,0,32,0.25)] bg-gradient-to-br from-[#800020] to-[#a31d24]">
                             <div className="absolute inset-0 pointer-events-none" style={{
                                 background: 'radial-gradient(circle at 20% 30%, rgba(255, 255, 255, 0.15) 0%, transparent 40%), radial-gradient(circle at 80% 70%, rgba(255, 255, 255, 0.1) 0%, transparent 40%)'
                             }} />
                             
-                            <div className="relative z-10 w-full max-w-md animate-[fadeInUp_0.6s_cubic-bezier(0.16,1,0.3,1)_forwards] px-4">
-                                <h1 className="text-3xl font-extrabold text-white leading-tight mb-3 tracking-wide drop-shadow-lg uppercase">
+                            <div className="relative z-10 w-full max-w-md  px-2">
+                                <h1 className="text-3xl font-extrabold text-white leading-tight mb- tracking-wide drop-shadow-lg uppercase">
                                     AI Impact Expo 2026
                                 </h1>
-                                <p className="text-lg font-semibold text-white drop-shadow-md">
-                                    See What Happens When Your Website Starts Talking
-                                </p>
                             </div>
 
-                            <div className="absolute bottom-[-50px] w-[100px] h-[100px] bg-white rounded-3xl shadow-[0_16px_40px_rgba(243,108,33,0.2)] p-5 flex items-center justify-center border-4 border-white">
+                            <div className="absolute bottom-[-50px] w-[100px] h-[100px] bg-white rounded-3xl shadow-[0_16px_40px_rgba(243,108,33,0.2)] p-2 flex items-center justify-center border-4 border-white">
                                 <img src={LOGO_URL} alt="Agni By Ravan.ai" className="w-full h-full object-contain" />
                             </div>
                         </div>
 
-                        {/* Content */}
+                        
                         <div className="pt-16 px-8 pb-10">
                             <div className="text-center mb-6">
-                                <h1 className="text-2xl font-bold text-[#1A1A2E]">Welcome to <span className="text-[#800020]">Agni By Ravan.ai</span></h1>
+                                <h1 className="text-xl font-bold text-[#1A1A2E]">Welcome to <span className="text-[#800020]">Agni By Ravan.ai</span></h1>
                                 <p className="text-sm text-gray-500 mt-1">Please fill in your details to start the demo</p>
                             </div>
 
@@ -709,7 +706,7 @@ const Dynamic = () => {
     // 2. SELECTION MENU
      if (step === "MENU") {
         return (
-            <div className="fixed inset-0 bg-[#F8F7F4]">
+            <div className=" bg-[#F8F7F4] ">
                 <div className="absolute w-full inset-[-40%] opacity-100 animate-[bgPulse_20s_ease-in-out_infinite_alternate]" style={{
                     background: 'radial-gradient(circle at 30% 20%, rgba(255, 107, 44, 0.08), transparent 40%), radial-gradient(circle at 70% 80%, rgba(255, 143, 89, 0.06), transparent 40%)'
                 }} />
