@@ -165,8 +165,10 @@ const RoomContent = ({
         return () => { room.off(RoomEvent.TranscriptionReceived, handleTranscription); };
     }, [room, localParticipant, agentName]);
 
-    useEffect(() => { transcriptEndRef.current?.scrollIntoView({ behavior: "smooth" }); }, [transcripts]);
-    useEffect(() => { chatEndRef.current?.scrollIntoView({ behavior: "smooth" }); }, [chatMessages]);
+    // Only scroll transcripts, not chat
+    useEffect(() => { 
+        transcriptEndRef.current?.scrollIntoView({ behavior: "smooth" }); 
+    }, [transcripts]);
 
     const handleSendChat = useCallback(async () => {
         if (!inputText.trim() || isSending) return;
@@ -314,12 +316,12 @@ const RoomContent = ({
                                     <span>{t.text}</span>
                                 </div>
                             ))}
+                            <div ref={transcriptEndRef} />
                         </div>
                     )}
-                    <div ref={transcriptEndRef} />
                 </div>
 
-                {/* Chat Overlay */}
+                {/* Chat Overlay - No auto-scroll */}
                 {chatMessages.length > 0 && (
                     <div 
                         className="absolute bottom-0 left-0 right-0 max-h-[40%] overflow-y-auto pointer-events-none flex flex-col justify-end p-4 gap-2 bg-gradient-to-t from-[#fafafafa] to-transparent"
@@ -332,7 +334,7 @@ const RoomContent = ({
                                 </div>
                             </div>
                         ))}
-                        <div ref={chatEndRef} />
+                        {/* Removed chatEndRef from here */}
                     </div>
                 )}
             </div>
@@ -548,7 +550,7 @@ const Dynamic = () => {
     // 1. LEAD CAPTURE
     if (step === "LEAD") {
         return (
-            <div className="fixed inset-0 bg-[#F8F7F4] z-50">
+            <div className="fixed inset-0 bg-gradient-to-br from-white/10 via-white/5 to-white/10 backdrop-blur-2xl z-50">
                 <style>{`
                     @keyframes bgPulse {
                         0% { opacity: 0.8; }
@@ -599,7 +601,7 @@ const Dynamic = () => {
                                         required
                                         value={leadData.name}
                                         onChange={e => setLeadData({ ...leadData, name: e.target.value })}
-                                        className="w-full px-4.5 py-4 rounded-[14px] border border-[#EAEAEA] bg-[#F8F9FC] text-base text-[#1A1A2E] outline-none transition-all shadow-[inset_0_2px_4px_rgba(0,0,0,0.01)] focus:bg-white focus:border-[#F36C21] focus:shadow-[0_4px_12px_rgba(243,108,33,0.15),0_0_0_2px_rgba(243,108,33,0.05)] focus:-translate-y-0.5 placeholder:text-[#BBB]"
+                                        className="w-full px-4 py-4 rounded-[14px] border border-[#EAEAEA] bg-[#F8F9FC] text-base text-[#1A1A2E] outline-none transition-all shadow-[inset_0_2px_4px_rgba(0,0,0,0.01)] focus:bg-white focus:border-[#F36C21] focus:shadow-[0_4px_12px_rgba(243,108,33,0.15),0_0_0_2px_rgba(243,108,33,0.05)] focus:-translate-y-0.5 placeholder:text-[#BBB]"
                                         placeholder="Full Name *"
                                     />
                                 </div>
@@ -656,7 +658,7 @@ const Dynamic = () => {
                                         required
                                         value={leadData.phone}
                                         onChange={e => setLeadData({ ...leadData, phone: e.target.value })}
-                                        className="flex-1 px-4.5 py-4 rounded-[14px] border border-[#EAEAEA] bg-[#F8F9FC] text-base text-[#1A1A2E] outline-none transition-all shadow-[inset_0_2px_4px_rgba(0,0,0,0.01)] focus:bg-white focus:border-[#F36C21] focus:shadow-[0_4px_12px_rgba(243,108,33,0.15),0_0_0_2px_rgba(243,108,33,0.05)] focus:-translate-y-0.5 placeholder:text-[#BBB]"
+                                        className="flex-1 px-4 py-4 rounded-[14px] border border-[#EAEAEA] bg-[#F8F9FC] text-base text-[#1A1A2E] outline-none transition-all shadow-[inset_0_2px_4px_rgba(0,0,0,0.01)] focus:bg-white focus:border-[#F36C21] focus:shadow-[0_4px_12px_rgba(243,108,33,0.15),0_0_0_2px_rgba(243,108,33,0.05)] focus:-translate-y-0.5 placeholder:text-[#BBB]"
                                         placeholder="Phone number"
                                     />
                                 </div>
@@ -667,7 +669,7 @@ const Dynamic = () => {
                                         required
                                         value={leadData.email}
                                         onChange={e => setLeadData({ ...leadData, email: e.target.value })}
-                                        className="w-full px-4.5 py-4 rounded-[14px] border border-[#EAEAEA] bg-[#F8F9FC] text-base text-[#1A1A2E] outline-none transition-all shadow-[inset_0_2px_4px_rgba(0,0,0,0.01)] focus:bg-white focus:border-[#F36C21] focus:shadow-[0_4px_12px_rgba(243,108,33,0.15),0_0_0_2px_rgba(243,108,33,0.05)] focus:-translate-y-0.5 placeholder:text-[#BBB]"
+                                        className="w-full px-4 py-4 rounded-[14px] border border-[#EAEAEA] bg-[#F8F9FC] text-base text-[#1A1A2E] outline-none transition-all shadow-[inset_0_2px_4px_rgba(0,0,0,0.01)] focus:bg-white focus:border-[#F36C21] focus:shadow-[0_4px_12px_rgba(243,108,33,0.15),0_0_0_2px_rgba(243,108,33,0.05)] focus:-translate-y-0.5 placeholder:text-[#BBB]"
                                         placeholder="Email Address *"
                                     />
                                 </div>
@@ -677,7 +679,7 @@ const Dynamic = () => {
                                         type="text"
                                         value={leadData.company}
                                         onChange={e => setLeadData({ ...leadData, company: e.target.value })}
-                                        className="w-full px-4.5 py-4 rounded-[14px] border border-[#EAEAEA] bg-[#F8F9FC] text-base text-[#1A1A2E] outline-none transition-all shadow-[inset_0_2px_4px_rgba(0,0,0,0.01)] focus:bg-white focus:border-[#F36C21] focus:shadow-[0_4px_12px_rgba(243,108,33,0.15),0_0_0_2px_rgba(243,108,33,0.05)] focus:-translate-y-0.5 placeholder:text-[#BBB]"
+                                        className="w-full px-4 py-4 rounded-[14px] border border-[#EAEAEA] bg-[#F8F9FC] text-base text-[#1A1A2E] outline-none transition-all shadow-[inset_0_2px_4px_rgba(0,0,0,0.01)] focus:bg-white focus:border-[#F36C21] focus:shadow-[0_4px_12px_rgba(243,108,33,0.15),0_0_0_2px_rgba(243,108,33,0.05)] focus:-translate-y-0.5 placeholder:text-[#BBB]"
                                         placeholder="Company Name (Optional)"
                                     />
                                 </div>
@@ -685,7 +687,7 @@ const Dynamic = () => {
                                 <button 
                                     type="submit" 
                                     disabled={isSubmittingLead} 
-                                    className="w-full px-4.5 py-4.5 bg-gradient-to-br from-[#800020] to-[#600018] text-white border-none rounded-[14px] font-bold text-lg tracking-wide mt-6 cursor-pointer shadow-[0_10px_25px_rgba(128,0,32,0.3)] transition-all flex items-center justify-center gap-2.5 relative overflow-hidden hover:-translate-y-1 hover:shadow-[0_15px_35px_rgba(128,0,32,0.4)] hover:bg-gradient-to-br hover:from-[#900024] hover:to-[#70001C] active:-translate-y-0.5 disabled:opacity-70 disabled:transform-none"
+                                    className="w-full px-4 py-4 bg-gradient-to-br from-[#800020] to-[#600018] text-white border-none rounded-[14px] font-bold text-lg tracking-wide mt-6 cursor-pointer shadow-[0_10px_25px_rgba(128,0,32,0.3)] transition-all flex items-center justify-center gap-2.5 relative overflow-hidden hover:-translate-y-1 hover:shadow-[0_15px_35px_rgba(128,0,32,0.4)] hover:bg-gradient-to-br hover:from-[#900024] hover:to-[#70001C] active:-translate-y-0.5 disabled:opacity-70 disabled:transform-none"
                                 >
                                     {isSubmittingLead ? <Loader2 className="animate-spin" /> : <>Continue to Demo <ArrowRight size={18} /></>}
                                 </button>
@@ -931,7 +933,7 @@ const Dynamic = () => {
                             <button 
                                 type="submit" 
                                 disabled={isCreatingAgent} 
-                                className="w-full px-4.5 py-4.5 bg-gradient-to-br from-[#800020] to-[#600018] text-white border-none rounded-[14px] font-bold text-lg tracking-wide mt-6 cursor-pointer shadow-[0_10px_25px_rgba(128,0,32,0.3)] transition-all flex items-center justify-center gap-2.5 relative overflow-hidden hover:-translate-y-1 hover:shadow-[0_15px_35px_rgba(128,0,32,0.4)] hover:bg-gradient-to-br hover:from-[#900024] hover:to-[#70001C] active:-translate-y-0.5 disabled:opacity-70 disabled:transform-none"
+                                className="w-full px-4 py-4 bg-gradient-to-br from-[#800020] to-[#600018] text-white border-none rounded-[14px] font-bold text-lg tracking-wide mt-6 cursor-pointer shadow-[0_10px_25px_rgba(128,0,32,0.3)] transition-all flex items-center justify-center gap-2.5 relative overflow-hidden hover:-translate-y-1 hover:shadow-[0_15px_35px_rgba(128,0,32,0.4)] hover:bg-gradient-to-br hover:from-[#900024] hover:to-[#70001C] active:-translate-y-0.5 disabled:opacity-70 disabled:transform-none"
                             >
                                 {isCreatingAgent ? (
                                     <div className="flex items-center gap-2">
