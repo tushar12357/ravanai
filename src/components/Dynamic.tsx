@@ -568,9 +568,6 @@ const Dynamic = () => {
                         to { opacity: 1; transform: translateY(0); }
                     }
                 `}</style>
-                <div className="absolute inset-[-40%] opacity-100 animate-[bgPulse_20s_ease-in-out_infinite_alternate]" style={{
-                    background: 'radial-gradient(circle at 30% 20%, rgba(255, 107, 44, 0.08), transparent 40%), radial-gradient(circle at 70% 80%, rgba(255, 143, 89, 0.06), transparent 40%)'
-                }} />
                 
                 <div className="relative z-10  flex items-center justify-center w-full h-full p-6">
                     <div className="w-full max-w-[440px] h-[700px] rounded-3xl overflow-hidden bg-white border-none shadow-[0_24px_60px_-12px_rgba(50,50,93,0.1),0_12px_36px_-8px_rgba(0,0,0,0.05)]">
