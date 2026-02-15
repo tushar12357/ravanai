@@ -1,505 +1,1017 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import {
-  Mic,
-  Send,
-  X,
-  Minimize2,
-  Volume2,
-  VolumeX,
-  Loader2,
+    Send,
+    Mic,
+    MicOff,
+    Sparkles,
+    PhoneOff,
+    Activity,
+    MessageSquare,
+    Phone,
+    ArrowRight,
+    Loader2,
+    ChevronDown,
+    Calendar,
+    X,
 } from "lucide-react";
 import axios from "axios";
-import { UltravoxSession } from "ultravox-client";
-import useSessionStore from "../store/session";
-import { useUltravoxStore } from "../store/ultrasession";
-import logo from "../assets/logo.png";
-const LOCAL_STORAGE_KEY = "ravan_demo_user_data";
-const Dynamic = () => {
-  const [expanded, setExpanded] = useState(false);
-  const [isMinimized, setIsMinimized] = useState(false);
-  const [isGlowing, setIsGlowing] = useState(false);
-  const [isMuted, setIsMuted] = useState(false);
-  const [speech, setSpeech] = useState("Talk To Maya");
-  const [transcripts, setTranscripts] = useState("");
-  const [isRecording, setIsRecording] = useState(false);
-  const [message, setMessage] = useState("");
-  const containerRef = useRef(null);
+import {
+    LiveKitRoom,
+    RoomAudioRenderer,
+    useLocalParticipant,
+    useRoomContext,
+    useConnectionState,
+    useVoiceAssistant,
+    useChat,
+    BarVisualizer,
+} from "@livekit/components-react";
+import { ConnectionState, RoomEvent, Participant } from "livekit-client";
+import "@livekit/components-styles";
 
-  // Form states
-  const [showForm, setShowForm] = useState(true);
-  const [isCreatingAgent, setIsCreatingAgent] = useState(false);
-  const [formData, setFormData] = useState({
-    companyName: "",
-    agentName: "Maya",
-    websiteUrl: "",
-    personality: "Friendly, professional, and helpful customer support agent",
-  });
+const LOGO_URL = "https://storage.googleapis.com/msgsndr/LK2LrQP5tkIZ3ahmumnr/media/698928520708e4d8649f0642.png";
 
+// ─── TYPES ───
+type FlowStep = "LEAD" | "MENU" | "WIDGET_FORM" | "WIDGET_ACTIVE" | "CALLING";
 
-  useEffect(() => {
-    try {
-      const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        setFormData(prev => ({
-          ...prev,
-          companyName: parsed.businessName || prev.companyName,
-        }));
-      }
-    } catch (e) {
-      // silent
-    }
-  }, []);
-  // Dynamic agent code from /start-demo
-  const [dynamicAgentCode, setDynamicAgentCode] = useState(null);
-  const [creationStatus, setCreationStatus] = useState<string>("");
-  const { callId, callSessionId, setCallId, setCallSessionId } =
-    useSessionStore();
-  const {
-    setSession,
-    setTranscripts: setStoreTranscripts,
-    isListening,
-    setIsListening,
-    status,
-    setStatus,
-  } = useUltravoxStore();
+interface LeadData {
+    name: string;
+    email: string;
+    phone: string;
+    company: string;
+    countryCode: string;
+}
 
-  const baseurl = "https://app.snowie.ai";
-  const sessionRef = useRef(null);
+interface TranscriptItem {
+    id: string;
+    text: string;
+    isFinal: boolean;
+    timestamp: number;
+    participantName: string;
+}
 
-  // Initialize Ultravox Session once
-  useEffect(() => {
-    if (!sessionRef.current) {
-      sessionRef.current = new UltravoxSession({
-        experimentalMessages: new Set(["debug"]),
-      });
-      setSession(sessionRef.current);
-    }
-  }, [setSession]);
+const COUNTRY_CODES = [
+    { code: "+93", country: "AF" }, { code: "+355", country: "AL" }, { code: "+213", country: "DZ" }, { code: "+1-684", country: "AS" },
+    { code: "+376", country: "AD" }, { code: "+244", country: "AO" }, { code: "+1-264", country: "AI" }, { code: "+672", country: "AQ" },
+    { code: "+1-268", country: "AG" }, { code: "+54", country: "AR" }, { code: "+374", country: "AM" }, { code: "+297", country: "AW" },
+    { code: "+61", country: "AU" }, { code: "+43", country: "AT" }, { code: "+994", country: "AZ" }, { code: "+1-242", country: "BS" },
+    { code: "+973", country: "BH" }, { code: "+880", country: "BD" }, { code: "+1-246", country: "BB" }, { code: "+375", country: "BY" },
+    { code: "+32", country: "BE" }, { code: "+501", country: "BZ" }, { code: "+229", country: "BJ" }, { code: "+1-441", country: "BM" },
+    { code: "+975", country: "BT" }, { code: "+591", country: "BO" }, { code: "+387", country: "BA" }, { code: "+267", country: "BW" },
+    { code: "+55", country: "BR" }, { code: "+246", country: "IO" }, { code: "+1-284", country: "VG" }, { code: "+673", country: "BN" },
+    { code: "+359", country: "BG" }, { code: "+226", country: "BF" }, { code: "+257", country: "BI" }, { code: "+855", country: "KH" },
+    { code: "+237", country: "CM" }, { code: "+1", country: "CA" }, { code: "+238", country: "CV" }, { code: "+1-345", country: "KY" },
+    { code: "+236", country: "CF" }, { code: "+235", country: "TD" }, { code: "+56", country: "CL" }, { code: "+86", country: "CN" },
+    { code: "+61", country: "CX" }, { code: "+61", country: "CC" }, { code: "+57", country: "CO" }, { code: "+269", country: "KM" },
+    { code: "+682", country: "CK" }, { code: "+506", country: "CR" }, { code: "+385", country: "HR" }, { code: "+53", country: "CU" },
+    { code: "+599", country: "CW" }, { code: "+357", country: "CY" }, { code: "+420", country: "CZ" }, { code: "+243", country: "CD" },
+    { code: "+45", country: "DK" }, { code: "+253", country: "DJ" }, { code: "+1-767", country: "DM" }, { code: "+1-809", country: "DO" },
+    { code: "+670", country: "TL" }, { code: "+593", country: "EC" }, { code: "+20", country: "EG" }, { code: "+503", country: "SV" },
+    { code: "+240", country: "GQ" }, { code: "+291", country: "ER" }, { code: "+372", country: "EE" }, { code: "+251", country: "ET" },
+    { code: "+500", country: "FK" }, { code: "+298", country: "FO" }, { code: "+679", country: "FJ" }, { code: "+358", country: "FI" },
+    { code: "+33", country: "FR" }, { code: "+689", country: "PF" }, { code: "+241", country: "GA" }, { code: "+220", country: "GM" },
+    { code: "+995", country: "GE" }, { code: "+49", country: "DE" }, { code: "+233", country: "GH" }, { code: "+350", country: "GI" },
+    { code: "+30", country: "GR" }, { code: "+299", country: "GL" }, { code: "+1-473", country: "GD" }, { code: "+1-671", country: "GU" },
+    { code: "+502", country: "GT" }, { code: "+44-1481", country: "GG" }, { code: "+224", country: "GN" }, { code: "+245", country: "GW" },
+    { code: "+592", country: "GY" }, { code: "+509", country: "HT" }, { code: "+504", country: "HN" }, { code: "+852", country: "HK" },
+    { code: "+36", country: "HU" }, { code: "+354", country: "IS" }, { code: "+91", country: "IN" }, { code: "+62", country: "ID" },
+    { code: "+98", country: "IR" }, { code: "+964", country: "IQ" }, { code: "+353", country: "IE" }, { code: "+44-1624", country: "IM" },
+    { code: "+972", country: "IL" }, { code: "+39", country: "IT" }, { code: "+225", country: "CI" }, { code: "+1-876", country: "JM" },
+    { code: "+81", country: "JP" }, { code: "+44-1534", country: "JE" }, { code: "+962", country: "JO" }, { code: "+7", country: "KZ" },
+    { code: "+254", country: "KE" }, { code: "+686", country: "KI" }, { code: "+383", country: "XK" }, { code: "+965", country: "KW" },
+    { code: "+996", country: "KG" }, { code: "+856", country: "LA" }, { code: "+371", country: "LV" }, { code: "+961", country: "LB" },
+    { code: "+266", country: "LS" }, { code: "+231", country: "LR" }, { code: "+218", country: "LY" }, { code: "+423", country: "LI" },
+    { code: "+370", country: "LT" }, { code: "+352", country: "LU" }, { code: "+853", country: "MO" }, { code: "+389", country: "MK" },
+    { code: "+261", country: "MG" }, { code: "+265", country: "MW" }, { code: "+60", country: "MY" }, { code: "+960", country: "MV" },
+    { code: "+223", country: "ML" }, { code: "+356", country: "MT" }, { code: "+692", country: "MH" }, { code: "+222", country: "MR" },
+    { code: "+230", country: "MU" }, { code: "+262", country: "YT" }, { code: "+52", country: "MX" }, { code: "+691", country: "FM" },
+    { code: "+373", country: "MD" }, { code: "+377", country: "MC" }, { code: "+976", country: "MN" }, { code: "+382", country: "ME" },
+    { code: "+1-664", country: "MS" }, { code: "+212", country: "MA" }, { code: "+258", country: "MZ" }, { code: "+95", country: "MM" },
+    { code: "+264", country: "NA" }, { code: "+674", country: "NR" }, { code: "+977", country: "NP" }, { code: "+31", country: "NL" },
+    { code: "+599", country: "AN" }, { code: "+687", country: "NC" }, { code: "+64", country: "NZ" }, { code: "+505", country: "NI" },
+    { code: "+227", country: "NE" }, { code: "+234", country: "NG" }, { code: "+683", country: "NU" }, { code: "+850", country: "KP" },
+    { code: "+1-670", country: "MP" }, { code: "+47", country: "NO" }, { code: "+968", country: "OM" }, { code: "+92", country: "PK" },
+    { code: "+680", country: "PW" }, { code: "+970", country: "PS" }, { code: "+507", country: "PA" }, { code: "+675", country: "PG" },
+    { code: "+595", country: "PY" }, { code: "+51", country: "PE" }, { code: "+63", country: "PH" }, { code: "+64", country: "PN" },
+    { code: "+48", country: "PL" }, { code: "+351", country: "PT" }, { code: "+1-787", country: "PR" }, { code: "+974", country: "QA" },
+    { code: "+242", country: "CG" }, { code: "+262", country: "RE" }, { code: "+40", country: "RO" }, { code: "+7", country: "RU" },
+    { code: "+250", country: "RW" }, { code: "+590", country: "BL" }, { code: "+290", country: "SH" }, { code: "+1-869", country: "KN" },
+    { code: "+1-758", country: "LC" }, { code: "+590", country: "MF" }, { code: "+508", country: "PM" }, { code: "+1-784", country: "VC" },
+    { code: "+685", country: "WS" }, { code: "+378", country: "SM" }, { code: "+239", country: "ST" }, { code: "+966", country: "SA" },
+    { code: "+221", country: "SN" }, { code: "+381", country: "RS" }, { code: "+248", country: "SC" }, { code: "+232", country: "SL" },
+    { code: "+65", country: "SG" }, { code: "+1-721", country: "SX" }, { code: "+421", country: "SK" }, { code: "+386", country: "SI" },
+    { code: "+677", country: "SB" }, { code: "+252", country: "SO" }, { code: "+27", country: "ZA" }, { code: "+82", country: "KR" },
+    { code: "+211", country: "SS" }, { code: "+34", country: "ES" }, { code: "+94", country: "LK" }, { code: "+249", country: "SD" },
+    { code: "+597", country: "SR" }, { code: "+47", country: "SJ" }, { code: "+268", country: "SZ" }, { code: "+46", country: "SE" },
+    { code: "+41", country: "CH" }, { code: "+963", country: "SY" }, { code: "+886", country: "TW" }, { code: "+992", country: "TJ" },
+    { code: "+255", country: "TZ" }, { code: "+66", country: "TH" }, { code: "+228", country: "TG" }, { code: "+690", country: "TK" },
+    { code: "+676", country: "TO" }, { code: "+1-868", country: "TT" }, { code: "+216", country: "TN" }, { code: "+90", country: "TR" },
+    { code: "+993", country: "TM" }, { code: "+1-649", country: "TC" }, { code: "+688", country: "TV" }, { code: "+1-340", country: "VI" },
+    { code: "+256", country: "UG" }, { code: "+380", country: "UA" }, { code: "+971", country: "AE" }, { code: "+44", country: "GB" },
+    { code: "+1", country: "US" }, { code: "+598", country: "UY" }, { code: "+998", country: "UZ" }, { code: "+678", country: "VU" },
+    { code: "+39-06", country: "VA" }, { code: "+58", country: "VE" }, { code: "+84", country: "VN" }, { code: "+681", country: "WF" },
+    { code: "+212", country: "EH" }, { code: "+967", country: "YE" }, { code: "+260", country: "ZM" }, { code: "+263", country: "ZW" }
+].sort((a, b) => a.country.localeCompare(b.country));
 
-  const session = sessionRef.current;
+// ─── ROOM CONTENT (The Widget Call) ────────────────────────────
+const RoomContent = ({
+    onClose,
+    agentName,
+}: {
+    onClose: () => void;
+    agentName: string;
+}) => {
+    const room = useRoomContext();
+    const connectionState = useConnectionState();
+    const { localParticipant } = useLocalParticipant();
+    const [isMuted, setIsMuted] = useState(false);
+    const [inputText, setInputText] = useState("");
+    const transcriptEndRef = useRef<HTMLDivElement>(null);
+    const chatEndRef = useRef<HTMLDivElement>(null);
+    const { state, audioTrack } = useVoiceAssistant();
+    const { chatMessages, send, isSending } = useChat();
+    const [transcripts, setTranscripts] = useState<TranscriptItem[]>([]);
 
-  // Handle form submission → create agent
-  const handleCreateAgent = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!formData.companyName || !formData.websiteUrl) return;
+    // ── Call Timer ──
+    const [callSeconds, setCallSeconds] = useState(0);
+    useEffect(() => {
+        if (connectionState !== ConnectionState.Connected) return;
+        const interval = setInterval(() => setCallSeconds(s => s + 1), 1000);
+        return () => clearInterval(interval);
+    }, [connectionState]);
+    const formatTime = (s: number) => {
+        const m = Math.floor(s / 60);
+        const sec = s % 60;
+        return `${m.toString().padStart(2, "0")}:${sec.toString().padStart(2, "0")}`;
+    };
 
-    setIsCreatingAgent(true);
-    setCreationStatus("Validating your website...");
+    useEffect(() => {
+        const handleTranscription = (segments: any[], participant?: Participant) => {
+            if (!segments || segments.length === 0) return;
+            setTranscripts((prev) => {
+                const newTranscripts = [...prev];
+                const name = participant?.identity === localParticipant.identity ? "You" : agentName;
+                for (const seg of segments) {
+                    const existingIndex = newTranscripts.findIndex(t => t.id === seg.id);
+                    if (existingIndex !== -1) {
+                        newTranscripts[existingIndex] = { ...newTranscripts[existingIndex], text: seg.text, isFinal: seg.final };
+                    } else {
+                        newTranscripts.push({ id: seg.id, text: seg.text, isFinal: seg.final, timestamp: seg.firstReceivedTime || Date.now(), participantName: name });
+                    }
+                }
+                return newTranscripts.sort((a, b) => a.timestamp - b.timestamp);
+            });
+        };
+        room.on(RoomEvent.TranscriptionReceived, handleTranscription);
+        return () => { room.off(RoomEvent.TranscriptionReceived, handleTranscription); };
+    }, [room, localParticipant, agentName]);
 
-    try {
-      // Step 1: Initial
-      setCreationStatus("Fetching your website...");
+    useEffect(() => { transcriptEndRef.current?.scrollIntoView({ behavior: "smooth" }); }, [transcripts]);
+    useEffect(() => { chatEndRef.current?.scrollIntoView({ behavior: "smooth" }); }, [chatMessages]);
 
-      const response = await axios.post(`${baseurl}/api/start-demo/`, {
-        company_name: formData.companyName,
-        agent_name: formData.agentName || "Maya",
-        company_website: formData.websiteUrl,
-        agent_personality: formData.personality,
-      });
+    const handleSendChat = useCallback(async () => {
+        if (!inputText.trim() || isSending) return;
+        const text = inputText.trim();
+        setInputText("");
+        try { await send(text); } catch (err) { console.error("Chat send error:", err); }
+    }, [inputText, isSending, send]);
 
-      const { agent_code, schema_name } = response.data.response;
+    const toggleMute = useCallback(() => {
+        const enabled = localParticipant.isMicrophoneEnabled;
+        localParticipant.setMicrophoneEnabled(!enabled);
+        setIsMuted(enabled);
+    }, [localParticipant]);
 
-      if (!agent_code) {
-        throw new Error("No agent code received");
-      }
+    const isListening = state === "listening";
+    const isSpeaking = state === "speaking";
+    const isConnected = connectionState === ConnectionState.Connected;
 
-      // Step 2–5: Simulate progress (or use real SSE if backend supports
-      setCreationStatus("Scraping content from your website...");
-      await new Promise((r) => setTimeout(r, 2500));
-
-      setCreationStatus("Reading and understanding your content...");
-      await new Promise((r) => setTimeout(r, 3000));
-
-      setCreationStatus(
-        `Training ${formData.agentName || "Maya"} with your brand voice...`
-      );
-      await new Promise((r) => setTimeout(r, 3500));
-
-      setCreationStatus("Finalizing AI agent – this takes a moment...");
-      await new Promise((r) => setTimeout(r, 2000));
-
-      setDynamicAgentCode(agent_code);
-      setShowForm(false);
-      setSpeech(`Talk to ${formData.agentName || "Maya"}`);
-      setCreationStatus("Agent ready! Connecting you now...");
-
-      // Auto-start the call
-      setTimeout(async () => {
-        try {
-          const savedUser = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY) || "{}");
-          const thunderRes = await axios.post(`${baseurl}/api/create-room/`, {
-            agent_code: agent_code,
-            schema_name: schema_name,
-            name: savedUser.name || "",
-            email: savedUser.email || "",
-            phone: savedUser.phone || "",
-          });
-
-          const { joinUrl, callId, call_session_id } = thunderRes.data.response;
-
-          localStorage.setItem("callId", callId);
-          setCallId(callId);
-          setCallSessionId(call_session_id);
-
-          if (joinUrl && session) {
-            await session.joinCall(joinUrl);
-            setIsListening(true);
-            setIsGlowing(true);
-            setExpanded(true);
-          }
-        } catch (err) {
-          console.error("Failed to auto-start call:", err);
-          setCreationStatus("Agent ready! Click the mic to start talking.");
+    const getStatusText = () => {
+        switch (connectionState) {
+            case ConnectionState.Connecting: return "Connecting...";
+            case ConnectionState.Connected: return isSpeaking ? `${agentName} speaking...` : isListening ? "Listening..." : "Connected";
+            case ConnectionState.Disconnected: return "Disconnected";
+            default: return "Ready";
         }
-      }, 1200);
-    } catch (error: any) {
-      console.error("Failed to create agent:", error);
-      setCreationStatus("");
-    } finally {
-      // Only remove loading if error occurred; otherwise we hide form
-      if (creationStatus.includes("Failed") || !dynamicAgentCode) {
-        setIsCreatingAgent(false);
-      }
-    }
-  };
-
-  // Update speech based on status
-  useEffect(() => {
-    if (status === "disconnected") {
-      setSpeech(`Talk to ${formData.agentName || "Maya"}`);
-    } else if (status === "connecting") {
-      setSpeech(`Connecting to ${formData.agentName || "Maya"}...`);
-    } else if (status === "speaking") {
-      setSpeech(`${formData.agentName || "Maya"} is speaking`);
-    } else if (status === "connected") {
-      setSpeech(`Connected to ${formData.agentName || "Maya"}`);
-    } else if (status === "listening") {
-      setSpeech(`${formData.agentName || "Maya"} is listening...`);
-    } else if (status === "disconnecting") {
-      setSpeech("Ending conversation...");
-    }
-  }, [status, formData.agentName]);
-
-  // Handle mic click using dynamic agent code
-  const handleMicClick = async () => {
-    if (!dynamicAgentCode) return;
-
-    try {
-      if (!isListening) {
-        setIsGlowing(true);
-        const response = await axios.post(`${baseurl}/api/create-room/`, {
-          agent_code: dynamicAgentCode,
-          schema_name: "default",
-          "provider":"thunderemotionlite" // or pass dynamically if needed
-        });
-
-        const wssUrl = response.data.joinUrl;
-        const callId = response.data.callId;
-
-        localStorage.setItem("callId", callId);
-        setCallId(callId);
-        setCallSessionId(response.data.call_session_id);
-
-        if (wssUrl && session) {
-          await session.joinCall(wssUrl);
-        }
-        toggleVoice(true);
-      } else {
-        setIsGlowing(false);
-        await session?.leaveCall();
-        setStoreTranscripts(null);
-        setTranscripts("");
-        toggleVoice(false);
-      }
-    } catch (error) {
-      console.error("Error in handleMicClick:", error);
-    }
-  };
-
-  const handleSubmit = () => {
-    if (status !== "disconnected" && message.trim() && session) {
-      session.sendText(message);
-      setMessage("");
-    }
-  };
-
-  const toggleVoice = (data) => setIsListening(data);
-  const toggleExpand = () => {
-    if (!dynamicAgentCode && !showForm) return;
-    setExpanded(true);
-    if (!isListening && dynamicAgentCode) {
-      handleMicClick();
-    }
-  };
-
-  const toggleMute = () => {
-    setIsMuted(!isMuted);
-    if (session?.isSpeakerMuted) {
-      session.unmuteSpeaker();
-    } else {
-      session?.muteSpeaker();
-    }
-  };
-
-  const toggleMinimize = () => setIsMinimized(!isMinimized);
-
-  const handleClose = async () => {
-    setExpanded(false);
-    await session?.leaveCall();
-    setTranscripts("");
-    setStoreTranscripts(null);
-    toggleVoice(false);
-  };
-
-  // Session event listeners
-  useEffect(() => {
-    if (!session) return;
-
-    const handleTranscripts = () => {
-      const alltrans = session.transcripts;
-      if (alltrans.length > 0) {
-        const latest = alltrans[alltrans.length - 1].text;
-        setTranscripts(latest);
-        setStoreTranscripts(latest);
-      }
     };
 
-    const handleStatus = () => {
-      setStatus(session.status);
-      setIsRecording(
-        session.status === "speaking" || session.status === "listening"
-      );
-      setIsGlowing(
-        session.status === "speaking" || session.status === "listening"
-      );
-    };
-
-    session.addEventListener("transcripts", handleTranscripts);
-    session.addEventListener("status", handleStatus);
-
-    return () => {
-      session.removeEventListener("transcripts", handleTranscripts);
-      session.removeEventListener("status", handleStatus);
-    };
-  }, [session, setStatus, setStoreTranscripts]);
-
-  // Auto scroll
-  useEffect(() => {
-    if (containerRef.current) {
-      containerRef.current.scrollTop = containerRef.current.scrollHeight;
-    }
-  }, [transcripts]);
-
-  // Show form if no agent yet
-  if (showForm) {
     return (
-      <div className="dynamic-widget-container flex items-center justify-center bg-gray-50">
-        <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full">
-          <div className="flex items-center gap-3 mb-6">
-            <img src={logo} alt="Ravan AI" className="w-10 h-10" />
-            <div className="flex flex-col gap-1">
-              <p className="text-xs font-bold tracking-wider text-orange-500 uppercase">
-                BUILD IN FEW MINUTES
-              </p>
-
-            
-            </div>
-          </div>
-
-          <form onSubmit={handleCreateAgent} className="space-y-5">
-           
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Agent Name
-              </label>
-              <input
-                type="text"
-                value={formData.agentName}
-                onChange={(e) =>
-                  setFormData({ ...formData, agentName: e.target.value })
+        <div className="w-full max-w-[480px] h-full max-h-[720px] bg-white rounded-[28px] shadow-[0_24px_60px_rgba(0,0,0,0.1),0_0_0_1px_rgba(0,0,0,0.03)] flex flex-col overflow-hidden animate-[widgetCardEnter_0.5s_cubic-bezier(0.16,1,0.3,1)] mx-auto">
+            <style>{`
+                @keyframes widgetCardEnter {
+                    from { opacity: 0; transform: translateY(20px) scale(0.97); }
+                    to { opacity: 1; transform: translateY(0) scale(1); }
                 }
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
-                placeholder="Maya"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Website URL *
-              </label>
-              <input
-                type="text"
-                required
-                value={formData.websiteUrl}
-                onChange={(e) =>
-                  setFormData({ ...formData, websiteUrl: e.target.value })
+                @keyframes timerBarEnter {
+                    from { opacity: 0; transform: translateY(-8px); }
+                    to { opacity: 1; transform: translateY(0); }
                 }
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
-                placeholder="https://yourcompany.com"
-              />
-            </div>
+                @keyframes timerPulse {
+                    0%, 100% { opacity: 1; transform: scale(1); }
+                    50% { opacity: 0.4; transform: scale(0.8); }
+                }
+                @keyframes ringPulse1 {
+                    0%, 100% { transform: scale(1); opacity: 1; }
+                    50% { transform: scale(1.15); opacity: 0.4; }
+                }
+                @keyframes ringPulse2 {
+                    0%, 100% { transform: scale(1); opacity: 1; }
+                    50% { transform: scale(1.2); opacity: 0.3; }
+                }
+                @keyframes pulseOrb {
+                    0% { transform: scale(1); box-shadow: 0 0 0 rgba(255, 107, 44, 0); }
+                    100% { transform: scale(1.1); box-shadow: 0 0 20px rgba(255, 107, 44, 0.4); }
+                }
+            `}</style>
 
-          
-            <button
-              type="submit"
-              disabled={isCreatingAgent}
-              className="w-full bg-orange-500 hover:bg-orange-600 disabled:bg-orange-400 text-white font-semibold py-4 rounded-lg flex flex-col items-center justify-center gap-3 transition min-h-[70px]"
-            >
-              {isCreatingAgent ? (
-                <>
-                  <Loader2 className="animate-spin" size={24} />
-                  <span className="text-sm font-medium text-center px-4">
-                    {creationStatus || "Creating your AI agent..."}
-                  </span>
-                  <span className="text-xs opacity-80">
-                    This usually takes 15–30 seconds
-                  </span>
-                </>
-              ) : (
-                "Create & Start Talking"
-              )}
-            </button>
-          </form>
+            {/* Header */}
+            <div className="relative p-5 px-6 flex items-center justify-between bg-gradient-to-b from-[#80002008] to-transparent border-b border-black/5 flex-shrink-0 min-h-[80px]">
+                {/* Maroon accent strip */}
+                <div className="absolute top-0 left-0 right-0 h-[3px] bg-gradient-to-r from-[#800020] via-[#B8002B] to-[#D4A017] rounded-t-[28px]" />
 
-          <p className="text-xs text-gray-500 text-center mt-6">
-            We will analyze your website to make your agent smart and
-            context-aware.
-          </p>
-        </div>
-      </div>
-    );
-  }
-
-  // Main widget (same as before, just cleaner)
-  return (
-    <div className="end-widget-container">
-      {expanded ? (
-        <div
-          className={`chat-window ${isMinimized ? "minimized" : ""} ${
-            isGlowing
-              ? "border-orange-400 shadow-orange-500/50"
-              : "border-orange-300"
-          }`}
-        >
-          <div className="chat-header">
-            <div className="header-logo">
-              <div className="logo-container">
-                <img src={logo} alt="Ravan AI logo" className="w-6 h-6" />
-              </div>
-              <span className="header-title">Ravan AI</span>
-            </div>
-            <div className="header-controls">
-              <button
-                onClick={toggleMute}
-                className="control-button"
-                title={isMuted ? "Unmute" : "Mute"}
-              >
-                {isMuted ? <VolumeX size={18} /> : <Volume2 size={18} />}
-              </button>
-              <button onClick={toggleMinimize} className="control-button">
-                <Minimize2 size={18} />
-              </button>
-              <button onClick={handleClose} className="control-button">
-                <X size={18} />
-              </button>
-            </div>
-          </div>
-
-          {!isMinimized && (
-            <div className="chat-content">
-              <div className="mic-button-container">
-                {isRecording && (
-                  <>
-                    <div
-                      className="pulse-ring"
-                      style={{ "--delay": "0s" }}
-                    ></div>
-                    <div
-                      className="pulse-ring"
-                      style={{ "--delay": "0.5s" }}
-                    ></div>
-                    <div
-                      className="pulse-ring"
-                      style={{ "--delay": "1s" }}
-                    ></div>
-                  </>
-                )}
-                <button
-                  onClick={handleMicClick}
-                  className={`mic-button ${isRecording ? "active" : ""}`}
-                >
-                  <div className="relative">
-                    {isGlowing && <div className="glow-effect"></div>}
-                    <img
-                      src={logo}
-                      alt="Logo"
-                      className={`w-12 h-12 transition-transform duration-300 ${
-                        isRecording ? "scale-110" : ""
-                      }`}
-                    />
-                  </div>
-                </button>
-              </div>
-
-              <div className="status-badge">{speech}</div>
-
-              <div className="transcript-container" ref={containerRef}>
-                <span className="transcript-text">
-                  {transcripts || (
-                    <span className="text-gray-400 italic">
-                      Your conversation will appear here...
-                    </span>
-                  )}
-                </span>
-              </div>
-
-              <div className="input-wrapper">
-                <div className="input-container">
-                  <input
-                    type="text"
-                    value={message}
-                    onChange={(e) => setMessage(e.target.value)}
-                    onKeyDown={(e) =>
-                      e.key === "Enter" && message.trim() && handleSubmit()
-                    }
-                    placeholder="Type your message..."
-                    disabled={
-                      status === "disconnected" || status === "connecting"
-                    }
-                    className="message-input"
-                  />
-                  <button
-                    onClick={handleSubmit}
-                    disabled={!message.trim()}
-                    className="send-button"
-                  >
-                    <Send size={20} className="text-white" />
-                  </button>
+                <div className="flex flex-col justify-center">
+                    <div className="text-xl font-extrabold text-[#1A1A2E] tracking-tight">{agentName}</div>
+                    <div className="flex items-center gap-1.5 text-xs font-semibold text-[#6E6E80] mt-0.5">
+                        <span className={`w-1.5 h-1.5 rounded-full ${isConnected ? 'bg-emerald-500 shadow-[0_0_8px_#10B981]' : 'bg-gray-300'} transition-all`} />
+                        {getStatusText()}
+                    </div>
                 </div>
-              </div>
+
+                {/* Center Orb */}
+                <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-16 h-16 pointer-events-none">
+                    <div className="relative w-full h-full flex items-center justify-center">
+                        {/* Orb rings */}
+                        <div className={`absolute w-14 h-14 rounded-full border-[1.5px] border-[#80002014] transition-all ${isSpeaking ? 'border-[#80002033] animate-[ringPulse1_1.4s_ease-in-out_infinite]' : ''}`} />
+                        <div className={`absolute w-16 h-16 rounded-full border-[1.5px] border-[#80002014] transition-all ${isSpeaking ? 'border-[#8000201f] animate-[ringPulse2_1.4s_ease-in-out_infinite_0.2s]' : ''}`} />
+                        
+                        <div className={`w-11 h-11 rounded-full bg-gradient-to-br from-[#800020] to-[#B8002B] flex items-center justify-center z-10 shadow-[0_6px_16px_rgba(128,0,32,0.3)] transition-all ${isSpeaking ? 'animate-[pulseOrb_1s_infinite_alternate] shadow-[0_8px_24px_rgba(128,0,32,0.4)]' : ''} ${isListening ? 'shadow-[0_6px_20px_rgba(128,0,32,0.25)]' : ''}`}>
+                            <img src={LOGO_URL} alt="Agent" className="w-5 h-5 brightness-[10]" />
+                        </div>
+                    </div>
+                    {(isSpeaking || isListening) && (
+                        <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 w-24 h-4 flex items-center justify-center">
+                            <BarVisualizer 
+                                state={state} 
+                                trackRef={audioTrack} 
+                                barCount={7} 
+                                style={{ width: "100%", height: "100%", "--lk-va-bar-color": "#800020", background: "transparent" } as React.CSSProperties} 
+                            />
+                        </div>
+                    )}
+                </div>
+
+                <div className="flex gap-2.5">
+                    <button 
+                        onClick={toggleMute} 
+                        className={`w-10 h-10 rounded-full border border-gray-200 bg-white flex items-center justify-center cursor-pointer text-[#6E6E80] transition-all hover:bg-gray-50 hover:-translate-y-0.5 ${isMuted ? 'bg-[#8000200a] text-[#800020] border-[#80002033]' : ''}`}
+                    >
+                        {isMuted ? <MicOff size={20} /> : <Mic size={20} />}
+                    </button>
+                    <button 
+                        onClick={onClose} 
+                        className="w-10 h-10 rounded-full border border-red-100 bg-red-50 flex items-center justify-center cursor-pointer text-red-500 transition-all hover:bg-red-100"
+                    >
+                        <PhoneOff size={20} />
+                    </button>
+                </div>
             </div>
-          )}
-        </div>
-      ) : (
-        <div className="floating-button-container flex flex-col items-center">
-          <button onClick={toggleExpand} className="floating-button">
-            <div className="relative">
-              <img
-                src={logo}
-                alt="Ravan AI logo"
-                className="w-8 h-8 relative z-10"
-              />
+
+            {/* Timer Bar */}
+            {isConnected && (
+                <div className="flex items-center gap-2 px-4 py-1.5 bg-gradient-to-r from-[#80002008] to-[#D4A01708] border-b border-black/[0.04] flex-shrink-0 animate-[timerBarEnter_0.4s_ease]">
+                    <div className="w-1.5 h-1.5 rounded-full bg-red-500 animate-[timerPulse_1.5s_ease-in-out_infinite]" />
+                    <span className="text-[0.68rem] font-bold uppercase tracking-wider text-red-500">Live</span>
+                    <span className="text-xs font-bold text-[#1A1A2E] tabular-nums tracking-tight">{formatTime(callSeconds)}</span>
+                    <span className="ml-auto text-[0.65rem] font-extrabold text-[#800020] uppercase tracking-wider opacity-60">Agni</span>
+                </div>
+            )}
+
+            {/* Content Area */}
+            <div className="flex-1 relative flex flex-col bg-[#FAFAFA] overflow-hidden">
+                {/* Transcript Stream */}
+                <div 
+                    className="flex-1 overflow-y-auto p-5 px-6 flex flex-col gap-3 [mask-image:linear-gradient(to_bottom,transparent_0%,black_5%,black_95%,transparent_100%)]"
+                    style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+                >
+                    <style>{`.flex-1::-webkit-scrollbar { display: none; }`}</style>
+                    
+                    {transcripts.length === 0 && chatMessages.length === 0 ? (
+                        <div className="h-full flex flex-col items-center justify-center gap-1">
+                            <div className="w-14 h-14 rounded-full bg-[#8000200a] flex items-center justify-center text-[#80002026] mb-2">
+                                <Activity size={36} />
+                            </div>
+                            <p className="text-sm font-semibold text-[#ADADB8]">Conversation will appear here...</p>
+                            <p className="text-xs text-[#CCCCD2]">Start speaking or type a message below</p>
+                        </div>
+                    ) : (
+                        <div className="flex flex-col gap-3">
+                            {transcripts.map((t) => (
+                                <div 
+                                    key={t.id} 
+                                    className={`text-sm leading-relaxed text-[#6E6E80] animate-[fadeIn_0.3s_ease-out] px-3 py-2 rounded-xl transition-colors ${t.participantName === "You" ? 'bg-black/[0.02]' : 'bg-[#80002005]'} ${!t.isFinal ? 'opacity-50' : ''}`}
+                                >
+                                    <style>{`@keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }`}</style>
+                                    <span className="font-bold text-[#800020] text-[0.7rem] mr-2 uppercase tracking-wider">{t.participantName === "You" ? <span className="text-[#1A1A2E]">{t.participantName}</span> : t.participantName}</span>
+                                    <span>{t.text}</span>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                    <div ref={transcriptEndRef} />
+                </div>
+
+                {/* Chat Overlay */}
+                {chatMessages.length > 0 && (
+                    <div 
+                        className="absolute bottom-0 left-0 right-0 max-h-[40%] overflow-y-auto pointer-events-none flex flex-col justify-end p-4 gap-2 bg-gradient-to-t from-[#fafafafa] to-transparent"
+                        style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+                    >
+                        {chatMessages.map((m, i) => (
+                            <div key={i} className="flex w-full justify-end pointer-events-auto pt-1">
+                                <div className={`px-3.5 py-2 rounded-2xl text-sm max-w-[80%] shadow-sm ${m.from?.identity === localParticipant.identity ? 'bg-gradient-to-br from-[#800020] to-[#B8002B] text-white rounded-br' : 'bg-white text-[#1A1A2E] border border-gray-200 self-start rounded-bl'}`}>
+                                    {m.message}
+                                </div>
+                            </div>
+                        ))}
+                        <div ref={chatEndRef} />
+                    </div>
+                )}
             </div>
-          </button>
-          <span className="talk-to-me text-sm font-medium px-3 py-1 mt-2">
-            Talk to {formData.agentName || "Maya"}
-          </span>
+
+            {/* Footer */}
+            <div className="p-3.5 px-5 bg-white border-t border-black/5 flex-shrink-0">
+                <div className="flex items-center bg-[#F5F5F7] rounded-full px-4.5 py-1.5 pr-1.5 border border-transparent transition-all focus-within:bg-white focus-within:border-[#8000204d] focus-within:shadow-[0_0_0_3px_rgba(128,0,32,0.06)]">
+                    <input 
+                        type="text" 
+                        value={inputText} 
+                        onChange={(e) => setInputText(e.target.value)} 
+                        onKeyDown={(e) => e.key === "Enter" && handleSendChat()} 
+                        placeholder="Type a message..." 
+                        disabled={!isConnected}
+                        className="flex-1 bg-transparent border-none outline-none text-sm text-[#1A1A2E]"
+                    />
+                    <button 
+                        onClick={handleSendChat} 
+                        disabled={!inputText.trim() || isSending}
+                        className="w-[34px] h-[34px] rounded-full bg-gradient-to-br from-[#800020] to-[#B8002B] text-white border-none flex items-center justify-center cursor-pointer transition-all shadow-[0_2px_8px_rgba(128,0,32,0.2)] hover:scale-110 hover:shadow-[0_4px_12px_rgba(128,0,32,0.3)] disabled:bg-zinc-300 disabled:shadow-none disabled:scale-100"
+                    >
+                        <Send size={18} fill="currentColor" />
+                    </button>
+                </div>
+            </div>
+            <RoomAudioRenderer />
         </div>
-      )}
-    </div>
-  );
+    );
+};
+
+// ─── MAIN COMPONENT ────────────────────────────────────────────
+const Dynamic = () => {
+    // State Machine
+    const [step, setStep] = useState<FlowStep>("LEAD");
+
+    // Data
+    const [leadData, setLeadData] = useState<LeadData>({ name: "", email: "", phone: "", company: "", countryCode: "+91" });
+    const [isSubmittingLead, setIsSubmittingLead] = useState(false);
+
+    // Widget Form Data
+    const [formData, setFormData] = useState({
+        companyName: "",
+        agentName: "Maya",
+        websiteUrl: "",
+        personality: "Friendly, professional, and helpful customer support agent",
+    });
+
+    // LiveKit State
+    const [token, setToken] = useState<string>("");
+    const [serverUrl, setServerUrl] = useState<string>("");
+    const [connect, setConnect] = useState(false);
+    const [creationStatus, setCreationStatus] = useState<string>("");
+    const [isCreatingAgent, setIsCreatingAgent] = useState(false);
+
+    // AI Calling State
+    const [isCalling, setIsCalling] = useState(false);
+    const [callStatus, setCallStatus] = useState("");
+
+    // Calendar Slider State
+    const [showCalendar, setShowCalendar] = useState(false);
+
+    const baseurl = "https://app.snowie.ai";
+
+    useEffect(() => {
+        const saved = localStorage.getItem("ravan_demo_user_data");
+        if (saved) {
+            try {
+                const parsed = JSON.parse(saved);
+                setFormData((prev) => ({ ...prev, companyName: parsed.businessName || prev.companyName }));
+            } catch (e) {
+                // ignore
+            }
+        }
+    }, []);
+
+    // Country Dropdown State
+    const [isCountryOpen, setIsCountryOpen] = useState(false);
+    const [countrySearch, setCountrySearch] = useState("");
+    const countryDropdownRef = useRef<HTMLDivElement>(null);
+
+    // Close dropdown when clicking outside
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (countryDropdownRef.current && !countryDropdownRef.current.contains(event.target as Node)) {
+                setIsCountryOpen(false);
+            }
+        };
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
+
+    const filteredCountries = COUNTRY_CODES.filter(c =>
+        c.country.toLowerCase().includes(countrySearch.toLowerCase()) ||
+        c.code.includes(countrySearch)
+    );
+
+    // ── LEAD SUBMIT ──
+    const handleLeadSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!leadData.name || !leadData.email || !leadData.phone) return;
+
+        setIsSubmittingLead(true);
+        const fullPhone = `${leadData.countryCode}${leadData.phone}`;
+        try {
+            await fetch("https://services.leadconnectorhq.com/hooks/LK2LrQP5tkIZ3ahmumnr/webhook-trigger/2YDqWleQcK5pdYFne1Wy", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    name: leadData.name,
+                    email: leadData.email,
+                    receiver_number: fullPhone,
+                }),
+            });
+        } catch (err) {
+            console.error("Webhook error:", err);
+        }
+        localStorage.setItem("ravan_demo_user_data", JSON.stringify({
+            name: leadData.name,
+            email: leadData.email,
+            phone: fullPhone,
+            businessName: leadData.company,
+        }));
+        setIsSubmittingLead(false);
+        setStep("MENU");
+    };
+
+    // ── WIDGET SUBMIT ──
+    const handleCreateAgent = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!formData.websiteUrl) return;
+        setIsCreatingAgent(true);
+        setCreationStatus("Analyzing your website...");
+
+        try {
+            setCreationStatus("Scraping website content...");
+            const response = await axios.post(`${baseurl}/api/start-demo/`, {
+                company_name: formData.companyName || formData.websiteUrl,
+                agent_name: formData.agentName || "Maya",
+                company_website: formData.websiteUrl,
+                agent_personality: formData.personality,
+            });
+            const { agent_code, schema_name } = (response as any).data.response;
+
+            setCreationStatus("Training your AI agent...");
+            await new Promise((r) => setTimeout(r, 2000));
+            setCreationStatus("Connecting to voice engine...");
+            await new Promise((r) => setTimeout(r, 1500));
+            setCreationStatus("Almost ready...");
+
+            const tokenRes = await axios.post(`${baseurl}/api/create-room/`, {
+                agent_code, provider: "thunderemotionlite", schema_name,
+            });
+            const newToken = tokenRes.data.response.token;
+            const newServerUrl = tokenRes.data.response.url;
+
+            if (newToken) {
+                setToken(newToken);
+                setServerUrl(newServerUrl);
+                setStep("WIDGET_ACTIVE");
+                setConnect(true);
+            } else {
+                throw new Error("Failed to get LiveKit token");
+            }
+        } catch (error) {
+            console.error("Failed to create agent:", error);
+            setCreationStatus("Something went wrong. Please try again.");
+            setTimeout(() => setIsCreatingAgent(false), 2500);
+        } finally {
+            if (!token) setIsCreatingAgent(false);
+        }
+    };
+
+    // ── AI CALLING ──
+    const handleInitiateCall = async () => {
+        setStep("CALLING");
+        setIsCalling(true);
+        const fullNumber = `${leadData.countryCode}${leadData.phone}`;
+        setCallStatus(`Calling ${fullNumber}...`);
+
+        try {
+            await axios.post(
+                "https://app.snowie.ai/api/trigger-call/",
+                {
+                    phone_number: fullNumber,
+                },
+            );
+
+            setCallStatus("Call initiated! Check your phone.");
+            await new Promise(r => setTimeout(r, 5000));
+        } catch (error) {
+            console.error("Failed to trigger call:", error);
+            setCallStatus("Failed to initiate call. Please try again.");
+            await new Promise(r => setTimeout(r, 3000));
+        } finally {
+            setIsCalling(false);
+            setStep("MENU");
+            setTimeout(() => setShowCalendar(true), 600);
+        }
+    };
+
+    const handleDisconnect = () => {
+        setConnect(false);
+        setStep("MENU");
+        setToken("");
+        setServerUrl("");
+        setIsCreatingAgent(false);
+        setCreationStatus("");
+        setTimeout(() => setShowCalendar(true), 600);
+    };
+
+    // ── RENDERS ──
+
+    // 1. LEAD CAPTURE
+    if (step === "LEAD") {
+        return (
+            <div className="fixed inset-0 bg-[#F8F7F4]">
+                <style>{`
+                    @keyframes bgPulse {
+                        0% { opacity: 0.8; }
+                        100% { opacity: 1; }
+                    }
+                    @keyframes fadeInUp {
+                        from { opacity: 0; transform: translateY(20px); }
+                        to { opacity: 1; transform: translateY(0); }
+                    }
+                `}</style>
+                <div className="absolute inset-[-40%] opacity-100 animate-[bgPulse_20s_ease-in-out_infinite_alternate]" style={{
+                    background: 'radial-gradient(circle at 30% 20%, rgba(255, 107, 44, 0.08), transparent 40%), radial-gradient(circle at 70% 80%, rgba(255, 143, 89, 0.06), transparent 40%)'
+                }} />
+                
+                <div className="relative z-10 flex items-center justify-center w-full h-full p-6">
+                    <div className="w-full max-w-[440px] rounded-3xl overflow-hidden bg-white border-none shadow-[0_24px_60px_-12px_rgba(50,50,93,0.1),0_12px_36px_-8px_rgba(0,0,0,0.05)]">
+                        {/* Header */}
+                        <div className="relative flex flex-col items-center justify-center text-center p-6 min-h-[240px] pb-[60px] z-10 shadow-[0_4px_20px_rgba(128,0,32,0.25)] bg-gradient-to-br from-[#800020] to-[#a31d24]">
+                            <div className="absolute inset-0 pointer-events-none" style={{
+                                background: 'radial-gradient(circle at 20% 30%, rgba(255, 255, 255, 0.15) 0%, transparent 40%), radial-gradient(circle at 80% 70%, rgba(255, 255, 255, 0.1) 0%, transparent 40%)'
+                            }} />
+                            
+                            <div className="relative z-10 w-full max-w-md animate-[fadeInUp_0.6s_cubic-bezier(0.16,1,0.3,1)_forwards] px-4">
+                                <h1 className="text-3xl font-extrabold text-white leading-tight mb-3 tracking-wide drop-shadow-lg uppercase">
+                                    AI Impact Expo 2026
+                                </h1>
+                                <p className="text-lg font-semibold text-white drop-shadow-md">
+                                    See What Happens When Your Website Starts Talking
+                                </p>
+                            </div>
+
+                            <div className="absolute bottom-[-50px] w-[100px] h-[100px] bg-white rounded-3xl shadow-[0_16px_40px_rgba(243,108,33,0.2)] p-5 flex items-center justify-center border-4 border-white">
+                                <img src={LOGO_URL} alt="Agni By Ravan.ai" className="w-full h-full object-contain" />
+                            </div>
+                        </div>
+
+                        {/* Content */}
+                        <div className="pt-16 px-8 pb-10">
+                            <div className="text-center mb-6">
+                                <h1 className="text-2xl font-bold text-[#1A1A2E]">Welcome to <span className="text-[#800020]">Agni By Ravan.ai</span></h1>
+                                <p className="text-sm text-gray-500 mt-1">Please fill in your details to start the demo</p>
+                            </div>
+
+                            <form onSubmit={handleLeadSubmit} className="flex flex-col gap-4">
+                                <div>
+                                    <input
+                                        type="text"
+                                        required
+                                        value={leadData.name}
+                                        onChange={e => setLeadData({ ...leadData, name: e.target.value })}
+                                        className="w-full px-4.5 py-4 rounded-[14px] border border-[#EAEAEA] bg-[#F8F9FC] text-base text-[#1A1A2E] outline-none transition-all shadow-[inset_0_2px_4px_rgba(0,0,0,0.01)] focus:bg-white focus:border-[#F36C21] focus:shadow-[0_4px_12px_rgba(243,108,33,0.15),0_0_0_2px_rgba(243,108,33,0.05)] focus:-translate-y-0.5 placeholder:text-[#BBB]"
+                                        placeholder="Full Name *"
+                                    />
+                                </div>
+
+                                <div className="flex gap-2.5">
+                                    <div className="relative min-w-[90px]" ref={countryDropdownRef}>
+                                        <div
+                                            className="flex items-center justify-between w-full h-full px-3 bg-[#F9F9FB] border border-[#EBEBEB] rounded-xl cursor-pointer transition-all text-[#333] font-medium hover:bg-white hover:border-[#DDD] hover:shadow-sm"
+                                            onClick={() => setIsCountryOpen(!isCountryOpen)}
+                                        >
+                                            <span>{leadData.countryCode}</span>
+                                            <ChevronDown size={14} className={`transition-transform text-[#888] ml-1.5 ${isCountryOpen ? 'rotate-180' : ''}`} />
+                                        </div>
+
+                                        {isCountryOpen && (
+                                            <div className="absolute top-[120%] left-0 w-[300px] max-h-[320px] bg-white border border-[#F0F0F0] rounded-2xl shadow-[0_12px_40px_rgba(0,0,0,0.12)] z-[100] overflow-hidden flex flex-col animate-[fadeIn_0.15s_ease-out]">
+                                                <style>{`@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }`}</style>
+                                                <div className="p-3 border-b border-[#F5F5F5] bg-[#FAFAFA]">
+                                                    <input
+                                                        type="text"
+                                                        placeholder="Search..."
+                                                        value={countrySearch}
+                                                        onChange={(e) => setCountrySearch(e.target.value)}
+                                                        autoFocus
+                                                        onClick={(e) => e.stopPropagation()}
+                                                        className="w-full px-3 py-2.5 rounded-lg border border-[#E5E5E5] text-sm outline-none transition-all focus:border-[#FF6B2C] focus:shadow-[0_0_0_3px_rgba(255,107,44,0.1)] focus:bg-white"
+                                                    />
+                                                </div>
+                                                <div className="overflow-y-auto flex-1 max-h-60" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+                                                    <style>{`.overflow-y-auto::-webkit-scrollbar { display: none; }`}</style>
+                                                    {filteredCountries.map((c) => (
+                                                        <div
+                                                            key={`${c.country}-${c.code}`}
+                                                            className="px-4 py-2.5 flex items-center justify-between cursor-pointer transition-colors border-b border-[#FAFAFA] last:border-b-0 hover:bg-[#FFF5F0]"
+                                                            onClick={() => {
+                                                                setLeadData({ ...leadData, countryCode: c.code });
+                                                                setIsCountryOpen(false);
+                                                                setCountrySearch("");
+                                                            }}
+                                                        >
+                                                            <span className="text-sm text-[#333] font-medium">{c.country}</span>
+                                                            <span className="text-[0.85rem] text-[#888] font-mono bg-[#F5F5F5] px-1.5 py-0.5 rounded-md">{c.code}</span>
+                                                        </div>
+                                                    ))}
+                                                    {filteredCountries.length === 0 && (
+                                                        <div className="p-3 text-sm text-gray-400 text-center">No results</div>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+                                    <input
+                                        type="tel"
+                                        required
+                                        value={leadData.phone}
+                                        onChange={e => setLeadData({ ...leadData, phone: e.target.value })}
+                                        className="flex-1 px-4.5 py-4 rounded-[14px] border border-[#EAEAEA] bg-[#F8F9FC] text-base text-[#1A1A2E] outline-none transition-all shadow-[inset_0_2px_4px_rgba(0,0,0,0.01)] focus:bg-white focus:border-[#F36C21] focus:shadow-[0_4px_12px_rgba(243,108,33,0.15),0_0_0_2px_rgba(243,108,33,0.05)] focus:-translate-y-0.5 placeholder:text-[#BBB]"
+                                        placeholder="Phone number"
+                                    />
+                                </div>
+
+                                <div>
+                                    <input
+                                        type="email"
+                                        required
+                                        value={leadData.email}
+                                        onChange={e => setLeadData({ ...leadData, email: e.target.value })}
+                                        className="w-full px-4.5 py-4 rounded-[14px] border border-[#EAEAEA] bg-[#F8F9FC] text-base text-[#1A1A2E] outline-none transition-all shadow-[inset_0_2px_4px_rgba(0,0,0,0.01)] focus:bg-white focus:border-[#F36C21] focus:shadow-[0_4px_12px_rgba(243,108,33,0.15),0_0_0_2px_rgba(243,108,33,0.05)] focus:-translate-y-0.5 placeholder:text-[#BBB]"
+                                        placeholder="Email Address *"
+                                    />
+                                </div>
+
+                                <div>
+                                    <input
+                                        type="text"
+                                        value={leadData.company}
+                                        onChange={e => setLeadData({ ...leadData, company: e.target.value })}
+                                        className="w-full px-4.5 py-4 rounded-[14px] border border-[#EAEAEA] bg-[#F8F9FC] text-base text-[#1A1A2E] outline-none transition-all shadow-[inset_0_2px_4px_rgba(0,0,0,0.01)] focus:bg-white focus:border-[#F36C21] focus:shadow-[0_4px_12px_rgba(243,108,33,0.15),0_0_0_2px_rgba(243,108,33,0.05)] focus:-translate-y-0.5 placeholder:text-[#BBB]"
+                                        placeholder="Company Name (Optional)"
+                                    />
+                                </div>
+
+                                <button 
+                                    type="submit" 
+                                    disabled={isSubmittingLead} 
+                                    className="w-full px-4.5 py-4.5 bg-gradient-to-br from-[#800020] to-[#600018] text-white border-none rounded-[14px] font-bold text-lg tracking-wide mt-6 cursor-pointer shadow-[0_10px_25px_rgba(128,0,32,0.3)] transition-all flex items-center justify-center gap-2.5 relative overflow-hidden hover:-translate-y-1 hover:shadow-[0_15px_35px_rgba(128,0,32,0.4)] hover:bg-gradient-to-br hover:from-[#900024] hover:to-[#70001C] active:-translate-y-0.5 disabled:opacity-70 disabled:transform-none"
+                                >
+                                    {isSubmittingLead ? <Loader2 className="animate-spin" /> : <>Continue to Demo <ArrowRight size={18} /></>}
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    // 2. SELECTION MENU
+    if (step === "MENU") {
+        return (
+            <div className="fixed inset-0 bg-[#F8F7F4]">
+                <div className="absolute inset-[-40%] opacity-100 animate-[bgPulse_20s_ease-in-out_infinite_alternate]" style={{
+                    background: 'radial-gradient(circle at 30% 20%, rgba(255, 107, 44, 0.08), transparent 40%), radial-gradient(circle at 70% 80%, rgba(255, 143, 89, 0.06), transparent 40%)'
+                }} />
+                
+                <div className="relative z-10 flex items-center justify-center w-full h-full p-6">
+                    <div className="relative z-[2] py-12 px-8 max-w-[880px] w-full flex flex-col items-center gap-12">
+                        <style>{`
+                            @keyframes heroFadeIn {
+                                from { opacity: 0; transform: translateY(20px); }
+                                to { opacity: 1; transform: translateY(0); }
+                            }
+                            @keyframes chipPulse {
+                                0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
+                                50% { opacity: 0.6; box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
+                            }
+                            @keyframes cardReveal {
+                                from { opacity: 0; transform: translateY(30px) scale(0.97); }
+                                to { opacity: 1; transform: translateY(0) scale(1); }
+                            }
+                            @keyframes shimmerBorder {
+                                0% { background-position: 0% 50%; }
+                                50% { background-position: 100% 50%; }
+                                100% { background-position: 0% 50%; }
+                            }
+                        `}</style>
+
+                        {/* Hero */}
+                        <div className="text-center animate-[heroFadeIn_0.8s_cubic-bezier(0.16,1,0.3,1)_both]">
+                            <div className="inline-flex items-center gap-1.5 bg-[#8000200f] border border-[#8000201f] backdrop-blur-sm px-4.5 py-1.5 rounded-full text-[0.72rem] font-bold text-[#800020] uppercase tracking-widest mb-7">
+                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block animate-[chipPulse_2s_ease-in-out_infinite]" />
+                                <Sparkles size={13} />
+                                <span>Live Demo</span>
+                            </div>
+                            <h1 className="text-5xl font-black text-[#1A1A2E] leading-tight tracking-tight mb-4">
+                                Choose Your<br />
+                                <span className="bg-gradient-to-br from-[#800020] via-[#B8002B] to-[#D4A017] bg-clip-text text-transparent">AI Experience</span>
+                            </h1>
+                            <p className="text-lg text-[#6E6E80] max-w-[520px] mx-auto leading-relaxed">
+                                Pick a demo and experience AI that talks, calls, and converts — powered by Agni By Ravan.ai
+                            </p>
+                        </div>
+
+                        {/* Cards */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
+                            {/* Card 1 — Voice Widget */}
+                            <div 
+                                className="relative rounded-[20px] cursor-pointer overflow-hidden opacity-0 animate-[cardReveal_0.7s_cubic-bezier(0.16,1,0.3,1)_0.15s_forwards] transition-transform duration-400 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-2"
+                                onClick={() => setStep("WIDGET_FORM")}
+                            >
+                                {/* Shimmer border */}
+                                <div className="absolute inset-0 rounded-[20px] z-0 bg-[length:300%_300%] animate-[shimmerBorder_6s_linear_infinite] transition-all duration-400" style={{
+                                    background: 'linear-gradient(135deg, rgba(128, 0, 32, 0.08) 0%, rgba(212, 160, 23, 0.06) 50%, rgba(128, 0, 32, 0.08) 100%)',
+                                    backgroundSize: '300% 300%'
+                                }} />
+                                
+                                {/* Card body */}
+                                <div className="relative z-[1] m-[1px] bg-white/92 backdrop-blur-xl border border-white/70 rounded-[19px] p-8 flex flex-col gap-3.5 transition-all duration-[350ms] hover:bg-white hover:border-[#8000201a] hover:shadow-[0_20px_50px_rgba(0,0,0,0.06),0_0_0_1px_rgba(128,0,32,0.04)]">
+                                    <div className="flex items-center justify-between">
+                                        <div className="w-14 h-14 rounded-2xl flex items-center justify-center bg-gradient-to-br from-[#FFF0F3] to-[#FFE0E6] text-[#800020] shadow-[0_6px_20px_rgba(128,0,32,0.1)] transition-all duration-400 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-110 group-hover:-rotate-1 group-hover:shadow-[0_10px_28px_rgba(128,0,32,0.2)]">
+                                            <MessageSquare size={26} strokeWidth={2.2} />
+                                        </div>
+                                        <div className="inline-flex items-center gap-1.5 text-[0.65rem] font-extrabold text-emerald-500 uppercase tracking-wider bg-emerald-500/6 border border-emerald-500/12 px-2.5 py-1 rounded-full">
+                                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block animate-[chipPulse_2s_ease-in-out_infinite]" />
+                                            LIVE
+                                        </div>
+                                    </div>
+                                    <h2 className="text-2xl font-extrabold text-[#1A1A2E] tracking-tight mt-1">AI Voice Widget</h2>
+                                    <p className="text-sm text-[#6E6E80] leading-relaxed">
+                                        Drop an AI agent on your website that <strong className="text-[#1A1A2E] font-semibold">speaks to visitors</strong>, answers questions, and turns traffic into qualified leads — 24/7.
+                                    </p>
+                                    <div className="flex flex-wrap gap-1.5 mt-0.5">
+                                        <span className="text-xs font-semibold bg-[#F5F5F7] text-[#555] px-2.5 py-1 rounded-full border border-black/[0.04] whitespace-nowrap transition-all duration-250 hover:bg-[#8000200d] hover:text-[#800020] hover:border-[#80002014]">🎙️ Real-time Voice</span>
+                                        <span className="text-xs font-semibold bg-[#F5F5F7] text-[#555] px-2.5 py-1 rounded-full border border-black/[0.04] whitespace-nowrap transition-all duration-250 hover:bg-[#8000200d] hover:text-[#800020] hover:border-[#80002014]">🌐 Any Website</span>
+                                        <span className="text-xs font-semibold bg-[#F5F5F7] text-[#555] px-2.5 py-1 rounded-full border border-black/[0.04] whitespace-nowrap transition-all duration-250 hover:bg-[#8000200d] hover:text-[#800020] hover:border-[#80002014]">⚡ 60s Setup</span>
+                                    </div>
+                                    <div className="flex items-center gap-1.5 text-sm font-bold mt-2 pt-3.5 border-t border-black/[0.04] opacity-0 -translate-x-2.5 transition-all duration-[350ms] ease-[cubic-bezier(0.16,1,0.3,1)] hover:opacity-100 hover:translate-x-0 text-[#800020]">
+                                        <span>Build Your Agent</span>
+                                        <ArrowRight size={16} />
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Card 2 — AI Calling */}
+                            <div 
+                                className="relative rounded-[20px] cursor-pointer overflow-hidden opacity-0 animate-[cardReveal_0.7s_cubic-bezier(0.16,1,0.3,1)_0.3s_forwards] transition-transform duration-400 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-2"
+                                onClick={handleInitiateCall}
+                            >
+                                {/* Shimmer border */}
+                                <div className="absolute inset-0 rounded-[20px] z-0 bg-[length:300%_300%] animate-[shimmerBorder_6s_linear_infinite] transition-all duration-400" style={{
+                                    background: 'linear-gradient(135deg, rgba(128, 0, 32, 0.08) 0%, rgba(212, 160, 23, 0.06) 50%, rgba(128, 0, 32, 0.08) 100%)',
+                                    backgroundSize: '300% 300%'
+                                }} />
+                                
+                                {/* Card body */}
+                                <div className="relative z-[1] m-[1px] bg-white/92 backdrop-blur-xl border border-white/70 rounded-[19px] p-8 flex flex-col gap-3.5 transition-all duration-[350ms] hover:bg-white hover:border-[#8000201a] hover:shadow-[0_20px_50px_rgba(0,0,0,0.06),0_0_0_1px_rgba(128,0,32,0.04)]">
+                                    <div className="flex items-center justify-between">
+                                        <div className="w-14 h-14 rounded-2xl flex items-center justify-center bg-gradient-to-br from-[#FFF8E8] to-[#FFEDC0] text-[#B8860B] shadow-[0_6px_20px_rgba(180,130,0,0.1)] transition-all duration-400 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-110 group-hover:-rotate-1 group-hover:shadow-[0_10px_28px_rgba(180,130,0,0.2)]">
+                                            <Phone size={26} strokeWidth={2.2} />
+                                        </div>
+                                        <div className="inline-flex items-center gap-1.5 text-[0.65rem] font-extrabold text-emerald-500 uppercase tracking-wider bg-emerald-500/6 border border-emerald-500/12 px-2.5 py-1 rounded-full">
+                                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block animate-[chipPulse_2s_ease-in-out_infinite]" />
+                                            LIVE
+                                        </div>
+                                    </div>
+                                    <h2 className="text-2xl font-extrabold text-[#1A1A2E] tracking-tight mt-1">AI Phone Caller</h2>
+                                    <p className="text-sm text-[#6E6E80] leading-relaxed">
+                                        Get a <strong className="text-[#1A1A2E] font-semibold">live AI call right now</strong>. Our agent handles calls, books meetings, follows up — and never takes a break.
+                                    </p>
+                                    <div className="flex flex-wrap gap-1.5 mt-0.5">
+                                        <span className="text-xs font-semibold bg-[#F5F5F7] text-[#555] px-2.5 py-1 rounded-full border border-black/[0.04] whitespace-nowrap transition-all duration-250 hover:bg-[#8000200d] hover:text-[#800020] hover:border-[#80002014]">📞 Instant Call</span>
+                                        <span className="text-xs font-semibold bg-[#F5F5F7] text-[#555] px-2.5 py-1 rounded-full border border-black/[0.04] whitespace-nowrap transition-all duration-250 hover:bg-[#8000200d] hover:text-[#800020] hover:border-[#80002014]">📅 Auto Booking</span>
+                                        <span className="text-xs font-semibold bg-[#F5F5F7] text-[#555] px-2.5 py-1 rounded-full border border-black/[0.04] whitespace-nowrap transition-all duration-250 hover:bg-[#8000200d] hover:text-[#800020] hover:border-[#80002014]">🔄 Smart Follow-up</span>
+                                    </div>
+                                    <div className="flex items-center gap-1.5 text-sm font-bold mt-2 pt-3.5 border-t border-black/[0.04] opacity-0 -translate-x-2.5 transition-all duration-[350ms] ease-[cubic-bezier(0.16,1,0.3,1)] hover:opacity-100 hover:translate-x-0 text-[#B8860B]">
+                                        <span>Call Me Now</span>
+                                        <ArrowRight size={16} />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <p className="text-xs text-[#AAAAAA] text-center tracking-wide">
+                            Powered by <strong className="text-[#800020] font-bold">Agni By Ravan.ai</strong> · Enterprise AI Platform
+                        </p>
+                    </div>
+                </div>
+
+                {/* Book a Call — Fixed Side Tab */}
+                <div 
+                    className="fixed right-0 top-1/2 -translate-y-1/2 z-[900] flex items-center gap-1.5 bg-gradient-to-br from-[#800020] to-[#B8002B] text-white text-xs font-bold tracking-wide px-3.5 py-2.5 rounded-l-[10px] cursor-pointer [writing-mode:vertical-rl] [text-orientation:mixed] shadow-[-3px_0_16px_rgba(128,0,32,0.2)] transition-all duration-300 hover:pr-4.5 hover:shadow-[-6px_0_24px_rgba(128,0,32,0.35)]"
+                    onClick={() => setShowCalendar(true)}
+                >
+                    <Calendar size={16} />
+                    <span>Book a Call</span>
+                </div>
+
+                {/* Calendar Slider Overlay */}
+                {showCalendar && (
+                    <div 
+                        className="fixed inset-0 z-[1000] bg-black/40 backdrop-blur-sm flex justify-end animate-[calFadeIn_0.35s_cubic-bezier(0.16,1,0.3,1)]" 
+                        onClick={() => setShowCalendar(false)}
+                    >
+                        <style>{`
+                            @keyframes calFadeIn {
+                                from { opacity: 0; backdrop-filter: blur(0); }
+                                to { opacity: 1; backdrop-filter: blur(4px); }
+                            }
+                            @keyframes calSlideIn {
+                                from { transform: translateX(100%); opacity: 0.5; }
+                                to { transform: translateX(0); opacity: 1; }
+                            }
+                        `}</style>
+                        <div 
+                            className="w-[440px] max-w-[92vw] h-full bg-white shadow-[-8px_0_40px_rgba(0,0,0,0.12)] flex flex-col animate-[calSlideIn_0.45s_cubic-bezier(0.22,1,0.36,1)]" 
+                            onClick={(e) => e.stopPropagation()}
+                        >
+                            <div className="flex items-center justify-between px-5 py-3.5 border-b border-[#F0F0F2]">
+                                <h3 className="text-lg font-extrabold text-[#1A1A2E] tracking-tight">Book a Call</h3>
+                                <button 
+                                    className="flex items-center justify-center w-8 h-8 rounded-lg border-none bg-[#F5F5F7] text-[#666] cursor-pointer transition-all duration-200 hover:bg-[#E8E8EC] hover:text-[#1A1A2E]"
+                                    onClick={() => setShowCalendar(false)}
+                                >
+                                    <X size={20} />
+                                </button>
+                            </div>
+                            <iframe
+                                src="https://link.ravan.ai/widget/booking/z0y3cgJJ3zTzb7hW7bLg"
+                                style={{ width: "100%", height: "calc(100% - 56px)", border: "none", overflow: "hidden" }}
+                                scrolling="no"
+                                title="Book a Call"
+                            />
+                        </div>
+                    </div>
+                )}
+            </div>
+        );
+    }
+
+    // 3. WIDGET FORM
+    if (step === "WIDGET_FORM") {
+        return (
+            <div className="fixed inset-0 bg-[#F8F7F4]">
+                <div className="absolute inset-[-40%] opacity-100 animate-[bgPulse_20s_ease-in-out_infinite_alternate]" style={{
+                    background: 'radial-gradient(circle at 30% 20%, rgba(255, 107, 44, 0.08), transparent 40%), radial-gradient(circle at 70% 80%, rgba(255, 143, 89, 0.06), transparent 40%)'
+                }} />
+                
+                <div className="relative z-10 flex items-center justify-center w-full h-full p-6">
+                    <div className="w-full max-w-[440px] py-12 px-10 bg-white/98 backdrop-blur-xl border border-black/[0.08] rounded-[28px] shadow-[0_24px_60px_-12px_rgba(50,50,93,0.1),0_12px_36px_-8px_rgba(0,0,0,0.05)]">
+                        <div className="text-center mb-10 flex flex-col items-center gap-4">
+                            <div className="w-14 h-14 bg-gradient-to-br from-[#FF6B2C] to-[#FF9F4A] rounded-[18px] p-3 shadow-[0_8px_20px_rgba(255,107,44,0.3)]">
+                                <img src={LOGO_URL} alt="Agni" className="w-full h-full object-contain brightness-[10]" />
+                            </div>
+                            <div className="inline-block bg-[#8000201a] text-[#800020] text-xs font-bold px-4 py-1.5 rounded-full uppercase tracking-widest border border-[#80002026]">
+                                AI Impact Expo 2026
+                            </div>
+                            <h1 className="text-[1.75rem] font-extrabold leading-tight tracking-tight">
+                                Build Your AI Agent<br />in Seconds
+                            </h1>
+                            <p className="text-[#6E6E80] text-[0.95rem] mt-2">
+                                Enter your website and watch your custom AI voice agent come to life
+                            </p>
+                        </div>
+
+                        <form onSubmit={handleCreateAgent} className="flex flex-col gap-5">
+                            <div>
+                                <label className="block text-xs font-semibold uppercase text-[#6E6E80] mb-1.5">Agent Name</label>
+                                <input 
+                                    type="text" 
+                                    value={formData.agentName} 
+                                    onChange={(e) => setFormData({ ...formData, agentName: e.target.value })} 
+                                    className="w-full px-4 py-3.5 rounded-[14px] border border-[#E2E2E2] text-base outline-none transition-all bg-white focus:border-[#FF6B2C] focus:shadow-[0_0_0_3px_rgba(255,107,44,0.1)]"
+                                    placeholder="Maya" 
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-xs font-semibold uppercase text-[#6E6E80] mb-1.5">
+                                    Website URL <span className="text-red-500">*</span>
+                                </label>
+                                <input 
+                                    type="text" 
+                                    required 
+                                    value={formData.websiteUrl} 
+                                    onChange={(e) => setFormData({ ...formData, websiteUrl: e.target.value })} 
+                                    className="w-full px-4 py-3.5 rounded-[14px] border border-[#E2E2E2] text-base outline-none transition-all bg-white focus:border-[#FF6B2C] focus:shadow-[0_0_0_3px_rgba(255,107,44,0.1)]"
+                                    placeholder="https://yourcompany.com" 
+                                />
+                            </div>
+                            <button 
+                                type="submit" 
+                                disabled={isCreatingAgent} 
+                                className="w-full px-4.5 py-4.5 bg-gradient-to-br from-[#800020] to-[#600018] text-white border-none rounded-[14px] font-bold text-lg tracking-wide mt-6 cursor-pointer shadow-[0_10px_25px_rgba(128,0,32,0.3)] transition-all flex items-center justify-center gap-2.5 relative overflow-hidden hover:-translate-y-1 hover:shadow-[0_15px_35px_rgba(128,0,32,0.4)] hover:bg-gradient-to-br hover:from-[#900024] hover:to-[#70001C] active:-translate-y-0.5 disabled:opacity-70 disabled:transform-none"
+                            >
+                                {isCreatingAgent ? (
+                                    <div className="flex items-center gap-2">
+                                        <Loader2 className="animate-spin" size={20} />
+                                        <span>{creationStatus || "Creating..."}</span>
+                                    </div>
+                                ) : (
+                                    <>
+                                        <Sparkles size={18} />
+                                        <span>Create & Start Talking</span>
+                                    </>
+                                )}
+                            </button>
+                            <button 
+                                type="button" 
+                                onClick={() => setStep("MENU")} 
+                                className="text-sm text-gray-400 mt-2 hover:text-gray-600 transition-colors"
+                            >
+                                Start Over
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    // 4. CALLING ACTIVE
+    if (step === "CALLING") {
+        return (
+            <div className="fixed inset-0 bg-[#F8F7F4]">
+                <div className="absolute inset-[-40%] opacity-100 animate-[bgPulse_20s_ease-in-out_infinite_alternate]" style={{
+                    background: 'radial-gradient(circle at 30% 20%, rgba(255, 107, 44, 0.08), transparent 40%), radial-gradient(circle at 70% 80%, rgba(255, 143, 89, 0.06), transparent 40%)'
+                }} />
+                
+                <div className="relative z-10 flex items-center justify-center w-full h-full p-6">
+                    <div className="w-full max-w-[440px] py-12 px-10 bg-white/98 backdrop-blur-xl border border-black/[0.08] rounded-[28px] shadow-[0_24px_60px_-12px_rgba(50,50,93,0.1),0_12px_36px_-8px_rgba(0,0,0,0.05)] flex flex-col items-center justify-center text-center">
+                        <div className="relative p-6 bg-orange-50 rounded-full mb-6">
+                            <Phone size={48} className="text-[#FF6B2C]" />
+                            {isCalling && <div className="absolute inset-0 rounded-full animate-ping bg-orange-200 opacity-50" />}
+                        </div>
+                        <h2 className="text-2xl font-bold mb-2 text-[#1A1A2E]">Calling You Now</h2>
+                        <p className="text-[#6E6E80] mb-8 max-w-xs">{callStatus}</p>
+                        <button 
+                            onClick={() => setStep("MENU")} 
+                            className="text-sm font-semibold text-[#FF6B2C] hover:underline"
+                        >
+                            Cancel
+                        </button>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    // 5. WIDGET ACTIVE (LiveKit)
+    return (
+        <div className="fixed inset-0 bg-[#F8F7F4]">
+            <div className="absolute inset-[-40%] opacity-100 animate-[bgPulse_20s_ease-in-out_infinite_alternate]" style={{
+                background: 'radial-gradient(circle at 30% 20%, rgba(255, 107, 44, 0.08), transparent 40%), radial-gradient(circle at 70% 80%, rgba(255, 143, 89, 0.06), transparent 40%)'
+            }} />
+            
+            <div className="relative z-10 flex items-center justify-center w-full h-full p-6">
+                {token && (
+                    <LiveKitRoom
+                        video={false} 
+                        audio={true}
+                        token={token} 
+                        serverUrl={serverUrl}
+                        connect={connect} 
+                        data-lk-theme="default"
+                        onDisconnected={() => setConnect(false)}
+                        style={{ width: "100%", height: "100%", background: "transparent", display: "flex", alignItems: "center", justifyContent: "center" }}
+                    >
+                        <RoomContent onClose={handleDisconnect} agentName={formData.agentName} />
+                    </LiveKitRoom>
+                )}
+            </div>
+        </div>
+    );
 };
 
 export default Dynamic;
