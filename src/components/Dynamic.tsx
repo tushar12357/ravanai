@@ -700,7 +700,7 @@ const Dynamic = () => {
     // 2. SELECTION MENU
     if (step === "MENU") {
         return (
-            <div className="fixed inset-0 bg-[#F8F7F4]">
+            <div className="bg-[#F8F7F4]">
                 <div className="absolute inset-[-40%] opacity-100 animate-[bgPulse_20s_ease-in-out_infinite_alternate]" style={{
                     background: 'radial-gradient(circle at 30% 20%, rgba(255, 107, 44, 0.08), transparent 40%), radial-gradient(circle at 70% 80%, rgba(255, 143, 89, 0.06), transparent 40%)'
                 }} />
@@ -882,7 +882,7 @@ const Dynamic = () => {
     // 3. WIDGET FORM
     if (step === "WIDGET_FORM") {
         return (
-            <div className="fixed inset-0 bg-[#F8F7F4]">
+            <div className="bg-[#F8F7F4]">
                 <div className="absolute inset-[-40%] opacity-100 animate-[bgPulse_20s_ease-in-out_infinite_alternate]" style={{
                     background: 'radial-gradient(circle at 30% 20%, rgba(255, 107, 44, 0.08), transparent 40%), radial-gradient(circle at 70% 80%, rgba(255, 143, 89, 0.06), transparent 40%)'
                 }} />
@@ -962,7 +962,7 @@ const Dynamic = () => {
     // 4. CALLING ACTIVE
     if (step === "CALLING") {
         return (
-            <div className="fixed inset-0 bg-[#F8F7F4]">
+            <div className=" bg-[#F8F7F4]">
                 <div className="absolute inset-[-40%] opacity-100 animate-[bgPulse_20s_ease-in-out_infinite_alternate]" style={{
                     background: 'radial-gradient(circle at 30% 20%, rgba(255, 107, 44, 0.08), transparent 40%), radial-gradient(circle at 70% 80%, rgba(255, 143, 89, 0.06), transparent 40%)'
                 }} />
@@ -989,7 +989,7 @@ const Dynamic = () => {
 
     // 5. WIDGET ACTIVE (LiveKit)
     return (
-        <div className="fixed inset-0 bg-[#F8F7F4]">
+        <div className=" bg-[#F8F7F4]">
             <div className="absolute inset-[-40%] opacity-100 animate-[bgPulse_20s_ease-in-out_infinite_alternate]" style={{
                 background: 'radial-gradient(circle at 30% 20%, rgba(255, 107, 44, 0.08), transparent 40%), radial-gradient(circle at 70% 80%, rgba(255, 143, 89, 0.06), transparent 40%)'
             }} />
