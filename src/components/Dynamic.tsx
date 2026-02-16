@@ -586,10 +586,10 @@ const Dynamic = () => {
                 `}</style>
 
                 <div className="relative z-10  flex items-center justify-center w-full h-full p-6">
-                    <div className="w-full max-w-[440px] h-[700px] rounded-3xl overflow-hidden bg-white border-none shadow-[0_24px_60px_-12px_rgba(50,50,93,0.1),0_12px_36px_-8px_rgba(0,0,0,0.05)]">
+                    <div className="w-full max-w-[440px] h-[530px] lg:h-[700px] rounded-3xl overflow-hidden bg-white border-none shadow-[0_24px_60px_-12px_rgba(50,50,93,0.1),0_12px_36px_-8px_rgba(0,0,0,0.05)]">
 
 
-                        <div className="relative flex flex-col items-center justify-center text-center p-6  pb-[60px] z-10 shadow-[0_4px_20px_rgba(128,0,32,0.25)] bg-gradient-to-br from-[#800020] to-[#a31d24]">
+                        <div className="relative flex flex-col items-center justify-center text-center p-6  lg:pb-[60px] z-10 shadow-[0_4px_20px_rgba(128,0,32,0.25)] bg-gradient-to-br from-[#800020] to-[#a31d24]">
                             <button
                                 onClick={() => { setStep("MENU"); }}
                                 aria-label="Close"
@@ -609,13 +609,13 @@ const Dynamic = () => {
 
                             </div>
 
-                            <div className="absolute bottom-[-50px] w-[100px] h-[100px] bg-white rounded-3xl shadow-[0_16px_40px_rgba(243,108,33,0.2)] p-2 flex items-center justify-center border-4 border-white">
+                            <div className="flex items-center justify-center hidden lg:block absolute bottom-[-50px] w-[100px] h-[100px] bg-white rounded-3xl shadow-[0_16px_40px_rgba(243,108,33,0.2)] p-2  border-4 border-white">
                                 <img src={LOGO_URL} alt="Agni By Ravan.ai" className="w-full h-full object-contain" />
                             </div>
                         </div>
 
 
-                        <div className="pt-16 px-8 pb-10">
+                        <div className="pt-5 lg:pt-16 px-8 pb-10">
                             <div className="text-center mb-6">
                                 <h1 className="text-xl font-bold text-[#1A1A2E]">Welcome to <span className="text-[#800020]"> Ravan.ai</span></h1>
                                 <p className="text-sm text-gray-500 mt-1">Please fill in your details to start the demo</p>
@@ -628,7 +628,7 @@ const Dynamic = () => {
                                         required
                                         value={leadData.name}
                                         onChange={e => setLeadData({ ...leadData, name: e.target.value })}
-                                        className="w-full px-4 py-4 rounded-[14px] border border-[#EAEAEA] bg-[#F8F9FC] text-base text-[#1A1A2E] outline-none transition-all shadow-[inset_0_2px_4px_rgba(0,0,0,0.01)] focus:bg-white focus:border-[#F36C21] focus:shadow-[0_4px_12px_rgba(243,108,33,0.15),0_0_0_2px_rgba(243,108,33,0.05)] focus:-translate-y-0.5 placeholder:text-[#BBB]"
+                                        className="w-full px-4 py-2 lg:py-4 rounded-[14px] border border-[#EAEAEA] bg-[#F8F9FC] text-base text-[#1A1A2E] outline-none transition-all shadow-[inset_0_2px_4px_rgba(0,0,0,0.01)] focus:bg-white focus:border-[#F36C21] focus:shadow-[0_4px_12px_rgba(243,108,33,0.15),0_0_0_2px_rgba(243,108,33,0.05)] focus:-translate-y-0.5 placeholder:text-[#BBB]"
                                         placeholder="Full Name *"
                                     />
                                 </div>
@@ -685,7 +685,7 @@ const Dynamic = () => {
                                         required
                                         value={leadData.phone}
                                         onChange={e => setLeadData({ ...leadData, phone: e.target.value })}
-                                        className="flex-1 px-4 py-4 rounded-[14px] border border-[#EAEAEA] bg-[#F8F9FC] text-base text-[#1A1A2E] outline-none transition-all shadow-[inset_0_2px_4px_rgba(0,0,0,0.01)] focus:bg-white focus:border-[#F36C21] focus:shadow-[0_4px_12px_rgba(243,108,33,0.15),0_0_0_2px_rgba(243,108,33,0.05)] focus:-translate-y-0.5 placeholder:text-[#BBB]"
+                                        className="flex-1 px-4 py-2 lg:py-4 rounded-[14px] border border-[#EAEAEA] bg-[#F8F9FC] text-base text-[#1A1A2E] outline-none transition-all shadow-[inset_0_2px_4px_rgba(0,0,0,0.01)] focus:bg-white focus:border-[#F36C21] focus:shadow-[0_4px_12px_rgba(243,108,33,0.15),0_0_0_2px_rgba(243,108,33,0.05)] focus:-translate-y-0.5 placeholder:text-[#BBB]"
                                         placeholder="Phone number"
                                     />
                                 </div>
@@ -696,7 +696,7 @@ const Dynamic = () => {
                                         required
                                         value={leadData.email}
                                         onChange={e => setLeadData({ ...leadData, email: e.target.value })}
-                                        className="w-full px-4 py-4 rounded-[14px] border border-[#EAEAEA] bg-[#F8F9FC] text-base text-[#1A1A2E] outline-none transition-all shadow-[inset_0_2px_4px_rgba(0,0,0,0.01)] focus:bg-white focus:border-[#F36C21] focus:shadow-[0_4px_12px_rgba(243,108,33,0.15),0_0_0_2px_rgba(243,108,33,0.05)] focus:-translate-y-0.5 placeholder:text-[#BBB]"
+                                        className="w-full px-4 py-2 lg:py-4 rounded-[14px] border border-[#EAEAEA] bg-[#F8F9FC] text-base text-[#1A1A2E] outline-none transition-all shadow-[inset_0_2px_4px_rgba(0,0,0,0.01)] focus:bg-white focus:border-[#F36C21] focus:shadow-[0_4px_12px_rgba(243,108,33,0.15),0_0_0_2px_rgba(243,108,33,0.05)] focus:-translate-y-0.5 placeholder:text-[#BBB]"
                                         placeholder="Email Address *"
                                     />
                                 </div>
@@ -706,7 +706,7 @@ const Dynamic = () => {
                                         type="text"
                                         value={leadData.company}
                                         onChange={e => setLeadData({ ...leadData, company: e.target.value })}
-                                        className="w-full px-4 py-4 rounded-[14px] border border-[#EAEAEA] bg-[#F8F9FC] text-base text-[#1A1A2E] outline-none transition-all shadow-[inset_0_2px_4px_rgba(0,0,0,0.01)] focus:bg-white focus:border-[#F36C21] focus:shadow-[0_4px_12px_rgba(243,108,33,0.15),0_0_0_2px_rgba(243,108,33,0.05)] focus:-translate-y-0.5 placeholder:text-[#BBB]"
+                                        className="w-full px-4 py-2 lg:py-4 rounded-[14px] border border-[#EAEAEA] bg-[#F8F9FC] text-base text-[#1A1A2E] outline-none transition-all shadow-[inset_0_2px_4px_rgba(0,0,0,0.01)] focus:bg-white focus:border-[#F36C21] focus:shadow-[0_4px_12px_rgba(243,108,33,0.15),0_0_0_2px_rgba(243,108,33,0.05)] focus:-translate-y-0.5 placeholder:text-[#BBB]"
                                         placeholder="Company Name (Optional)"
                                     />
                                 </div>
@@ -714,7 +714,7 @@ const Dynamic = () => {
                                 <button
                                     type="submit"
                                     disabled={isSubmittingLead}
-                                    className="w-full px-4 py-4 bg-gradient-to-br from-[#800020] to-[#600018] text-white border-none rounded-[14px] font-bold text-lg tracking-wide mt-6 cursor-pointer shadow-[0_10px_25px_rgba(128,0,32,0.3)] transition-all flex items-center justify-center gap-2.5 relative overflow-hidden hover:-translate-y-1 hover:shadow-[0_15px_35px_rgba(128,0,32,0.4)] hover:bg-gradient-to-br hover:from-[#900024] hover:to-[#70001C] active:-translate-y-0.5 disabled:opacity-70 disabled:transform-none"
+                                    className="w-full px-4 py-2 lg:py-4 bg-gradient-to-br from-[#800020] to-[#600018] text-white border-none rounded-[14px] font-bold text-lg tracking-wide mt-6 cursor-pointer shadow-[0_10px_25px_rgba(128,0,32,0.3)] transition-all flex items-center justify-center gap-2.5 relative overflow-hidden hover:-translate-y-1 hover:shadow-[0_15px_35px_rgba(128,0,32,0.4)] hover:bg-gradient-to-br hover:from-[#900024] hover:to-[#70001C] active:-translate-y-0.5 disabled:opacity-70 disabled:transform-none"
                                 >
                                     {isSubmittingLead ? <Loader2 className="animate-spin" /> : <>Continue to Demo <ArrowRight size={18} /></>}
                                 </button>
