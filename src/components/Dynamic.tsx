@@ -851,7 +851,7 @@ const Dynamic = () => {
                         <a target="_blank"
                             href="https://rzp.io/rzp/TpFhZ8yj"
                             rel="noopener noreferrer"
-                            className="group relative mx-auto mt-6 flex items-center justify-between w-[320px] rounded-full bg-gradient-to-r from-black via-gray-900 to-black px-6 py-4 text-white shadow-[0_12px_30px_rgba(0,0,0,0.25),0_0_0_1px_rgba(199,119,58,0.1)] transition-all duration-500 hover:shadow-[0_16px_40px_rgba(199,119,58,0.45),0_0_0_2px_rgba(199,119,58,0.3)] hover:scale-105 active:scale-95"
+                            className="group relative mx-auto mt-6 flex items-center justify-between w-[250px] lg:w-[320px] rounded-full bg-gradient-to-r from-black via-gray-900 to-black px-6 py-4 text-white shadow-[0_12px_30px_rgba(0,0,0,0.25),0_0_0_1px_rgba(199,119,58,0.1)] transition-all duration-500 hover:shadow-[0_16px_40px_rgba(199,119,58,0.45),0_0_0_2px_rgba(199,119,58,0.3)] hover:scale-105 active:scale-95"
                         >
                             {/* Animated gradient overlay */}
                             <span className="absolute inset-0 rounded-full bg-gradient-to-r from-[#C7773A] via-[#E89D5E] to-[#C7773A] opacity-0 transition-opacity duration-500 group-hover:opacity-100"></span>
@@ -999,7 +999,7 @@ const Dynamic = () => {
                             <a target="_blank"
                                 href="https://rzp.io/rzp/TpFhZ8yj"
                                 rel="noopener noreferrer"
-                                className="group relative mx-auto mt-6 flex items-center justify-between w-[320px] rounded-full bg-gradient-to-r from-black via-gray-900 to-black px-6 py-4 text-white shadow-[0_12px_30px_rgba(0,0,0,0.25),0_0_0_1px_rgba(199,119,58,0.1)] transition-all duration-500 hover:shadow-[0_16px_40px_rgba(199,119,58,0.45),0_0_0_2px_rgba(199,119,58,0.3)] hover:scale-105 active:scale-95"
+                                className="group relative mx-auto mt-6 flex items-center justify-between w-[250px] lg:w-[320px] rounded-full bg-gradient-to-r from-black via-gray-900 to-black px-6 py-4 text-white shadow-[0_12px_30px_rgba(0,0,0,0.25),0_0_0_1px_rgba(199,119,58,0.1)] transition-all duration-500 hover:shadow-[0_16px_40px_rgba(199,119,58,0.45),0_0_0_2px_rgba(199,119,58,0.3)] hover:scale-105 active:scale-95"
                             >
                                 {/* Animated gradient overlay */}
                                 <span className="absolute inset-0 rounded-full bg-gradient-to-r from-[#C7773A] via-[#E89D5E] to-[#C7773A] opacity-0 transition-opacity duration-500 group-hover:opacity-100"></span>
